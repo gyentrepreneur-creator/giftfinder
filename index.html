@@ -8,23 +8,21 @@
 </head>
 <body>
 
-  <!-- NAVBAR -->
   <nav class="navbar">
     <div class="navbar-left">
       <span class="gift-icon">🎁</span>
       <span class="brand" id="brand-name"></span>
     </div>
-    <div class="navbar-right">
+    <div class="navbar-right" id="nav-right">
       <button class="btn-outline" onclick="openAuth('login')">Connexion</button>
       <button class="btn-primary" onclick="openAuth('signup')">S'inscrire</button>
     </div>
   </nav>
 
-  <!-- HERO -->
   <section class="hero">
     <div class="badge">
       <span class="dot"></span>
-      Propulsé par l'IA
+      1 200+ cadeaux trouvés cette semaine
     </div>
     <h1>Fini les cadeaux<br><span class="highlight">ratés</span></h1>
     <p class="subtitle">
@@ -39,11 +37,10 @@
       <span class="stars">★★★★★</span>
       <span class="rating-text">+2 000 cadeaux trouvés</span>
     </div>
-    <button class="btn-cta" onclick="window.location.href='questionnaire.html'">Trouver un cadeau →</button>
+    <button class="btn-cta" onclick="handleHeroCta()">Trouver un cadeau →</button>
     <span class="cta-sub">Gratuit · Sans carte bancaire</span>
   </section>
 
-  <!-- ARGUMENTS -->
   <section class="arguments">
     <div class="argument">
       <div class="arg-icon">🎯</div>
@@ -62,7 +59,6 @@
     </div>
   </section>
 
-  <!-- PILLS -->
   <section class="pills">
     <span class="pill pill-noel">🎄 Noël</span>
     <span class="pill pill-valentin">❤️ Saint-Valentin</span>
@@ -71,19 +67,17 @@
     <span class="pill pill-autre">＋ Autre</span>
   </section>
 
-  <!-- FOOTER -->
   <footer class="footer">
     Déjà un compte ? <a href="#" onclick="openAuth('login'); return false;">Se connecter</a>
   </footer>
 
-  <!-- AUTH MODAL -->
   <div class="auth-overlay" id="authOverlay" style="display:none;">
     <div class="auth-card">
       <h2 id="authTitle">Connexion</h2>
       <p class="auth-sub" id="authSub">Connectez-vous pour trouver le cadeau parfait</p>
       <div class="auth-error" id="authError"></div>
       <div class="form-group">
-        <label for="authEmail">Email</label>
+        <label for="authEmail">Adresse e-mail</label>
         <input type="email" id="authEmail" placeholder="vous@exemple.com">
       </div>
       <div class="form-group" id="authPrenomGroup" style="display:none;">
@@ -101,17 +95,17 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/supabase-init.js"></script>
   <script>
     document.getElementById('brand-name').textContent = APP_NAME;
+
     let authMode = 'login';
 
     function openAuth(mode) {
       authMode = mode;
-      const errorEl = document.getElementById('authError');
-      errorEl.style.display = 'none';
+      document.getElementById('authError').style.display = 'none';
       if (mode === 'login') {
         document.getElementById('authTitle').textContent = 'Connexion';
         document.getElementById('authSub').textContent = 'Connectez-vous pour trouver le cadeau parfait';
@@ -134,16 +128,29 @@
       if (e.target === this) this.style.display = 'none';
     });
 
+    function handleHeroCta() {
+      supabase.auth.getSession().then(function(r) {
+        if (r.data.session) {
+          window.location.href = 'questionnaire.html';
+        } else {
+          openAuth('signup');
+        }
+      });
+    }
+
     async function handleAuth() {
-      const email = document.getElementById('authEmail').value.trim();
+      const email    = document.getElementById('authEmail').value.trim();
       const password = document.getElementById('authPassword').value;
-      const errorEl = document.getElementById('authError');
+      const errorEl  = document.getElementById('authError');
       errorEl.style.display = 'none';
       if (!email || !password) {
         errorEl.textContent = 'Veuillez remplir tous les champs.';
         errorEl.style.display = 'block';
         return;
       }
+      const btn = document.getElementById('authSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Chargement…';
       try {
         if (authMode === 'signup') {
           const prenom = document.getElementById('authPrenom').value.trim();
@@ -157,6 +164,8 @@
       } catch (err) {
         errorEl.textContent = err.message || 'Une erreur est survenue.';
         errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = authMode === 'signup' ? "S'inscrire" : 'Se connecter';
       }
     }
 
@@ -167,7 +176,7 @@
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        document.querySelector('.navbar-right').innerHTML =
+        document.getElementById('nav-right').innerHTML =
           '<button class="btn-primary" onclick="window.location.href=\'questionnaire.html\'">Trouver un cadeau</button>';
       }
     })();
