@@ -48,7 +48,7 @@
     <span id="footer-brand"></span> — <a href="questionnaire.html">Nouvelle recherche</a>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/supabase-init.js"></script>
   <script>
@@ -84,7 +84,7 @@
 
       if (pollCount > MAX_POLLS) {
         stopPolling();
-        showError('Le délai d'attente est dépassé. Veuillez rafraîchir la page ou relancer une recherche.');
+        showError('Délai d\'attente dépassé. Veuillez rafraîchir ou relancer une recherche.');
         return;
       }
 
@@ -102,10 +102,10 @@
           displayResults(data);
         } else if (data.statut === 'error' || data.statut === 'failed') {
           stopPolling();
-          showError('Une erreur est survenue lors de la génération. Veuillez réessayer.');
+          showError('Erreur lors de la génération. Veuillez réessayer.');
         }
       } catch (err) {
-        console.error('Polling error:', err.message);
+        console.error('Erreur polling :', err.message);
       }
     }
 
@@ -126,15 +126,14 @@
         showError('Aucun résultat trouvé. Veuillez relancer une recherche.');
         return;
       }
-      const header = document.getElementById('resultsHeader');
-      header.style.display = 'block';
+      document.getElementById('resultsHeader').style.display = 'block';
       document.getElementById('resultsSubtitle').textContent =
         'Pour ' + (data.destinataire || 'votre proche') +
         ' · ' + (data.occasion || '') +
         ' · ' + (data.budget || '');
       const grid = document.getElementById('resultsGrid');
       grid.innerHTML = '';
-      products.forEach(p => {
+      products.forEach(function(p) {
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML =
@@ -148,8 +147,7 @@
 
     function showError(msg) {
       document.getElementById('loader').style.display = 'none';
-      const errEl = document.getElementById('errorState');
-      errEl.style.display = 'flex';
+      document.getElementById('errorState').style.display = 'flex';
       document.getElementById('errorMessage').textContent = msg;
     }
 
