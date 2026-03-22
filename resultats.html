@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr" translate="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiftFinder — Vos idées cadeaux</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gradient" style="min-height: 100vh;">
+
+  <nav class="navbar">
+    <div class="navbar-left">
+      <span class="gift-icon">🎁</span>
+      <span class="brand" id="brand-name"></span>
+    </div>
+    <div class="navbar-right">
+      <button class="btn-outline" onclick="window.location.href='questionnaire.html'">Nouveau formulaire</button>
+      <button class="btn-primary" id="refreshBtn" onclick="manualRefresh()">Rafraîchir</button>
+    </div>
+  </nav>
+
+  <main style="padding: 40px 20px 60px;">
+
+    <div class="loader-container" id="loader">
+      <div class="spinner"></div>
+      <h2 style="font-size: 20px; font-weight: 700; color: #26215C; margin-bottom: 8px;">Notre IA cherche vos idées…</h2>
+      <p style="font-size: 14px; color: #666; max-width: 320px; line-height: 1.5;">Nous analysons votre profil et trouvons les 9 meilleures idées cadeaux. Cela prend moins de 30 secondes.</p>
+      <p style="font-size: 12px; color: #999; margin-top: 16px;" id="pollingStatus">Vérification en cours…</p>
+    </div>
+
+    <div class="loader-container" id="errorState" style="display:none;">
+      <div style="font-size: 48px; margin-bottom: 16px;">😕</div>
+      <h2 style="font-size: 20px; font-weight: 700; color: #26215C; margin-bottom: 8px;">Une erreur est survenue</h2>
+      <p style="font-size: 14px; color: #666;" id="errorMessage">Impossible de charger les résultats.</p>
+      <button class="btn-primary" style="margin-top: 20px;" onclick="window.location.href='questionnaire.html'">Réessayer</button>
+    </div>
+
+    <div id="resultsHeader" style="display:none; text-align:center; margin-bottom: 32px;">
+      <h1 style="font-size: 28px; font-weight: 700; color: #26215C; margin-bottom: 8px;">🎁 Vos 9 idées cadeaux</h1>
+      <p style="font-size: 14px; color: #666;" id="resultsSubtitle">Sélectionnées par notre IA pour vous</p>
+    </div>
+
+    <div class="results-grid" id="resultsGrid"></div>
+
+  </main>
+
+  <footer class="footer">
+    <span id="footer-brand"></span> — <a href="questionnaire.html">Nouvelle recherche</a>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script>
+    document.getElementById('brand-name').textContent = APP_NAME;
+    document.getElementById('footer-brand').textContent = APP_NAME;
+
+    const params = new URLSearchParams(window.location.search);
+    const searchId = params.get('id');
+
+    if (!searchId) {
+      showError('Aucun identifiant de recherche fourni. Veuillez relancer une recherche.');
+    }
+
+    let pollInterval = null;
+    let pollCount = 0;
+    const MAX_POLLS = 60;
+
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { window.location.href = 'index.html'; return; }
+      if (searchId) startPolling();
+    })();
+
+    function startPolling() {
+      pollInterval = setInterval(checkStatus, POLLING_INTERVAL);
+      checkStatus();
+    }
+
+    async function checkStatus() {
+      pollCount++;
+      document.getElementById('pollingStatus').textContent =
+        'Vérification #' + pollCount + '… (' + (pollCount * POLLING_INTERVAL / 1000) + 's)';
+
+      if (pollCount > MAX_POLLS) {
+        stopPolling();
+        showError('Le délai d'attente est dépassé. Veuillez rafraîchir la page ou relancer une recherche.');
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('searches')
+          .select('statut, resultats, destinataire, occasion, budget')
+          .eq('id', searchId)
+          .single();
+
+        if (error) throw error;
+
+        if (data.statut === 'done' || data.statut === 'completed') {
+          stopPolling();
+          displayResults(data);
+        } else if (data.statut === 'error' || data.statut === 'failed') {
+          stopPolling();
+          showError('Une erreur est survenue lors de la génération. Veuillez réessayer.');
+        }
+      } catch (err) {
+        console.error('Polling error:', err.message);
+      }
+    }
+
+    function stopPolling() {
+      if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+    }
+
+    function displayResults(data) {
+      document.getElementById('loader').style.display = 'none';
+      let products = [];
+      try {
+        products = typeof data.resultats === 'string' ? JSON.parse(data.resultats) : data.resultats;
+      } catch (e) {
+        showError('Format de résultats invalide.');
+        return;
+      }
+      if (!products || !products.length) {
+        showError('Aucun résultat trouvé. Veuillez relancer une recherche.');
+        return;
+      }
+      const header = document.getElementById('resultsHeader');
+      header.style.display = 'block';
+      document.getElementById('resultsSubtitle').textContent =
+        'Pour ' + (data.destinataire || 'votre proche') +
+        ' · ' + (data.occasion || '') +
+        ' · ' + (data.budget || '');
+      const grid = document.getElementById('resultsGrid');
+      grid.innerHTML = '';
+      products.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML =
+          '<h3>' + escHtml(p.nom || p.name || 'Cadeau') + '</h3>' +
+          '<div class="price">' + escHtml(p.prix || p.price || '') + '</div>' +
+          '<p class="description">' + escHtml(p.description || '') + '</p>' +
+          ((p.lien || p.url) ? '<a class="buy-link" href="' + escHtml(p.lien || p.url) + '" target="_blank" rel="noopener">Voir le produit →</a>' : '');
+        grid.appendChild(card);
+      });
+    }
+
+    function showError(msg) {
+      document.getElementById('loader').style.display = 'none';
+      const errEl = document.getElementById('errorState');
+      errEl.style.display = 'flex';
+      document.getElementById('errorMessage').textContent = msg;
+    }
+
+    function manualRefresh() {
+      stopPolling();
+      pollCount = 0;
+      document.getElementById('loader').style.display = 'flex';
+      document.getElementById('errorState').style.display = 'none';
+      document.getElementById('resultsHeader').style.display = 'none';
+      document.getElementById('resultsGrid').innerHTML = '';
+      startPolling();
+    }
+
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+  </script>
+
+</body>
+</html>
