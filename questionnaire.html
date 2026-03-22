@@ -70,12 +70,13 @@
     <span id="footer-brand"></span> — <a href="index.html">Retour à l'accueil</a>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/supabase-init.js"></script>
   <script>
     document.getElementById('brand-name').textContent = APP_NAME;
     document.getElementById('footer-brand').textContent = APP_NAME;
+
     const fields = ['destinataire', 'occasion', 'budget', 'centres_interet'];
     function updateProgress() {
       const filled = fields.filter(id => document.getElementById(id).value.trim() !== '').length;
@@ -85,25 +86,30 @@
       document.getElementById(id).addEventListener('input', updateProgress);
       document.getElementById(id).addEventListener('change', updateProgress);
     });
+
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       const navRight = document.getElementById('nav-right');
       if (!session) { window.location.href = 'index.html'; return; }
       const prenom = session.user.user_metadata?.prenom || session.user.email.split('@')[0];
-      navRight.innerHTML = '<span style="font-size:14px;color:#666;">Bonjour, <strong>' + prenom + '</strong></span><button class="btn-outline" onclick="handleLogout()">Déconnexion</button>';
+      navRight.innerHTML =
+        '<span style="font-size:14px;color:#666;">Bonjour, <strong>' + prenom + '</strong></span>' +
+        '<button class="btn-outline" onclick="handleLogout()">Déconnexion</button>';
     })();
+
     async function handleLogout() {
       await supabase.auth.signOut();
       window.location.href = 'index.html';
     }
+
     async function handleSubmit(e) {
       e.preventDefault();
-      const errorEl = document.getElementById('formError');
+      const errorEl  = document.getElementById('formError');
       const submitBtn = document.getElementById('submitBtn');
       errorEl.style.display = 'none';
-      const destinataire = document.getElementById('destinataire').value.trim();
-      const occasion = document.getElementById('occasion').value;
-      const budget = document.getElementById('budget').value;
+      const destinataire    = document.getElementById('destinataire').value.trim();
+      const occasion        = document.getElementById('occasion').value;
+      const budget          = document.getElementById('budget').value;
       const centres_interet = document.getElementById('centres_interet').value.trim();
       if (!destinataire || !occasion || !budget || !centres_interet) {
         errorEl.textContent = 'Veuillez remplir tous les champs.';
@@ -115,7 +121,11 @@
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) { window.location.href = 'index.html'; return; }
-        const { data, error } = await supabase.from('searches').insert([{ user_id: session.user.id, destinataire, occasion, budget, centres_interet, statut: 'pending' }]).select('id').single();
+        const { data, error } = await supabase
+          .from('searches')
+          .insert([{ user_id: session.user.id, destinataire, occasion, budget, centres_interet, statut: 'pending' }])
+          .select('id')
+          .single();
         if (error) throw error;
         window.location.href = 'resultats.html?id=' + data.id;
       } catch (err) {
