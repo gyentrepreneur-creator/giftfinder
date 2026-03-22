@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr" translate="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiftFinder — Questionnaire</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gradient">
+
+  <nav class="navbar">
+    <div class="navbar-left">
+      <span class="gift-icon">🎁</span>
+      <span class="brand" id="brand-name"></span>
+    </div>
+    <div class="navbar-right" id="nav-right"></div>
+  </nav>
+
+  <div style="min-height: calc(100vh - 56px); display: flex; align-items: center; justify-content: center; padding: 32px 20px;">
+    <div class="card">
+      <div class="progress-bar">
+        <div class="fill" id="progressFill" style="width: 0%;"></div>
+      </div>
+      <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px; color: #26215C;">Trouvons le cadeau parfait</h2>
+      <p style="font-size: 13px; color: #666; margin-bottom: 28px;">Répondez à 4 questions — notre IA fait le reste.</p>
+      <form id="giftForm" onsubmit="handleSubmit(event)">
+        <div class="form-group">
+          <label for="destinataire">Pour qui est ce cadeau ? *</label>
+          <input type="text" id="destinataire" placeholder="Ex : ma mère, mon meilleur ami, mon patron…" maxlength="120" required>
+        </div>
+        <div class="form-group">
+          <label for="occasion">Quelle est l'occasion ? *</label>
+          <select id="occasion" required>
+            <option value="" disabled selected>Choisissez une occasion</option>
+            <option value="Noël">🎄 Noël</option>
+            <option value="Anniversaire">🎂 Anniversaire</option>
+            <option value="Saint-Valentin">❤️ Saint-Valentin</option>
+            <option value="Mariage">💍 Mariage</option>
+            <option value="Fête des mères">💐 Fête des mères</option>
+            <option value="Fête des pères">👔 Fête des pères</option>
+            <option value="Retraite">🎉 Retraite</option>
+            <option value="Autre">✨ Autre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="budget">Quel est votre budget ? *</label>
+          <select id="budget" required>
+            <option value="" disabled selected>Choisissez un budget</option>
+            <option value="Moins de 20 €">Moins de 20 €</option>
+            <option value="20 – 50 €">20 – 50 €</option>
+            <option value="50 – 100 €">50 – 100 €</option>
+            <option value="100 – 200 €">100 – 200 €</option>
+            <option value="Plus de 200 €">Plus de 200 €</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="centres_interet">Décrivez la personne ou ses centres d'intérêt *</label>
+          <textarea id="centres_interet" rows="3" placeholder="Ex : elle adore la cuisine, le yoga et les voyages. Elle a 35 ans." maxlength="500" required></textarea>
+        </div>
+        <div class="auth-error" id="formError"></div>
+        <button type="submit" class="btn-cta" id="submitBtn" style="width: 100%; margin-top: 8px;">
+          Trouver mes cadeaux →
+        </button>
+        <p style="font-size: 11px; color: #888; text-align: center; margin-top: 10px;">Résultats en moins de 30 secondes · Gratuit</p>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span id="footer-brand"></span> — <a href="index.html">Retour à l'accueil</a>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script>
+    document.getElementById('brand-name').textContent = APP_NAME;
+    document.getElementById('footer-brand').textContent = APP_NAME;
+    const fields = ['destinataire', 'occasion', 'budget', 'centres_interet'];
+    function updateProgress() {
+      const filled = fields.filter(id => document.getElementById(id).value.trim() !== '').length;
+      document.getElementById('progressFill').style.width = (filled / fields.length * 100) + '%';
+    }
+    fields.forEach(id => {
+      document.getElementById(id).addEventListener('input', updateProgress);
+      document.getElementById(id).addEventListener('change', updateProgress);
+    });
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const navRight = document.getElementById('nav-right');
+      if (!session) { window.location.href = 'index.html'; return; }
+      const prenom = session.user.user_metadata?.prenom || session.user.email.split('@')[0];
+      navRight.innerHTML = '<span style="font-size:14px;color:#666;">Bonjour, <strong>' + prenom + '</strong></span><button class="btn-outline" onclick="handleLogout()">Déconnexion</button>';
+    })();
+    async function handleLogout() {
+      await supabase.auth.signOut();
+      window.location.href = 'index.html';
+    }
+    async function handleSubmit(e) {
+      e.preventDefault();
+      const errorEl = document.getElementById('formError');
+      const submitBtn = document.getElementById('submitBtn');
+      errorEl.style.display = 'none';
+      const destinataire = document.getElementById('destinataire').value.trim();
+      const occasion = document.getElementById('occasion').value;
+      const budget = document.getElementById('budget').value;
+      const centres_interet = document.getElementById('centres_interet').value.trim();
+      if (!destinataire || !occasion || !budget || !centres_interet) {
+        errorEl.textContent = 'Veuillez remplir tous les champs.';
+        errorEl.style.display = 'block';
+        return;
+      }
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Analyse en cours…';
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) { window.location.href = 'index.html'; return; }
+        const { data, error } = await supabase.from('searches').insert([{ user_id: session.user.id, destinataire, occasion, budget, centres_interet, statut: 'pending' }]).select('id').single();
+        if (error) throw error;
+        window.location.href = 'resultats.html?id=' + data.id;
+      } catch (err) {
+        errorEl.textContent = err.message || 'Une erreur est survenue.';
+        errorEl.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Trouver mes cadeaux →';
+      }
+    }
+  </script>
+</body>
+</html>
