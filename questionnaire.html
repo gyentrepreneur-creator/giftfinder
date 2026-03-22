@@ -5,69 +5,273 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GiftFinder — Questionnaire</title>
   <link rel="stylesheet" href="css/style.css">
-</head>
-<body class="bg-gradient">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #EEEDFE 0%, #FBEAF0 50%, #E1F5EE 100%);
+      position: relative;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .deco {
+      position: fixed;
+      border-radius: 50%;
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .deco-violet { background: #7F77DD; width: 180px; height: 180px; top: -45px; left: -45px; }
+    .deco-rose   { background: #D4537E; width: 110px; height: 110px; top: 20px; right: -25px; }
+    .deco-vert   { background: #1D9E75; width:  80px; height:  80px; bottom: 80px; right: 40px; }
+    .deco-ambre  { background: #EF9F27; width:  60px; height:  60px; bottom: 60px; left: 40px; }
 
+    .navbar { position: relative; z-index: 10; }
+
+    .q-wrap {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 36px 20px 64px;
+      position: relative;
+      z-index: 1;
+    }
+    .q-card {
+      background: rgba(255,255,255,0.82);
+      border-radius: 24px;
+      box-shadow: 0 8px 48px rgba(60,52,137,0.13), 0 2px 12px rgba(0,0,0,0.05);
+      padding: 36px 40px;
+      max-width: 680px;
+      width: 100%;
+      backdrop-filter: blur(12px);
+    }
+
+    /* Progress */
+    .q-prog-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(60,52,137,0.12);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .q-prog-fill {
+      height: 100%;
+      background: #3C3489;
+      border-radius: 999px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .q-title    { font-size: 22px; font-weight: 700; color: #26215C; margin-bottom: 4px; }
+    .q-subtitle { font-size: 13px; color: #666; margin-bottom: 28px; }
+
+    /* Fields */
+    .q-field { margin-bottom: 24px; }
+    .q-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #26215C;
+      margin-bottom: 10px;
+    }
+    .q-input {
+      padding: 12px 16px;
+      border: 1.5px solid rgba(60,52,137,0.2);
+      border-radius: 12px;
+      font-size: 14px;
+      color: #333;
+      background: rgba(255,255,255,0.85);
+      font-family: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+    }
+    .q-input:focus {
+      border-color: #3C3489;
+      box-shadow: 0 0 0 3px rgba(60,52,137,0.1);
+    }
+    .q-input-full { width: 100%; box-sizing: border-box; }
+    .q-input-sm   { width: 140px; }
+
+    /* Chips */
+    .chips-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1.5px solid rgba(60,52,137,0.25);
+      background: rgba(255,255,255,0.72);
+      color: #3C3489;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+      font-family: inherit;
+      line-height: 1.4;
+    }
+    .chip:hover {
+      background: rgba(60,52,137,0.07);
+      border-color: rgba(60,52,137,0.5);
+    }
+    .chip.selected {
+      background: #3C3489;
+      color: #EEEDFE;
+      border-color: #3C3489;
+    }
+
+    /* Error */
+    .q-error {
+      background: #fef2f2;
+      color: #b91c1c;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+      border: 1px solid #fecaca;
+    }
+
+    /* Submit button */
+    .q-submit {
+      width: 100%;
+      padding: 16px;
+      background: #3C3489;
+      color: #EEEDFE;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      font-family: inherit;
+      margin-top: 8px;
+    }
+    .q-submit:hover   { background: #2d2768; }
+    .q-submit:active  { transform: scale(0.98); }
+    .q-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .q-hint {
+      font-size: 11px;
+      color: #888;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .footer { position: relative; z-index: 1; }
+
+    @media (max-width: 640px) {
+      .q-card { padding: 24px 20px; border-radius: 16px; }
+      .q-title { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cercles decoratifs -->
+  <div class="deco deco-violet"></div>
+  <div class="deco deco-rose"></div>
+  <div class="deco deco-vert"></div>
+  <div class="deco deco-ambre"></div>
+
+  <!-- NAVBAR -->
   <nav class="navbar">
     <div class="navbar-left">
-      <span class="gift-icon">🎁</span>
+      <span class="gift-icon">&#127873;</span>
       <span class="brand" id="brand-name"></span>
     </div>
     <div class="navbar-right" id="nav-right"></div>
   </nav>
 
-  <div style="min-height: calc(100vh - 56px); display: flex; align-items: center; justify-content: center; padding: 32px 20px;">
-    <div class="card">
-      <div class="progress-bar">
-        <div class="fill" id="progressFill" style="width: 0%;"></div>
+  <!-- CONTENU -->
+  <div class="q-wrap">
+    <div class="q-card">
+
+      <!-- Barre de progression -->
+      <div class="q-prog-bar">
+        <div class="q-prog-fill" id="progressFill"></div>
       </div>
-      <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px; color: #26215C;">Trouvons le cadeau parfait</h2>
-      <p style="font-size: 13px; color: #666; margin-bottom: 28px;">Répondez à 4 questions — notre IA fait le reste.</p>
-      <form id="giftForm" onsubmit="handleSubmit(event)">
-        <div class="form-group">
-          <label for="destinataire">Pour qui est ce cadeau ? *</label>
-          <input type="text" id="destinataire" placeholder="Ex : ma mère, mon meilleur ami, mon patron…" maxlength="120" required>
+
+      <h2 class="q-title">Trouvons le cadeau parfait</h2>
+      <p class="q-subtitle">Repondez a quelques questions &mdash; notre IA fait le reste.</p>
+
+      <div class="q-error" id="formError"></div>
+
+      <!-- 1 . Destinataire -->
+      <div class="q-field">
+        <label class="q-label" for="destinataire">Pour qui est ce cadeau ? *</label>
+        <input class="q-input q-input-full" type="text" id="destinataire"
+               placeholder="Ex : ma mere, mon meilleur ami, mon patron..." maxlength="120">
+      </div>
+
+      <!-- 2 . Age -->
+      <div class="q-field">
+        <label class="q-label" for="age">Quel age a-t-il / elle ?</label>
+        <input class="q-input q-input-sm" type="number" id="age"
+               placeholder="Ex : 35" min="1" max="120">
+      </div>
+
+      <!-- 3 . Occasion -->
+      <div class="q-field">
+        <label class="q-label">Quelle est l'occasion ? *</label>
+        <div class="chips-row" id="grp-occasion">
+          <button type="button" class="chip" data-value="Noel">&#127876; Noel</button>
+          <button type="button" class="chip" data-value="Anniversaire">&#127874; Anniversaire</button>
+          <button type="button" class="chip" data-value="Mariage">&#128141; Mariage</button>
+          <button type="button" class="chip" data-value="Saint-Valentin">&#10084;&#65039; Saint-Valentin</button>
+          <button type="button" class="chip" data-value="Autre">&#10024; Autre</button>
         </div>
-        <div class="form-group">
-          <label for="occasion">Quelle est l'occasion ? *</label>
-          <select id="occasion" required>
-            <option value="" disabled selected>Choisissez une occasion</option>
-            <option value="Noël">🎄 Noël</option>
-            <option value="Anniversaire">🎂 Anniversaire</option>
-            <option value="Saint-Valentin">❤️ Saint-Valentin</option>
-            <option value="Mariage">💍 Mariage</option>
-            <option value="Fête des mères">💐 Fête des mères</option>
-            <option value="Fête des pères">👔 Fête des pères</option>
-            <option value="Retraite">🎉 Retraite</option>
-            <option value="Autre">✨ Autre</option>
-          </select>
+      </div>
+
+      <!-- 4 . Genre -->
+      <div class="q-field">
+        <label class="q-label">Genre *</label>
+        <div class="chips-row" id="grp-genre">
+          <button type="button" class="chip" data-value="Homme">&#128104; Homme</button>
+          <button type="button" class="chip" data-value="Femme">&#128105; Femme</button>
+          <button type="button" class="chip" data-value="Non-binaire">&#129489; Non-binaire</button>
+          <button type="button" class="chip" data-value="Peu importe">&#129335; Peu importe</button>
         </div>
-        <div class="form-group">
-          <label for="budget">Quel est votre budget ? *</label>
-          <select id="budget" required>
-            <option value="" disabled selected>Choisissez un budget</option>
-            <option value="Moins de 20 €">Moins de 20 €</option>
-            <option value="20 – 50 €">20 – 50 €</option>
-            <option value="50 – 100 €">50 – 100 €</option>
-            <option value="100 – 200 €">100 – 200 €</option>
-            <option value="Plus de 200 €">Plus de 200 €</option>
-          </select>
+      </div>
+
+      <!-- 5 . Centres d'interet (multi) -->
+      <div class="q-field">
+        <label class="q-label">Centres d'interet (plusieurs choix possibles) *</label>
+        <div class="chips-row" id="grp-centres">
+          <button type="button" class="chip multi" data-value="Tech &amp; Gaming">&#127918; Tech &amp; Gaming</button>
+          <button type="button" class="chip multi" data-value="Mode &amp; Beaute">&#128247; Mode &amp; Beaute</button>
+          <button type="button" class="chip multi" data-value="Sport &amp; Fitness">&#127947; Sport &amp; Fitness</button>
+          <button type="button" class="chip multi" data-value="Cuisine &amp; Gastronomie">&#127859; Cuisine &amp; Gastronomie</button>
+          <button type="button" class="chip multi" data-value="Lecture &amp; Culture">&#128218; Lecture &amp; Culture</button>
+          <button type="button" class="chip multi" data-value="Voyage &amp; Aventure">&#9992;&#65039; Voyage &amp; Aventure</button>
+          <button type="button" class="chip multi" data-value="Art &amp; Creativite">&#127912; Art &amp; Creativite</button>
+          <button type="button" class="chip multi" data-value="Bien-etre &amp; Relaxation">&#129340; Bien-etre &amp; Relaxation</button>
         </div>
-        <div class="form-group">
-          <label for="centres_interet">Décrivez la personne ou ses centres d'intérêt *</label>
-          <textarea id="centres_interet" rows="3" placeholder="Ex : elle adore la cuisine, le yoga et les voyages. Elle a 35 ans." maxlength="500" required></textarea>
+      </div>
+
+      <!-- 6 . Budget -->
+      <div class="q-field">
+        <label class="q-label">Budget *</label>
+        <div class="chips-row" id="grp-budget">
+          <button type="button" class="chip" data-value="moins_25">Moins de 25 &euro;</button>
+          <button type="button" class="chip" data-value="25_50">25 &ndash; 50 &euro;</button>
+          <button type="button" class="chip" data-value="50_100">50 &ndash; 100 &euro;</button>
+          <button type="button" class="chip" data-value="100_200">100 &ndash; 200 &euro;</button>
+          <button type="button" class="chip" data-value="plus_200">Plus de 200 &euro;</button>
         </div>
-        <div class="auth-error" id="formError"></div>
-        <button type="submit" class="btn-cta" id="submitBtn" style="width: 100%; margin-top: 8px;">
-          Trouver mes cadeaux →
-        </button>
-        <p style="font-size: 11px; color: #888; text-align: center; margin-top: 10px;">Résultats en moins de 30 secondes · Gratuit</p>
-      </form>
+      </div>
+
+      <button class="q-submit" id="submitBtn" onclick="handleSubmit()">
+        Decouvrir mes recommandations &#10024;
+      </button>
+      <p class="q-hint">Resultats en moins de 30 secondes &middot; Gratuit</p>
+
     </div>
   </div>
 
   <footer class="footer">
-    <span id="footer-brand"></span> — <a href="index.html">Retour à l'accueil</a>
+    <span id="footer-brand"></span> &mdash; <a href="index.html">Retour a l'accueil</a>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -77,24 +281,60 @@
     document.getElementById('brand-name').textContent = APP_NAME;
     document.getElementById('footer-brand').textContent = APP_NAME;
 
-    const fields = ['destinataire', 'occasion', 'budget', 'centres_interet'];
-    function updateProgress() {
-      const filled = fields.filter(id => document.getElementById(id).value.trim() !== '').length;
-      document.getElementById('progressFill').style.width = (filled / fields.length * 100) + '%';
-    }
-    fields.forEach(id => {
-      document.getElementById(id).addEventListener('input', updateProgress);
-      document.getElementById(id).addEventListener('change', updateProgress);
+    // -- Etat des chips --
+    const sel = { occasion: null, genre: null, centres: [], budget: null };
+
+    // -- Chips mono-choix --
+    ['grp-occasion', 'grp-genre', 'grp-budget'].forEach(function(grpId) {
+      document.getElementById(grpId).querySelectorAll('.chip').forEach(function(chip) {
+        chip.addEventListener('click', function() {
+          const grp = document.getElementById(grpId);
+          grp.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('selected'); });
+          this.classList.add('selected');
+          const field = grpId.replace('grp-', '');
+          sel[field] = this.dataset.value;
+          updateProgress();
+        });
+      });
     });
 
-    (async () => {
+    // -- Chips multi-choix --
+    document.getElementById('grp-centres').querySelectorAll('.chip.multi').forEach(function(chip) {
+      chip.addEventListener('click', function() {
+        this.classList.toggle('selected');
+        const v = this.dataset.value;
+        if (this.classList.contains('selected')) {
+          if (!sel.centres.includes(v)) sel.centres.push(v);
+        } else {
+          sel.centres = sel.centres.filter(function(x) { return x !== v; });
+        }
+        updateProgress();
+      });
+    });
+
+    // -- Barre de progression --
+    document.getElementById('destinataire').addEventListener('input', updateProgress);
+
+    function updateProgress() {
+      const filled = [
+        document.getElementById('destinataire').value.trim() !== '',
+        sel.occasion !== null,
+        sel.genre    !== null,
+        sel.centres.length > 0,
+        sel.budget   !== null
+      ].filter(Boolean).length;
+      document.getElementById('progressFill').style.width = (filled / 5 * 100) + '%';
+    }
+
+    // -- Auth gate --
+    (async function() {
       const { data: { session } } = await supabase.auth.getSession();
-      const navRight = document.getElementById('nav-right');
       if (!session) { window.location.href = 'index.html'; return; }
-      const prenom = session.user.user_metadata?.prenom || session.user.email.split('@')[0];
-      navRight.innerHTML =
+      const prenom = (session.user.user_metadata && session.user.user_metadata.prenom)
+        || session.user.email.split('@')[0];
+      document.getElementById('nav-right').innerHTML =
         '<span style="font-size:14px;color:#666;">Bonjour, <strong>' + prenom + '</strong></span>' +
-        '<button class="btn-outline" onclick="handleLogout()">Déconnexion</button>';
+        '<button class="btn-outline" onclick="handleLogout()">Deconnexion</button>';
     })();
 
     async function handleLogout() {
@@ -102,38 +342,60 @@
       window.location.href = 'index.html';
     }
 
-    async function handleSubmit(e) {
-      e.preventDefault();
+    // -- Soumission --
+    async function handleSubmit() {
       const errorEl  = document.getElementById('formError');
       const submitBtn = document.getElementById('submitBtn');
       errorEl.style.display = 'none';
-      const destinataire    = document.getElementById('destinataire').value.trim();
-      const occasion        = document.getElementById('occasion').value;
-      const budget          = document.getElementById('budget').value;
-      const centres_interet = document.getElementById('centres_interet').value.trim();
-      if (!destinataire || !occasion || !budget || !centres_interet) {
-        errorEl.textContent = 'Veuillez remplir tous les champs.';
-        errorEl.style.display = 'block';
-        return;
-      }
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Analyse en cours…';
+
+      const destinataire = document.getElementById('destinataire').value.trim();
+      const ageRaw       = document.getElementById('age').value;
+      const age          = ageRaw ? parseInt(ageRaw, 10) : null;
+
+      // Validation
+      if (!destinataire)      { showError('Veuillez indiquer le destinataire du cadeau.'); return; }
+      if (!sel.occasion)      { showError('Veuillez selectionner une occasion.'); return; }
+      if (!sel.genre)         { showError('Veuillez selectionner un genre.'); return; }
+      if (!sel.centres.length){ showError('Veuillez selectionner au moins un centre d interet.'); return; }
+      if (!sel.budget)        { showError('Veuillez selectionner un budget.'); return; }
+
+      submitBtn.disabled    = true;
+      submitBtn.textContent = 'Analyse en cours...';
+
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) { window.location.href = 'index.html'; return; }
+
         const { data, error } = await supabase
           .from('searches')
-          .insert([{ user_id: session.user.id, destinataire, occasion, budget, centres_interet, statut: 'pending' }])
+          .insert([{
+            user_id:          session.user.id,
+            destinataire:     destinataire,
+            age:              age,
+            occasion:         sel.occasion,
+            genre:            sel.genre,
+            centres_interet:  JSON.stringify(sel.centres),
+            budget:           sel.budget,
+            statut:           'pending'
+          }])
           .select('id')
           .single();
+
         if (error) throw error;
         window.location.href = 'resultats.html?id=' + data.id;
+
       } catch (err) {
-        errorEl.textContent = err.message || 'Une erreur est survenue.';
-        errorEl.style.display = 'block';
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Trouver mes cadeaux →';
+        showError(err.message || 'Une erreur est survenue. Veuillez reessayer.');
+        submitBtn.disabled    = false;
+        submitBtn.textContent = 'Decouvrir mes recommandations';
       }
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('formError');
+      el.textContent    = msg;
+      el.style.display  = 'block';
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   </script>
 </body>
