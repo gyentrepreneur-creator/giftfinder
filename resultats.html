@@ -347,16 +347,27 @@
 
         var badge = (p.plateforme || p.platform)
           ? '<span class="r-badge">' + esc(p.plateforme || p.platform) + '</span>' : '';
-        var buyBtn = (p.lien || p.url)
-          ? '<a class="r-card-btn" href="' + esc(p.lien || p.url) + '" target="_blank" rel="noopener">Voir le produit &rarr;</a>' : '';
+        // Compatibilité avec les deux formats de champs (ancien et nouveau)
+        var titre = p.titre || p.nom || p.name || 'Cadeau';
+        var prix = p.prix_estime || p.prix || p.price || '';
+        var lienBrut = p.lien_recherche || p.lien || p.url || '';
+        // Ajouter le tag affilié Amazon si c'est un lien Amazon
+        var lien = lienBrut;
+        if (lienBrut && lienBrut.includes('amazon')) {
+          lien = lienBrut + (lienBrut.includes('?') ? '&' : '?') + 'tag=giftfinder0d6-21';
+        }
+
+        var buyBtn = lien
+          ? '<a class="r-card-btn" href="' + esc(lien) + '" target="_blank" rel="noopener">Voir le produit &rarr;</a>'
+          : '<a class="r-card-btn" href="https://www.amazon.fr/s?k=' + encodeURIComponent(titre) + '&tag=giftfinder0d6-21" target="_blank" rel="noopener">Rechercher sur Amazon &rarr;</a>';
 
         card.innerHTML =
           imgHtml +
           '<div class="r-card-body">' +
             badge +
-            '<div class="r-card-title">' + esc(p.nom || p.name || 'Cadeau') + '</div>' +
+            '<div class="r-card-title">' + esc(titre) + '</div>' +
             '<div class="r-card-desc">'  + esc(p.description || '') + '</div>' +
-            '<div class="r-card-price">' + esc(p.prix || p.price || '') + '</div>' +
+            (prix ? '<div class="r-card-price">~' + esc(String(prix)) + '€</div>' : '') +
             buyBtn +
           '</div>';
 
