@@ -1,6 +1,6 @@
-/* ──────────────────────────────────────────────
-   GiftFinder — Styles globaux
-   ────────────────────────────────────────────── */
+/* ââââââââââââââââââââââââââââââââââââââââââââââ
+   GiftFinder â Styles globaux
+   ââââââââââââââââââââââââââââââââââââââââââââââ */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -110,11 +110,27 @@ button { cursor: pointer; font-family: inherit; }
 .pill-autre    { background: #f3f4f6; color: #666; }
 
 .footer {
-  text-align: center; padding: 24px;
+  text-align: center; padding: 24px 20px 28px;
   background: #fff; border-top: 1px solid #eee;
-  font-size: 14px; color: #666;
+  font-size: 13px; color: #666;
 }
 .footer a { color: #534AB7; text-decoration: underline; font-weight: 500; }
+.footer .footer-links {
+  display: flex; justify-content: center; flex-wrap: wrap;
+  gap: 8px 20px; margin-bottom: 10px;
+}
+.footer .footer-links a { color: #534AB7; text-decoration: underline; font-weight: 500; }
+.footer .footer-amazon {
+  font-size: 11px; color: #aaa; margin-bottom: 10px;
+}
+.footer .footer-social {
+  display: flex; justify-content: center; gap: 20px; margin-bottom: 4px;
+}
+.footer .footer-social a {
+  color: #534AB7; text-decoration: none; font-size: 13px; font-weight: 500;
+}
+.footer .footer-social a:hover { text-decoration: underline; }
+.footer .footer-top { margin-bottom: 14px; }
 
 .bg-gradient {
   min-height: 100vh;
