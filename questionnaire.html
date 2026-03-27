@@ -251,13 +251,13 @@
       </div>
 
       <!-- 6 . Budget -->
-      <div clas="q-field">
+      <div class="q-field">
         <label class="q-label">Budget *</label>
         <div class="chips-row" id="grp-budget">
           <button type="button" class="chip" data-value="moins_25">Moins de 25 &euro;</button>
           <button type="button" class="chip" data-value="25_50">25 &ndash; 50 &euro;</button>
           <button type="button" class="chip" data-value="50_100">50 &ndash; 100 &euro;</button>
-          <button type="button" class="chip" data-value="100_200">100 &eash; 200 &euro;</button>
+          <button type="button" class="chip" data-value="100_200">100 &ndash; 200 &euro;</button>
           <button type="button" class="chip" data-value="plus_200">Plus de 200 &euro;</button>
         </div>
       </div>
@@ -346,6 +346,7 @@
         || session.user.email.split('@')[0];
       document.getElementById('nav-right').innerHTML =
         '<span style="font-size:14px;color:#666;">Bonjour, <strong>' + prenom + '</strong></span>' +
+        '<a href="historique.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128220; Mes recherches</a>' +
         '<button class="btn-outline" onclick="handleLogout()">Deconnexion</button>';
     })();
 
