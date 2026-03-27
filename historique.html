@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="fr" translate="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiftFinder â Mon historique</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #EEEDFE 0%, #FBEAF0 50%, #E1F5EE 100%);
+      position: relative;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .deco {
+      position: fixed;
+      border-radius: 50%;
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .deco-violet { background: #7F77DD; width: 180px; height: 180px; top: -45px; left: -45px; }
+    .deco-rose   { background: #D4537E; width: 110px; height: 110px; top: 20px; right: -25px; }
+    .deco-vert   { background: #1D9E75; width:  80px; height:  80px; bottom: 80px; right: 40px; }
+    .deco-ambre  { background: #EF9F27; width:  60px; height:  60px; bottom: 60px; left: 40px; }
+
+    .navbar { position: relative; z-index: 10; }
+
+    .h-main {
+      flex: 1;
+      padding: 40px 20px 60px;
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .h-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #26215C;
+      margin-bottom: 6px;
+    }
+    .h-sub {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 32px;
+    }
+
+    /* -- Card historique -- */
+    .h-card {
+      background: rgba(255,255,255,0.88);
+      border-radius: 16px;
+      box-shadow: 0 2px 16px rgba(60,52,137,0.08);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      cursor: pointer;
+      transition: box-shadow .15s, transform .15s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .h-card:hover {
+      box-shadow: 0 6px 28px rgba(60,52,137,0.14);
+      transform: translateY(-2px);
+    }
+    .h-emoji {
+      font-size: 36px;
+      flex-shrink: 0;
+      width: 52px;
+      text-align: center;
+    }
+    .h-info { flex: 1; min-width: 0; }
+    .h-info-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+    .h-destinataire {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a1935;
+    }
+    .h-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: rgba(60,52,137,0.1);
+      color: #3C3489;
+    }
+    .h-badge-done {
+      background: rgba(29,158,117,0.12);
+      color: #1D9E75;
+    }
+    .h-meta {
+      font-size: 12px;
+      color: #888;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .h-arrow {
+      font-size: 20px;
+      color: #ccc;
+      flex-shrink: 0;
+    }
+    .h-date {
+      font-size: 11px;
+      color: #bbb;
+      text-align: right;
+      flex-shrink: 0;
+      min-width: 80px;
+    }
+
+    /* -- Empty state -- */
+    .h-empty {
+      text-align: center;
+      padding: 80px 20px;
+    }
+    .h-empty-icon { font-size: 56px; margin-bottom: 16px; }
+    .h-empty h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #26215C;
+      margin-bottom: 8px;
+    }
+    .h-empty p {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 24px;
+    }
+
+    /* -- Loader -- */
+    .h-loader {
+      text-align: center;
+      padding: 80px 20px;
+      color: #888;
+      font-size: 14px;
+    }
+    .h-spinner {
+      width: 36px; height: 36px;
+      border: 3px solid rgba(60,52,137,0.15);
+      border-top-color: #3C3489;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .footer { position: relative; z-index: 1; }
+
+    @media (max-width: 540px) {
+      .h-card { padding: 16px; gap: 12px; }
+      .h-date { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="deco deco-violet"></div>
+  <div class="deco deco-rose"></div>
+  <div class="deco deco-vert"></div>
+  <div class="deco deco-ambre"></div>
+
+  <nav class="navbar">
+    <div class="navbar-left">
+      <span class="gift-icon">&#127873;</span>
+      <span class="brand" id="brand-name"></span>
+    </div>
+    <div class="navbar-right" id="nav-right"></div>
+  </nav>
+
+  <main class="h-main">
+    <h1 class="h-title">&#128220; Mes recherches</h1>
+    <p class="h-sub" id="h-sub">Chargement...</p>
+
+    <!-- Loader -->
+    <div id="loader" class="h-loader">
+      <div class="h-spinner"></div>
+      Chargement de vos recherches...
+    </div>
+
+    <!-- Liste -->
+    <div id="liste"></div>
+
+    <!-- Vide -->
+    <div id="empty" class="h-empty" style="display:none;">
+      <div class="h-empty-icon">&#127873;</div>
+      <h2>Aucune recherche pour l'instant</h2>
+      <p>Lancez votre premi&egrave;re recherche et d&eacute;couvrez des id&eacute;es cadeaux personnalis&eacute;es !</p>
+      <button class="btn-primary" onclick="window.location.href='questionnaire.html'">
+        Trouver un cadeau &#10024;
+      </button>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-top">
+      <span id="footer-brand"></span> &mdash; <a href="questionnaire.html">Nouvelle recherche</a>
+    </div>
+    <div class="footer-links">
+      <a href="mentions-legales.html">Mentions lÃ©gales</a>
+      <a href="confidentialite.html">ConfidentialitÃ©</a>
+      <a href="cgu.html">CGU</a>
+    </div>
+    <p class="footer-amazon">En tant que Partenaire Amazon, je rÃ©alise un bÃ©nÃ©fice sur les achats remplissant les conditions requises.</p>
+    <div class="footer-social">
+      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">ð¸ Instagram @GIFTFINDER2.0</a>
+      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">ðµ TikTok @giftfinder2.0</a>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script>
+    document.getElementById('brand-name').textContent   = APP_NAME;
+    document.getElementById('footer-brand').textContent = APP_NAME;
+
+    const OCCASION_EMOJI = {
+      'Noel': 'ð', 'Anniversaire': 'ð', 'Mariage': 'ð',
+      'Saint-Valentin': 'â¤ï¸', 'Autre': 'â¨'
+    };
+    const BUDGET_LABEL = {
+      'moins_25': '< 25 â¬', '25_50': '25-50 â¬',
+      '50_100': '50-100 â¬', '100_200': '100-200 â¬', 'plus_200': '> 200 â¬'
+    };
+
+    (async function() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { window.location.href = 'index.html'; return; }
+
+      const prenom = (session.user.user_metadata && session.user.user_metadata.prenom)
+        || session.user.email.split('@')[0];
+      document.getElementById('nav-right').innerHTML =
+        '<span style="font-size:14px;color:#666;">Bonjour, <strong>' + prenom + '</strong></span>' +
+        '<button class="btn-primary" onclick="window.location.href=\'questionnaire.html\'">+ Nouvelle recherche</button>' +
+        '<button class="btn-outline" onclick="handleLogout()">D&eacute;connexion</button>';
+
+      const { data, error } = await supabase
+        .from('searches')
+        .select('id, destinataire, occasion, genre, budget, centres_interet, statut, created_at')
+        .eq('user_id', session.user.id)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      document.getElementById('loader').style.display = 'none';
+
+      if (error || !data) {
+        document.getElementById('h-sub').textContent = 'Impossible de charger l\'historique.';
+        return;
+      }
+
+      const nb = data.length;
+      document.getElementById('h-sub').textContent =
+        nb === 0 ? 'Aucune recherche encore.' :
+        nb === 1 ? '1 recherche effectu&eacute;e' :
+        nb + ' recherches effectu&eacute;es';
+
+      if (nb === 0) {
+        document.getElementById('empty').style.display = 'block';
+        return;
+      }
+
+      const liste = document.getElementById('liste');
+      data.forEach(function(r) {
+        const emoji   = OCCASION_EMOJI[r.occasion] || 'ð';
+        const budget  = BUDGET_LABEL[r.budget] || r.budget || '';
+        const centres = (r.centres_interet || []).slice(0, 2).join(', ');
+        const isDone  = r.statut === 'done' || r.statut === 'completed';
+        const date    = new Date(r.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+
+        const a = document.createElement('a');
+        a.className = 'h-card';
+        a.href = isDone ? 'resultats.html?id=' + r.id : '#';
+        if (!isDone) a.style.opacity = '0.65';
+        a.innerHTML =
+          '<div class="h-emoji">' + emoji + '</div>' +
+          '<div class="h-info">' +
+            '<div class="h-info-top">' +
+              '<span class="h-destinataire">' + esc(r.destinataire || 'Cadeau') + '</span>' +
+              (r.occasion ? '<span class="h-badge">' + esc(r.occasion) + '</span>' : '') +
+              (isDone ? '<span class="h-badge h-badge-done">â Termin&eacute;</span>' : '<span class="h-badge">En cours...</span>') +
+            '</div>' +
+            '<div class="h-meta">' +
+              (budget ? 'Budget ' + esc(budget) : '') +
+              (centres ? ' &middot; ' + esc(centres) : '') +
+            '</div>' +
+          '</div>' +
+          '<div class="h-date">' + date + '</div>' +
+          '<div class="h-arrow">âº</div>';
+
+        liste.appendChild(a);
+      });
+    })();
+
+    async function handleLogout() {
+      await supabase.auth.signOut();
+      window.location.href = 'index.html';
+    }
+
+    function esc(s) {
+      return String(s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+  </script>
+</body>
+</html>
