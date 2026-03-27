@@ -198,6 +198,7 @@
       <span class="brand" id="brand-name"></span>
     </div>
     <div class="navbar-right">
+      <a href="historique.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128220; Mes recherches</a>
       <button class="btn-outline" style="border-color:#3C3489;color:#3C3489;"
               onclick="window.location.href='questionnaire.html'">Nouveau formulaire</button>
       <button class="btn-primary" onclick="manualRefresh()">Rafraichir</button>
@@ -352,18 +353,16 @@
         var imgHtml;
         if (p.image || p.img) {
           imgHtml = '<div class="r-card-img"><img src="' + esc(p.image || p.img) +
-                    '" alt="' + esc(p.nom || p.name || '') + '" onerror="this.parentElement.innerHTML=\'&#127873;\'"></div>';
+                    '" alt="' + esc(p.nom || p.name || '') + '" onerror="this.parentElement.innerHTML=\'&#127873;</div>';
         } else {
-          imgHtml = '<div class="r-card-img">&#127873;</div>';
+          imgHtml = '<div class="r-card-img">&#127873;</div>'
         }
 
         var badge = (p.plateforme || p.platform)
           ? '<span class="r-badge">' + esc(p.plateforme || p.platform) + '</span>' : '';
-        // CompatibilitÃ© avec les deux formats de champs (ancien et nouveau)
         var titre = p.titre || p.nom || p.name || 'Cadeau';
         var prix = p.prix_estime || p.prix || p.price || '';
         var lienBrut = p.lien_recherche || p.lien || p.url || '';
-        // Ajouter le tag affiliÃ© Amazon si c'est un lien Amazon
         var lien = lienBrut;
         if (lienBrut && lienBrut.includes('amazon')) {
           lien = lienBrut + (lienBrut.includes('?') ? '&' : '?') + 'tag=giftfinder0d6-21';
