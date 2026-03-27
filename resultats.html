@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GiftFinder &mdash; Vos idees cadeaux</title>
+  <title>GiftFinder &mdash; Vos id&eacute;es cadeaux</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
     body {
@@ -35,7 +35,6 @@
       margin: 0 auto;
     }
 
-    /* -- Loader -- */
     .r-loader {
       display: flex;
       flex-direction: column;
@@ -64,7 +63,6 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* -- Error -- */
     .r-error {
       display: none;
       flex-direction: column;
@@ -74,7 +72,6 @@
       text-align: center;
     }
 
-    /* -- Results header -- */
     .r-hdr {
       text-align: center;
       margin-bottom: 36px;
@@ -86,14 +83,12 @@
       margin-bottom: 8px;
     }
 
-    /* -- Grid 3x3 -- */
     .r-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 20px;
     }
 
-    /* -- Card produit -- */
     .r-card {
       background: #fff;
       border-radius: 16px;
@@ -185,13 +180,11 @@
 </head>
 <body>
 
-  <!-- Cercles decoratifs -->
   <div class="deco deco-violet"></div>
   <div class="deco deco-rose"></div>
   <div class="deco deco-vert"></div>
   <div class="deco deco-ambre"></div>
 
-  <!-- NAVBAR -->
   <nav class="navbar">
     <div class="navbar-left">
       <span class="gift-icon">&#127873;</span>
@@ -201,38 +194,34 @@
       <a href="historique.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128220; Mes recherches</a>
       <button class="btn-outline" style="border-color:#3C3489;color:#3C3489;"
               onclick="window.location.href='questionnaire.html'">Nouveau formulaire</button>
-      <button class="btn-primary" onclick="manualRefresh()">Rafraichir</button>
+      <button class="btn-primary" onclick="manualRefresh()">Rafra&icirc;chir</button>
     </div>
   </nav>
 
-  <!-- MAIN -->
   <main class="r-main">
 
-    <!-- Etat : chargement -->
     <div id="loader" class="r-loader">
       <div class="r-gift">&#127873;</div>
       <div class="r-spinner"></div>
-      <h2 style="font-size:20px;font-weight:700;color:#26215C;margin:0 0 8px;">Notre IA cherche vos idees&hellip;</h2>
+      <h2 style="font-size:20px;font-weight:700;color:#26215C;margin:0 0 8px;">Notre IA cherche vos id&eacute;es&hellip;</h2>
       <p style="font-size:14px;color:#666;max-width:300px;line-height:1.6;margin:0;">
-        Nous analysons votre profil et trouvons les meilleures idees cadeaux.</p>
+        Nous analysons votre profil et trouvons les meilleures id&eacute;es cadeaux.</p>
       <p style="font-size:13px;color:#888;margin:6px 0 0;">Cela prend moins de 30 secondes.</p>
-      <p style="font-size:11px;color:#bbb;margin:12px 0 0;" id="pollingStatus">Verification en cours&hellip;</p>
+      <p style="font-size:11px;color:#bbb;margin:12px 0 0;" id="pollingStatus">V&eacute;rification en cours&hellip;</p>
     </div>
 
-    <!-- Etat : erreur -->
     <div id="errorState" class="r-error">
       <div style="font-size:48px;margin-bottom:16px;">&#128533;</div>
       <h2 style="font-size:20px;font-weight:700;color:#26215C;margin-bottom:8px;">Une erreur est survenue</h2>
-      <p style="font-size:14px;color:#666;" id="errorMessage">Impossible de charger les resultats.</p>
+      <p style="font-size:14px;color:#666;" id="errorMessage">Impossible de charger les r&eacute;sultats.</p>
       <button class="btn-primary" style="margin-top:20px;"
-              onclick="window.location.href='questionnaire.html'">Reessayer</button>
+              onclick="window.location.href='questionnaire.html'">R&eacute;essayer</button>
     </div>
 
-    <!-- Etat : resultats -->
     <div id="resultsSection" style="display:none;">
       <div class="r-hdr">
-        <h1>&#127873; Vos idees cadeaux</h1>
-        <p style="font-size:14px;color:#666;" id="resultsSubtitle">Selectionnees par notre IA pour vous</p>
+        <h1>&#127873; Vos id&eacute;es cadeaux</h1>
+        <p style="font-size:14px;color:#666;" id="resultsSubtitle">S&eacute;lectionn&eacute;es par notre IA pour vous</p>
       </div>
       <div class="r-grid" id="resultsGrid"></div>
     </div>
@@ -244,14 +233,14 @@
       <span id="footer-brand"></span> &mdash; <a href="questionnaire.html">Nouvelle recherche</a>
     </div>
     <div class="footer-links">
-      <a href="mentions-legales.html">Mentions lÃ©gales</a>
-      <a href="confidentialite.html">ConfidentialitÃ©</a>
+      <a href="mentions-legales.html">Mentions l&eacute;gales</a>
+      <a href="confidentialite.html">Confidentialit&eacute;</a>
       <a href="cgu.html">CGU</a>
     </div>
-    <p class="footer-amazon">En tant que Partenaire Amazon, je rÃ©alise un bÃ©nÃ©fice sur les achats remplissant les conditions requises.</p>
+    <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
     <div class="footer-social">
-      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">ð¸ Instagram @GIFTFINDER2.0</a>
-      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">ðµ TikTok @giftfinder2.0</a>
+      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">&#128248; Instagram @GIFTFINDER2.0</a>
+      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">&#127925; TikTok @giftfinder2.0</a>
     </div>
   </footer>
 
@@ -285,11 +274,11 @@
     async function checkStatus() {
       pollCount++;
       document.getElementById('pollingStatus').textContent =
-        'Verification #' + pollCount + '... (' + (pollCount * POLLING_INTERVAL / 1000) + 's)';
+        'V\u00e9rification #' + pollCount + '... (' + (pollCount * POLLING_INTERVAL / 1000) + 's)';
 
       if (pollCount > MAX_POLLS) {
         stopPolling();
-        showError('Delai d attente depasse. Veuillez rafraichir ou relancer une recherche.');
+        showError('D\u00e9lai d\u2019attente d\u00e9pass\u00e9. Veuillez rafra\u00eechi r ou relancer une recherche.');
         return;
       }
 
@@ -307,7 +296,7 @@
           displayResults(data);
         } else if (data.statut === 'error' || data.statut === 'failed') {
           stopPolling();
-          showError('Erreur lors de la generation. Veuillez reessayer.');
+          showError('Erreur lors de la g\u00e9n\u00e9ration. Veuillez r\u00e9essayer.');
         }
       } catch (err) {
         console.error('Erreur polling :', err.message);
@@ -327,16 +316,15 @@
           ? JSON.parse(data.suggestions)
           : (Array.isArray(data.suggestions) ? data.suggestions : []);
       } catch (e) {
-        showError('Format de resultats invalide.');
+        showError('Format de r\u00e9sultats invalide.');
         return;
       }
 
       if (!products.length) {
-        showError('Aucun resultat trouve. Veuillez relancer une recherche.');
+        showError('Aucun r\u00e9sultat trouv\u00e9. Veuillez relancer une recherche.');
         return;
       }
 
-      // Sous-titre
       var budgetLabel = { moins_25:'< 25 EUR', '25_50':'25-50 EUR', '50_100':'50-100 EUR', '100_200':'100-200 EUR', plus_200:'> 200 EUR' };
       document.getElementById('resultsSubtitle').textContent =
         'Pour ' + (data.destinataire || 'votre proche') +
@@ -353,9 +341,9 @@
         var imgHtml;
         if (p.image || p.img) {
           imgHtml = '<div class="r-card-img"><img src="' + esc(p.image || p.img) +
-                    '" alt="' + esc(p.nom || p.name || '') + '" onerror="this.parentElement.innerHTML=\'&#127873;</div>';
+                    '" alt="' + esc(p.nom || p.name || '') + '" onerror="this.parentElement.innerHTML=\'&#127873;\'"></div>';
         } else {
-          imgHtml = '<div class="r-card-img">&#127873;</div>'
+          imgHtml = '<div class="r-card-img">&#127873;</div>';
         }
 
         var badge = (p.plateforme || p.platform)
@@ -378,7 +366,7 @@
             badge +
             '<div class="r-card-title">' + esc(titre) + '</div>' +
             '<div class="r-card-desc">'  + esc(p.description || '') + '</div>' +
-            (prix ? '<div class="r-card-price">~' + esc(String(prix)) + 'â¬</div>' : '') +
+            (prix ? '<div class="r-card-price">~' + esc(String(prix)) + '&euro;</div>' : '') +
             buyBtn +
           '</div>';
 
