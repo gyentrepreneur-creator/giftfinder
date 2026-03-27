@@ -189,6 +189,7 @@
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         document.getElementById('nav-right').innerHTML =
+          '<a href="historique.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128220; Mes recherches</a>' +
           '<button class="btn-primary" onclick="window.location.href=\'questionnaire.html\'">Trouver un cadeau</button>';
       }
     })();
