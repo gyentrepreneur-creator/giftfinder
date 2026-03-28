@@ -3,49 +3,179 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GiftFinder &mdash; Questionnaire</title>
+  <title>GiftFinder â Questionnaire</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    body { margin: 0; min-height: 100vh; background: linear-gradient(135deg, #EEEDFE 0%, #FBEAF0 50%, #E1F5EE 100%); position: relative; overflow-x: hidden; display: flex; flex-direction: column; }
-    .deco { position: fixed; border-radius: 50%; opacity: 0.15; pointer-events: none; z-index: 0; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #EEEDFE 0%, #FBEAF0 50%, #E1F5EE 100%);
+      position: relative;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .deco {
+      position: fixed;
+      border-radius: 50%;
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+    }
     .deco-violet { background: #7F77DD; width: 180px; height: 180px; top: -45px; left: -45px; }
-    .deco-rose { background: #D4537E; width: 110px; height: 110px; top: 20px; right: -25px; }
-    .deco-vert { background: #1D9E75; width: 80px; height: 80px; bottom: 80px; right: 40px; }
-    .deco-ambre { background: #EF9F27; width: 60px; height: 60px; bottom: 60px; left: 40px; }
+    .deco-rose   { background: #D4537E; width: 110px; height: 110px; top: 20px; right: -25px; }
+    .deco-vert   { background: #1D9E75; width:  80px; height:  80px; bottom: 80px; right: 40px; }
+    .deco-ambre  { background: #EF9F27; width:  60px; height:  60px; bottom: 60px; left: 40px; }
+
     .navbar { position: relative; z-index: 10; }
-    .q-wrap { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 36px 20px 64px; position: relative; z-index: 1; }
-    .q-card { background: rgba(255,255,255,0.82); border-radius: 24px; box-shadow: 0 8px 48px rgba(60,52,137,0.13), 0 2px 12px rgba(0,0,0,0.05); padding: 36px 40px; max-width: 680px; width: 100%; backdrop-filter: blur(12px); }
-    .q-prog-bar { width: 100%; height: 6px; background: rgba(60,52,137,0.12); border-radius: 999px; overflow: hidden; margin-bottom: 28px; }
-    .q-prog-fill { height: 100%; background: #3C3489; border-radius: 999px; transition: width 0.4s ease; width: 0%; }
-    .q-title { font-size: 22px; font-weight: 700; color: #26215C; margin-bottom: 4px; }
+
+    .q-wrap {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 36px 20px 64px;
+      position: relative;
+      z-index: 1;
+    }
+    .q-card {
+      background: rgba(255,255,255,0.82);
+      border-radius: 24px;
+      box-shadow: 0 8px 48px rgba(60,52,137,0.13), 0 2px 12px rgba(0,0,0,0.05);
+      padding: 36px 40px;
+      max-width: 680px;
+      width: 100%;
+      backdrop-filter: blur(12px);
+    }
+
+    /* Progress */
+    .q-prog-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(60,52,137,0.12);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .q-prog-fill {
+      height: 100%;
+      background: #3C3489;
+      border-radius: 999px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .q-title    { font-size: 22px; font-weight: 700; color: #26215C; margin-bottom: 4px; }
     .q-subtitle { font-size: 13px; color: #666; margin-bottom: 28px; }
+
+    /* Fields */
     .q-field { margin-bottom: 24px; }
-    .q-label { display: block; font-size: 13px; font-weight: 600; color: #26215C; margin-bottom: 10px; }
-    .q-input { padding: 12px 16px; border: 1.5px solid rgba(60,52,137,0.2); border-radius: 12px; font-size: 14px; color: #333; background: rgba(255,255,255,0.85); font-family: inherit; transition: border-color 0.15s, box-shadow 0.15s; outline: none; }
-    .q-input:focus { border-color: #3C3489; box-shadow: 0 0 0 3px rgba(60,52,137,0.1); }
+    .q-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #26215C;
+      margin-bottom: 10px;
+    }
+    .q-input {
+      padding: 12px 16px;
+      border: 1.5px solid rgba(60,52,137,0.2);
+      border-radius: 12px;
+      font-size: 14px;
+      color: #333;
+      background: rgba(255,255,255,0.85);
+      font-family: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+    }
+    .q-input:focus {
+      border-color: #3C3489;
+      box-shadow: 0 0 0 3px rgba(60,52,137,0.1);
+    }
     .q-input-full { width: 100%; box-sizing: border-box; }
-    .q-input-sm { width: 140px; }
+    .q-input-sm   { width: 140px; }
+
+    /* Chips */
     .chips-row { display: flex; flex-wrap: wrap; gap: 8px; }
-    .chip { padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 500; border: 1.5px solid rgba(60,52,137,0.25); background: rgba(255,255,255,0.72); color: #3C3489; cursor: pointer; transition: all 0.15s; user-select: none; font-family: inherit; line-height: 1.4; }
-    .chip:hover { background: rgba(60,52,137,0.07); border-color: rgba(60,52,137,0.5); }
-    .chip.selected { background: #3C3489; color: #EEEDFE; border-color: #3C3489; }
-    .q-error { background: #fef2f2; color: #b91c1c; padding: 10px 14px; border-radius: 10px; font-size: 13px; margin-bottom: 16px; display: none; border: 1px solid #fecaca; }
-    .q-limit-banner { background: #fff7ed; color: #92400e; padding: 12px 16px; border-radius: 12px; font-size: 13px; margin-bottom: 20px; border: 1px solid #fed7aa; display: none; }
-    .q-submit { width: 100%; padding: 16px; background: #3C3489; color: #EEEDFE; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.15s, transform 0.1s; font-family: inherit; margin-top: 8px; }
-    .q-submit:hover { background: #2d2768; }
-    .q-submit:active { transform: scale(0.98); }
+    .chip {
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1.5px solid rgba(60,52,137,0.25);
+      background: rgba(255,255,255,0.72);
+      color: #3C3489;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+      font-family: inherit;
+      line-height: 1.4;
+    }
+    .chip:hover {
+      background: rgba(60,52,137,0.07);
+      border-color: rgba(60,52,137,0.5);
+    }
+    .chip.selected {
+      background: #3C3489;
+      color: #EEEDFE;
+      border-color: #3C3489;
+    }
+
+    /* Error */
+    .q-error {
+      background: #fef2f2;
+      color: #b91c1c;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+      border: 1px solid #fecaca;
+    }
+
+    /* Submit button */
+    .q-submit {
+      width: 100%;
+      padding: 16px;
+      background: #3C3489;
+      color: #EEEDFE;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      font-family: inherit;
+      margin-top: 8px;
+    }
+    .q-submit:hover   { background: #2d2768; }
+    .q-submit:active  { transform: scale(0.98); }
     .q-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-    .q-hint { font-size: 11px; color: #888; text-align: center; margin-top: 10px; }
+
+    .q-hint {
+      font-size: 11px;
+      color: #888;
+      text-align: center;
+      margin-top: 10px;
+    }
+
     .footer { position: relative; z-index: 1; }
-    @media (max-width: 640px) { .q-card { padding: 24px 20px; border-radius: 16px; } .q-title { font-size: 18px; } }
+
+    @media (max-width: 640px) {
+      .q-card { padding: 24px 20px; border-radius: 16px; }
+      .q-title { font-size: 18px; }
+    }
   </style>
 </head>
 <body>
+
+  <!-- Cercles decoratifs -->
   <div class="deco deco-violet"></div>
   <div class="deco deco-rose"></div>
   <div class="deco deco-vert"></div>
   <div class="deco deco-ambre"></div>
 
+  <!-- NAVBAR -->
   <nav class="navbar">
     <div class="navbar-left">
       <span class="gift-icon">&#127873;</span>
@@ -54,34 +184,39 @@
     <div class="navbar-right" id="nav-right"></div>
   </nav>
 
+  <!-- CONTENU -->
   <div class="q-wrap">
     <div class="q-card">
+
+      <!-- Barre de progression -->
       <div class="q-prog-bar">
         <div class="q-prog-fill" id="progressFill"></div>
       </div>
-      <h2 class="q-title">Trouvons le cadeau parfait</h2>
-      <p class="q-subtitle">R&eacute;pondez &agrave; quelques questions &mdash; notre IA fait le reste.</p>
 
-      <div class="q-limit-banner" id="limitBanner">
-        &#9888;&#65039; Vous avez atteint la limite de <strong>3 recherches gratuites par jour</strong>. Revenez demain pour de nouvelles id&eacute;es !
-      </div>
+      <h2 class="q-title">Trouvons le cadeau parfait</h2>
+      <p class="q-subtitle">Repondez a quelques questions &mdash; notre IA fait le reste.</p>
 
       <div class="q-error" id="formError"></div>
 
+      <!-- 1 . Destinataire -->
       <div class="q-field">
         <label class="q-label" for="destinataire">Pour qui est ce cadeau ? *</label>
-        <input class="q-input q-input-full" type="text" id="destinataire" placeholder="Ex : ma m&egrave;re, mon meilleur ami, mon patron..." maxlength="120">
+        <input class="q-input q-input-full" type="text" id="destinataire"
+               placeholder="Ex : ma mere, mon meilleur ami, mon patron..." maxlength="120">
       </div>
 
+      <!-- 2 . Age -->
       <div class="q-field">
-        <label class="q-label" for="age">Quel &acirc;ge a-t-il / elle ?</label>
-        <input class="q-input q-input-sm" type="number" id="age" placeholder="Ex : 35" min="1" max="120">
+        <label class="q-label" for="age">Quel age a-t-il / elle ?</label>
+        <input class="q-input q-input-sm" type="number" id="age"
+               placeholder="Ex : 35" min="1" max="120">
       </div>
 
+      <!-- 3 . Occasion -->
       <div class="q-field">
-        <label class="q-label">Quelle est l&apos;occasion ? *</label>
+        <label class="q-label">Quelle est l'occasion ? *</label>
         <div class="chips-row" id="grp-occasion">
-          <button type="button" class="chip" data-value="Noel">&#127876; No&euml;l</button>
+          <button type="button" class="chip" data-value="Noel">&#127876; Noel</button>
           <button type="button" class="chip" data-value="Anniversaire">&#127874; Anniversaire</button>
           <button type="button" class="chip" data-value="Mariage">&#128141; Mariage</button>
           <button type="button" class="chip" data-value="Saint-Valentin">&#10084;&#65039; Saint-Valentin</button>
@@ -89,6 +224,7 @@
         </div>
       </div>
 
+      <!-- 4 . Genre -->
       <div class="q-field">
         <label class="q-label">Genre *</label>
         <div class="chips-row" id="grp-genre">
@@ -99,20 +235,22 @@
         </div>
       </div>
 
+      <!-- 5 . Centres d'interet (multi) -->
       <div class="q-field">
-        <label class="q-label">Centres d&apos;int&eacute;r&ecirc;t (plusieurs choix possibles) *</label>
+        <label class="q-label">Centres d'interet (plusieurs choix possibles) *</label>
         <div class="chips-row" id="grp-centres">
           <button type="button" class="chip multi" data-value="Tech &amp; Gaming">&#127918; Tech &amp; Gaming</button>
-          <button type="button" class="chip multi" data-value="Mode &amp; Beaute">&#128247; Mode &amp; Beaut&eacute;</button>
+          <button type="button" class="chip multi" data-value="Mode &amp; Beaute">&#128247; Mode &amp; Beaute</button>
           <button type="button" class="chip multi" data-value="Sport &amp; Fitness">&#127947; Sport &amp; Fitness</button>
           <button type="button" class="chip multi" data-value="Cuisine &amp; Gastronomie">&#127859; Cuisine &amp; Gastronomie</button>
           <button type="button" class="chip multi" data-value="Lecture &amp; Culture">&#128218; Lecture &amp; Culture</button>
           <button type="button" class="chip multi" data-value="Voyage &amp; Aventure">&#9992;&#65039; Voyage &amp; Aventure</button>
-          <button type="button" class="chip multi" data-value="Art &amp; Creativite">&#127912; Art &amp; Cr&eacute;ativit&eacute;</button>
-          <button type="button" class="chip multi" data-value="Bien-etre &amp; Relaxation">&#129340; Bien-&ecirc;tre &amp; Relaxation</button>
+          <button type="button" class="chip multi" data-value="Art &amp; Creativite">&#127912; Art &amp; Creativite</button>
+          <button type="button" class="chip multi" data-value="Bien-etre &amp; Relaxation">&#129340; Bien-etre &amp; Relaxation</button>
         </div>
       </div>
 
+      <!-- 6 . Budget -->
       <div class="q-field">
         <label class="q-label">Budget *</label>
         <div class="chips-row" id="grp-budget">
@@ -125,25 +263,26 @@
       </div>
 
       <button class="q-submit" id="submitBtn" onclick="handleSubmit()">
-        D&eacute;couvrir mes recommandations &#10024;
+        Decouvrir mes recommandations &#10024;
       </button>
-      <p class="q-hint" id="limitHint">R&eacute;sultats en moins de 30 secondes &middot; 3 recherches gratuites par jour</p>
+      <p class="q-hint">Resultats en moins de 30 secondes &middot; Gratuit &middot; 3 recherches/jour</p>
+
     </div>
   </div>
 
   <footer class="footer">
     <div class="footer-top">
-      <span id="footer-brand"></span> &mdash; <a href="index.html">Retour &agrave; l&apos;accueil</a>
+      <span id="footer-brand"></span> &mdash; <a href="index.html">Retour Ã  l'accueil</a>
     </div>
     <div class="footer-links">
-      <a href="mentions-legales.html">Mentions l&eacute;gales</a>
-      <a href="confidentialite.html">Confidentialit&eacute;</a>
+      <a href="mentions-legales.html">Mentions lÃ©gales</a>
+      <a href="confidentialite.html">ConfidentialitÃ©</a>
       <a href="cgu.html">CGU</a>
     </div>
-    <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
+    <p class="footer-amazon">En tant que Partenaire Amazon, je rÃ©alise un bÃ©nÃ©fice sur les achats remplissant les conditions requises.</p>
     <div class="footer-social">
-      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">&#128248; Instagram @GIFTFINDER2.0</a>
-      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">&#127925; TikTok @giftfinder2.0</a>
+      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">ð¸ Instagram @GIFTFINDER2.0</a>
+      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">ðµ TikTok @giftfinder2.0</a>
     </div>
   </footer>
 
@@ -154,10 +293,10 @@
     document.getElementById('brand-name').textContent = APP_NAME;
     document.getElementById('footer-brand').textContent = APP_NAME;
 
-    const DAILY_LIMIT = 3;
-
+    // -- Etat des chips --
     const sel = { occasion: null, genre: null, centres: [], budget: null };
 
+    // -- Chips mono-choix --
     ['grp-occasion', 'grp-genre', 'grp-budget'].forEach(function(grpId) {
       document.getElementById(grpId).querySelectorAll('.chip').forEach(function(chip) {
         chip.addEventListener('click', function() {
@@ -171,6 +310,7 @@
       });
     });
 
+    // -- Chips multi-choix --
     document.getElementById('grp-centres').querySelectorAll('.chip.multi').forEach(function(chip) {
       chip.addEventListener('click', function() {
         this.classList.toggle('selected');
@@ -184,49 +324,31 @@
       });
     });
 
+    // -- Barre de progression --
     document.getElementById('destinataire').addEventListener('input', updateProgress);
 
     function updateProgress() {
       const filled = [
         document.getElementById('destinataire').value.trim() !== '',
         sel.occasion !== null,
-        sel.genre !== null,
+        sel.genre    !== null,
         sel.centres.length > 0,
-        sel.budget !== null
+        sel.budget   !== null
       ].filter(Boolean).length;
       document.getElementById('progressFill').style.width = (filled / 5 * 100) + '%';
     }
 
+    // -- Auth gate --
     (async function() {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        window.location.href = 'index.html';
-        return;
-      }
-
-      const prenom = (session.user.user_metadata && session.user.user_metadata.prenom) || session.user.email.split('@')[0];
+      if (!session) { window.location.href = 'index.html'; return; }
+      const prenom = (session.user.user_metadata && session.user.user_metadata.prenom)
+        || session.user.email.split('@')[0];
       document.getElementById('nav-right').innerHTML =
         '<span style="font-size:14px;color:#666;">Bonjour, <strong>' + prenom + '</strong></span>' +
         '<a href="historique.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128220; Mes recherches</a>' +
-        '<button class="btn-outline" onclick="handleLogout()">D&eacute;connexion</button>';
-
-      // Verifier la limite quotidienne
-      const today = new Date().toISOString().split('T')[0];
-      const { count, error: countError } = await supabase
-        .from('searches')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', session.user.id)
-        .gte('created_at', today + 'T00:00:00.000Z')
-        .lte('created_at', today + 'T23:59:59.999Z');
-
-      if (!countError && count >= DAILY_LIMIT) {
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Limite atteinte (3 recherches/jour)';
-        document.getElementById('limitBanner').style.display = 'block';
-        document.getElementById('limitHint').textContent = 'Revenez demain pour de nouvelles recherches gratuites !';
-        document.getElementById('limitHint').style.color = '#b91c1c';
-      }
+        '<a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>' +
+        '<button class="btn-outline" onclick="handleLogout()">Deconnexion</button>';
     })();
 
     async function handleLogout() {
@@ -234,55 +356,64 @@
       window.location.href = 'index.html';
     }
 
+    // -- Soumission --
     async function handleSubmit() {
-      const errorEl = document.getElementById('formError');
+      const errorEl  = document.getElementById('formError');
       const submitBtn = document.getElementById('submitBtn');
       errorEl.style.display = 'none';
 
       const destinataire = document.getElementById('destinataire').value.trim();
-      const ageRaw = document.getElementById('age').value;
-      const age = ageRaw ? parseInt(ageRaw, 10) : null;
+      const ageRaw       = document.getElementById('age').value;
+      const age          = ageRaw ? parseInt(ageRaw, 10) : null;
 
-      if (!destinataire) { showError('Veuillez indiquer le destinataire du cadeau.'); return; }
-      if (!sel.occasion) { showError('Veuillez s&eacute;lectionner une occasion.'); return; }
-      if (!sel.genre) { showError('Veuillez s&eacute;lectionner un genre.'); return; }
-      if (!sel.centres.length) { showError("Veuillez s&eacute;lectionner au moins un centre d'int&eacute;r&ecirc;t."); return; }
-      if (!sel.budget) { showError('Veuillez s&eacute;lectionner un budget.'); return; }
+      // Validation
+      if (!destinataire)      { showError('Veuillez indiquer le destinataire du cadeau.'); return; }
+      if (!sel.occasion)      { showError('Veuillez selectionner une occasion.'); return; }
+      if (!sel.genre)         { showError('Veuillez selectionner un genre.'); return; }
+      if (!sel.centres.length){ showError('Veuillez selectionner au moins un centre d interet.'); return; }
+      if (!sel.budget)        { showError('Veuillez selectionner un budget.'); return; }
 
-      submitBtn.disabled = true;
+      submitBtn.disabled    = true;
       submitBtn.textContent = 'Analyse en cours...';
+
+      // -- Limite : 3 recherches gratuites par jour --
+      try {
+        const { data: { session: sess } } = await supabase.auth.getSession();
+        if (sess) {
+          const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+          const { count } = await supabase
+            .from('searches')
+            .select('id', { count: 'exact', head: true })
+            .eq('user_id', sess.user.id)
+            .gte('created_at', today + 'T00:00:00.000Z')
+            .lte('created_at', today + 'T23:59:59.999Z');
+          if (count >= 3) {
+            showError('Vous avez atteint la limite de 3 recherches gratuites par jour. Revenez demain !');
+            submitBtn.disabled    = false;
+            submitBtn.textContent = 'Decouvrir mes recommandations \u2728';
+            return;
+          }
+        }
+      } catch (limitErr) {
+        console.warn('Impossible de verifier la limite quotidienne :', limitErr.message);
+        // On laisse passer si la verification echoue (fail-open)
+      }
 
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) { window.location.href = 'index.html'; return; }
 
-        // Double-verification cote client de la limite quotidienne
-        const today = new Date().toISOString().split('T')[0];
-        const { count } = await supabase
-          .from('searches')
-          .select('id', { count: 'exact', head: true })
-          .eq('user_id', session.user.id)
-          .gte('created_at', today + 'T00:00:00.000Z')
-          .lte('created_at', today + 'T23:59:59.999Z');
-
-        if (count >= DAILY_LIMIT) {
-          document.getElementById('limitBanner').style.display = 'block';
-          submitBtn.disabled = true;
-          submitBtn.textContent = 'Limite atteinte (3 recherches/jour)';
-          return;
-        }
-
         const { data, error } = await supabase
           .from('searches')
           .insert([{
-            user_id: session.user.id,
-            destinataire: destinataire,
-            age: age,
-            occasion: sel.occasion,
-            genre: sel.genre,
-            centres_interet: sel.centres,
-            budget: sel.budget,
-            statut: 'pending'
+            user_id:          session.user.id,
+            destinataire:     destinataire,
+            age:              age,
+            occasion:         sel.occasion,
+            genre:            sel.genre,
+            centres_interet:  sel.centres,
+            budget:           sel.budget,
+            statut:           'pending'
           }])
           .select('id')
           .single();
@@ -291,16 +422,16 @@
         window.location.href = 'resultats.html?id=' + data.id;
 
       } catch (err) {
-        showError(err.message || 'Une erreur est survenue. Veuillez r&eacute;essayer.');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Découvrir mes recommandations ✨';
+        showError(err.message || 'Une erreur est survenue. Veuillez reessayer.');
+        submitBtn.disabled    = false;
+        submitBtn.textContent = 'Decouvrir mes recommandations';
       }
     }
 
     function showError(msg) {
       const el = document.getElementById('formError');
-      el.innerHTML = msg;
-      el.style.display = 'block';
+      el.textContent    = msg;
+      el.style.display  = 'block';
       el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   </script>
