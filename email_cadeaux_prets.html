@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml">
+<!--
+  =====================================================================
+  TEMPLATE EMAIL TRANSACTIONNEL â GiftFinder
+  "Vos idÃ©es cadeaux sont prÃªtes !"
+  =====================================================================
+  Usage n8n (node "Send Email" via Resend ou Brevo) :
+    - Remplacer les variables {{...}} par les donnÃ©es du record Supabase
+    - Subject : "ð Vos idÃ©es cadeaux pour {{occasion}} sont prÃªtes !"
+    - From    : GiftFinder <hello@giftfinder-cyan.vercel.app>
+    - To      : {{user_email}}
+
+  Variables disponibles depuis n8n :
+    {{destinataire}}    â ex: "ma mÃ¨re"
+    {{occasion}}        â ex: "Anniversaire"
+    {{budget}}          â ex: "50-100â¬"
+    {{nb_suggestions}}  â ex: "9"
+    {{url_resultats}}   â ex: "https://giftfinder-cyan.vercel.app/resultats.html?id=xxx"
+    {{user_email}}      â email de l'utilisateur (pour le footer)
+  =====================================================================
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Vos idÃ©es cadeaux sont prÃªtes !</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+  <style type="text/css">
+    /* Reset */
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+    body { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+
+    /* Responsive */
+    @media only screen and (max-width: 600px) {
+      .email-container { width: 100% !important; max-width: 100% !important; }
+      .fluid { width: 100% !important; max-width: 100% !important; height: auto !important; }
+      .stack-column, .stack-column-center {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        direction: ltr !important;
+      }
+      .stack-column-center { text-align: center !important; }
+      .center-on-narrow { text-align: center !important; display: block !important; margin: 0 auto !important; float: none !important; }
+      .btn-full { width: 100% !important; }
+      .hide-mobile { display: none !important; }
+      .padding-mobile { padding: 24px 20px !important; }
+      .hero-title { font-size: 26px !important; line-height: 1.3 !important; }
+      .pill-grid td { display: block !important; padding-bottom: 8px !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#F4F3FE;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+
+  <!-- Preheader (visible dans la liste des emails, pas dans le corps) -->
+  <div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;">
+    ð Nous avons trouvÃ© {{nb_suggestions}} idÃ©es cadeaux parfaites pour {{occasion}} â dÃ©couvrez-les maintenant !
+  </div>
+
+  <!-- Email wrapper -->
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color:#F4F3FE;">
+    <tr>
+      <td align="center" style="padding: 24px 12px;">
+
+        <!-- Email container -->
+        <table class="email-container" role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="max-width:600px;background-color:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 32px rgba(60,52,137,0.12);">
+
+          <!-- HEADER â dÃ©gradÃ© violet/rose -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#3C3489 0%,#7F77DD 50%,#D4537E 100%);padding:40px 40px 32px;text-align:center;">
+              <!-- Logo / IcÃ´ne -->
+              <div style="font-size:52px;line-height:1;margin-bottom:12px;">ð</div>
+              <h1 class="hero-title" style="margin:0 0 8px;font-size:30px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;line-height:1.2;">
+                Vos id&eacute;es cadeaux sont pr&ecirc;tes&nbsp;!
+              </h1>
+              <p style="margin:0;font-size:15px;color:rgba(255,255,255,0.85);line-height:1.5;">
+                Notre IA a s&eacute;lectionn&eacute; les meilleures suggestions pour vous
+              </p>
+            </td>
+          </tr>
+
+          <!-- BODY -->
+          <td class="padding-mobile" style="padding:36px 40px 28px;">
+
+            <!-- Intro -->
+            <p style="margin:0 0 24px;font-size:16px;color:#3C3489;line-height:1.65;">
+              Bonne nouvelle&nbsp;! Nous avons trouv&eacute; <strong>{{nb_suggestions}} id&eacute;es cadeaux</strong> soigneusement s&eacute;lectionn&eacute;es pour&nbsp;:
+            </p>
+
+            <!-- RÃ©cap de la recherche â carte -->
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
+                   style="background:#EEEDFE;border-radius:14px;margin-bottom:28px;">
+              <tr>
+                <td style="padding:20px 24px;">
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                    <tr>
+                      <td style="padding-bottom:10px;">
+                        <span style="font-size:12px;font-weight:600;color:#7F77DD;text-transform:uppercase;letter-spacing:0.8px;">Destinataire</span><br>
+                        <span style="font-size:17px;font-weight:700;color:#26215C;">{{destinataire}}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <!-- Pills : Occasion + Budget -->
+                        <table class="pill-grid" role="presentation" cellspacing="0" cellpadding="0" border="0">
+                          <tr>
+                            <td style="padding-right:8px;padding-bottom:0;">
+                              <span style="display:inline-block;background:#7F77DD;color:#fff;font-size:12px;font-weight:600;padding:4px 12px;border-radius:999px;">
+                                ð {{occasion}}
+                              </span>
+                            </td>
+                            <td style="padding-bottom:0;">
+                              <span style="display:inline-block;background:#1D9E75;color:#fff;font-size:12px;font-weight:600;padding:4px 12px;border-radius:999px;">
+                                ð¶ {{budget}}
+                              </span>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- CTA principal -->
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom:28px;">
+              <tr>
+                <td align="center">
+                  <a href="{{url_resultats}}" class="btn-full"
+                     style="display:inline-block;background:linear-gradient(135deg,#3C3489,#D4537E);color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;padding:16px 40px;border-radius:999px;letter-spacing:0.2px;box-shadow:0 4px 16px rgba(60,52,137,0.35);">
+                    â¨ Voir mes {{nb_suggestions}} id&eacute;es cadeaux
+                  </a>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Texte secondaire -->
+            <p style="margin:0 0 24px;font-size:14px;color:#666;line-height:1.65;text-align:center;">
+              Les r&eacute;sultats sont disponibles pendant <strong>7 jours</strong>.<br>
+              Retrouvez aussi toutes vos recherches dans &laquo;&nbsp;Mes recherches&nbsp;&raquo;.
+            </p>
+
+            <!-- SÃ©parateur -->
+            <hr style="border:none;border-top:1px solid #EEEDFE;margin:0 0 24px;">
+
+            <!-- Section "Comment Ã§a marche" -->
+            <p style="margin:0 0 16px;font-size:13px;font-weight:600;color:#26215C;text-transform:uppercase;letter-spacing:0.6px;">
+              Nos suggestions incluent
+            </p>
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+              <tr>
+                <td style="padding-bottom:10px;vertical-align:top;width:28px;">
+                  <span style="font-size:18px;">ðï¸</span>
+                </td>
+                <td style="padding-bottom:10px;padding-left:10px;font-size:14px;color:#555;line-height:1.5;vertical-align:top;">
+                  <strong style="color:#26215C;">Liens Amazon directs</strong> avec prix en temps r&eacute;el
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-bottom:10px;vertical-align:top;width:28px;">
+                  <span style="font-size:18px;">ð¯</span>
+                </td>
+                <td style="padding-bottom:10px;padding-left:10px;font-size:14px;color:#555;line-height:1.5;vertical-align:top;">
+                  <strong style="color:#26215C;">S&eacute;lection personnalis&eacute;e</strong> selon le profil et le budget
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-bottom:0;vertical-align:top;width:28px;">
+                  <span style="font-size:18px;">â­</span>
+                </td>
+                <td style="padding-bottom:0;padding-left:10px;font-size:14px;color:#555;line-height:1.5;vertical-align:top;">
+                  <strong style="color:#26215C;">Produits bien not&eacute;s</strong> avec description d&eacute;taill&eacute;e
+                </td>
+              </tr>
+            </table>
+
+          </td>
+
+          <!-- FOOTER -->
+          <tr>
+            <td style="background:#F4F3FE;padding:24px 40px;text-align:center;border-top:1px solid #E8E6FC;">
+
+              <!-- Liens sociaux -->
+              <p style="margin:0 0 12px;">
+                <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener"
+                   style="color:#7F77DD;text-decoration:none;font-size:13px;font-weight:500;margin-right:16px;">
+                  ð¸ Instagram
+                </a>
+                <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener"
+                   style="color:#7F77DD;text-decoration:none;font-size:13px;font-weight:500;">
+                  ðµ TikTok
+                </a>
+              </p>
+
+              <!-- Mentions lÃ©gales -->
+              <p style="margin:0 0 8px;font-size:11px;color:#999;line-height:1.5;">
+                <a href="https://giftfinder-cyan.vercel.app/mentions-legales.html" style="color:#aaa;text-decoration:underline;">Mentions l&eacute;gales</a>
+                &nbsp;Â·&nbsp;
+                <a href="https://giftfinder-cyan.vercel.app/confidentialite.html" style="color:#aaa;text-decoration:underline;">Confidentialit&eacute;</a>
+                &nbsp;Â·&nbsp;
+                <a href="https://giftfinder-cyan.vercel.app/cgu.html" style="color:#aaa;text-decoration:underline;">CGU</a>
+              </p>
+
+              <!-- Amazon affiliation disclaimer -->
+              <p style="margin:0 0 8px;font-size:10px;color:#bbb;line-height:1.5;">
+                En tant que Partenaire Amazon, nous r&eacute;alisons un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.
+              </p>
+
+              <!-- Unsubscribe / compte -->
+              <p style="margin:0;font-size:10px;color:#ccc;line-height:1.5;">
+                Vous recevez cet email car vous avez effectu&eacute; une recherche sur GiftFinder avec l&rsquo;adresse {{user_email}}.<br>
+                <a href="https://giftfinder-cyan.vercel.app/profil.html" style="color:#ccc;text-decoration:underline;">G&eacute;rer mon compte</a>
+              </p>
+
+            </td>
+          </tr>
+
+        </table>
+        <!-- /Email container -->
+
+        <!-- Espace bas -->
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+          <tr><td style="padding:20px 0;text-align:center;">
+            <p style="margin:0;font-size:11px;color:#aaa;">
+              &copy; 2026 GiftFinder &mdash; <a href="https://giftfinder-cyan.vercel.app" style="color:#7F77DD;text-decoration:none;">giftfinder-cyan.vercel.app</a>
+            </p>
+          </td></tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
