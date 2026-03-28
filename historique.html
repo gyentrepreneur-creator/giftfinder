@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GiftFinder â Mon historique</title>
+  <title>GiftFinder &#8212; Mon historique</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
     body {
@@ -209,14 +209,14 @@
       <span id="footer-brand"></span> &mdash; <a href="questionnaire.html">Nouvelle recherche</a>
     </div>
     <div class="footer-links">
-      <a href="mentions-legales.html">Mentions lÃ©gales</a>
-      <a href="confidentialite.html">ConfidentialitÃ©</a>
+      <a href="mentions-legales.html">Mentions l&eacute;gales</a>
+      <a href="confidentialite.html">Confidentialit&eacute;</a>
       <a href="cgu.html">CGU</a>
     </div>
-    <p class="footer-amazon">En tant que Partenaire Amazon, je rÃ©alise un bÃ©nÃ©fice sur les achats remplissant les conditions requises.</p>
+    <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
     <div class="footer-social">
-      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">ð¸ Instagram @GIFTFINDER2.0</a>
-      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">ðµ TikTok @giftfinder2.0</a>
+      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">📸 Instagram @GIFTFINDER2.0</a>
+      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">🎵 TikTok @giftfinder2.0</a>
     </div>
   </footer>
 
@@ -228,12 +228,12 @@
     document.getElementById('footer-brand').textContent = APP_NAME;
 
     const OCCASION_EMOJI = {
-      'Noel': 'ð', 'Anniversaire': 'ð', 'Mariage': 'ð',
-      'Saint-Valentin': 'â¤ï¸', 'Autre': 'â¨'
+      'Noel': '\uD83C\uDF84', 'Anniversaire': '\uD83C\uDF82', 'Mariage': '\uD83D\uDC8D',
+      'Saint-Valentin': '\u2764\uFE0F', 'Autre': '\u2728'
     };
     const BUDGET_LABEL = {
-      'moins_25': '< 25 â¬', '25_50': '25-50 â¬',
-      '50_100': '50-100 â¬', '100_200': '100-200 â¬', 'plus_200': '> 200 â¬'
+      'moins_25': '< 25 \u20AC', '25_50': '25-50 \u20AC',
+      '50_100': '50-100 \u20AC', '100_200': '100-200 \u20AC', 'plus_200': '> 200 \u20AC'
     };
 
     (async function() {
@@ -275,7 +275,7 @@
 
       const liste = document.getElementById('liste');
       data.forEach(function(r) {
-        const emoji   = OCCASION_EMOJI[r.occasion] || 'ð';
+        const emoji   = OCCASION_EMOJI[r.occasion] || '\uD83C\uDF81';
         const budget  = BUDGET_LABEL[r.budget] || r.budget || '';
         const centres = (r.centres_interet || []).slice(0, 2).join(', ');
         const isDone  = r.statut === 'done' || r.statut === 'completed';
@@ -291,7 +291,7 @@
             '<div class="h-info-top">' +
               '<span class="h-destinataire">' + esc(r.destinataire || 'Cadeau') + '</span>' +
               (r.occasion ? '<span class="h-badge">' + esc(r.occasion) + '</span>' : '') +
-              (isDone ? '<span class="h-badge h-badge-done">â Termin&eacute;</span>' : '<span class="h-badge">En cours...</span>') +
+              (isDone ? '<span class="h-badge h-badge-done">\u2713 Termin&eacute;</span>' : '<span class="h-badge">En cours...</span>') +
             '</div>' +
             '<div class="h-meta">' +
               (budget ? 'Budget ' + esc(budget) : '') +
@@ -299,7 +299,7 @@
             '</div>' +
           '</div>' +
           '<div class="h-date">' + date + '</div>' +
-          '<div class="h-arrow">âº</div>';
+          '<div class="h-arrow">\u203A</div>';
 
         liste.appendChild(a);
       });
