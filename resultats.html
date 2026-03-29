@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GiftFinder &mdash; Vos id&eacute;es cadeaux</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
   <link rel="stylesheet" href="css/style.css">
   <style>
     body {
@@ -212,8 +212,8 @@
 
     <!-- Etat : chargement -->
     <div id="loader" class="r-loader">
-      <div class="r-gift">&#127873;</div>
-      <div class="r-spinner"></div>
+      <div class="s-gift">&#127873;</div>
+      <div class="s-spinner"></div>
       <h2 style="font-size:20px;font-weight:700;color:#26215C;margin:0 0 8px;">Notre IA cherche vos id&eacute;es&hellip;</h2>
       <p style="font-size:14px;color:#666;max-width:300px;line-height:1.6;margin:0;">
         Nous analysons votre profil et trouvons les meilleures id&eacute;es cadeaux.</p>
@@ -222,7 +222,7 @@
     </div>
 
     <!-- Etat : erreur -->
-    <div id="errorState" class="r-error">
+    <div id="errorState" class="s-error">
       <div style="font-size:48px;margin-bottom:16px;">&#128533;</div>
       <h2 style="font-size:20px;font-weight:700;color:#26215C;margin-bottom:8px;">Une erreur est survenue</h2>
       <p style="font-size:14px;color:#666;" id="errorMessage">Impossible de charger les r&eacute;sultats.</p>
@@ -230,17 +230,17 @@
               onclick="window.location.href='questionnaire.html'">R&eacute;essayer</button>
     </div>
 
-    <!-- Ãtat : rÃ©sultats -->
+    <!-- État : résultats -->
     <div id="resultsSection" style="display:none;">
       <div class="r-hdr">
         <h1>&#127873; Vos id&eacute;es cadeaux</h1>
-        <p style="font-size:14px;color:#666;" id="resultsSubtitle">S\u00E9lectionn\u00E9es par notre IA pour vous</p>
+        <p style="font-size:14px;color:#666;" id="resultsSubtitle">S&eacute;lectionn&eacute;es par notre IA pour vous</p>
       </div>
       <div class="r-grid" id="resultsGrid"></div>
 
       <!-- Bouton partage social -->
       <div id="shareSection" style="text-align:center;margin-top:36px;padding-top:28px;border-top:1px solid rgba(60,52,137,0.1);">
-        <p style="font-size:13px;color:#888;margin-bottom:14px;">Vous avez aim\u00E9 ces suggestions ?</p>
+        <p style="font-size:13px;color:#888;margin-bottom:14px;">Vous avez aim&eacute; ces suggestions ?</p>
         <button id="shareBtn" onclick="handleShare()" style="
           display:inline-flex;align-items:center;gap:8px;
           background:#fff;border:1.5px solid rgba(60,52,137,0.25);
@@ -261,10 +261,10 @@
         <p style="font-size:16px;font-weight:700;color:#26215C;margin:0 0 6px;">
           &#127873; Chercher un autre cadeau ?
         </p>
-        <p style="font-size:13px;color:#888;margin:0 0 18px;">
-          Vous avez encore des recherches disponibles aujourd'hui.
+        <p id="ctaQuotaMsg" style="font-size:13px;color:#888;margin:0 0 18px;">
+          Chargement&hellip;
         </p>
-        <button onclick="window.location.href='questionnaire.html'" style="
+        <button id="ctaNewSearch" onclick="window.location.href='questionnaire.html'" style="
           background:#3C3489;color:#EEEDFE;border:none;
           padding:14px 32px;border-radius:12px;
           font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;
@@ -287,8 +287,8 @@
     </div>
     <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
     <div class="footer-social">
-      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">ð¸ Instagram @GIFTFINDER2.0</a>
-      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">ðµ TikTok @giftfinder2.0</a>
+      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">📸 Instagram @GIFTFINDER2.0</a>
+      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">🎵 TikTok @giftfinder2.0</a>
     </div>
   </footer>
 
@@ -397,11 +397,11 @@
 
         var badge = (p.plateforme || p.platform)
           ? '<span class="r-badge">' + esc(p.plateforme || p.platform) + '</span>' : '';
-        // CompatibilitÃ© avec les deux formats de champs (ancien et nouveau)
+        // Compatibilité avec les deux formats de champs (ancien et nouveau)
         var titre = p.titre || p.nom || p.name || 'Cadeau';
         var prix = p.prix_estime || p.prix || p.price || '';
         var lienBrut = p.lien_recherche || p.lien || p.url || '';
-        // Ajouter le tag affiliÃ© Amazon si c'est un lien Amazon
+        // Ajouter le tag affilié Amazon si c'est un lien Amazon
         var lien = lienBrut;
         if (lienBrut && lienBrut.includes('amazon')) {
           lien = lienBrut + (lienBrut.includes('?') ? '&' : '?') + 'tag=giftfinder0d6-21';
@@ -416,7 +416,7 @@
           '<div class="r-card-body">' +
             badge +
             '<div class="r-card-title">' + esc(titre) + '</div>' +
-            '<div class="r-card-desc">'  + esc(p.description || '') + '</div>' +
+            '<div class="s-card-desc">'  + esc(p.description || '') + '</div>' +
             (prix ? '<div class="r-card-price">~' + esc(String(prix)) + '\u20AC</div>' : '') +
             buyBtn +
           '</div>';
@@ -425,6 +425,35 @@
       });
 
       document.getElementById('resultsSection').style.display = 'block';
+      updateNewSearchCTA();
+    }
+
+    async function updateNewSearchCTA() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        const today = new Date().toISOString().slice(0, 10);
+        const { count } = await supabase
+          .from('searches')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', session.user.id)
+          .gte('created_at', today + 'T00:00:00.000Z')
+          .lte('created_at', today + 'T23:59:59.999Z');
+        const restantes = Math.max(0, 3 - (count || 0));
+        const msgEl = document.getElementById('ctaQuotaMsg');
+        const btnEl = document.getElementById('ctaNewSearch');
+        if (!msgEl) return;
+        if (restantes === 0) {
+          msgEl.innerHTML = '<span style="color:#b91c1c;font-weight:600;">\u26A0\uFE0F Limite atteinte \u2014 revenez demain !</span>';
+          if (btnEl) { btnEl.disabled = true; btnEl.style.opacity = '0.45'; btnEl.style.cursor = 'not-allowed'; }
+        } else {
+          msgEl.innerHTML = '<strong>' + restantes + ' recherche' + (restantes > 1 ? 's' : '') +
+            ' restante' + (restantes > 1 ? 's' : '') + ' aujourd\u2019hui</strong> \u2014 profitez-en\u00A0!';
+        }
+      } catch (e) {
+        var msgEl = document.getElementById('ctaQuotaMsg');
+        if (msgEl) msgEl.textContent = 'Nouvelle recherche disponible.';
+      }
     }
 
     function showError(msg) {
@@ -457,7 +486,7 @@
             document.getElementById('shareConfirm').style.display = 'none';
           }, 3000);
         }).catch(function() {
-          // Fallback ultime si clipboard aussi bloquÃ©
+          // Fallback ultime si clipboard aussi bloqué
           window.prompt('Copiez ce lien :', url);
         });
       }
