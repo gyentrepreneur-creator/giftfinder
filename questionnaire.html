@@ -195,7 +195,7 @@
       </div>
 
       <h2 class="q-title">Trouvons le cadeau parfait</h2>
-      <p class="q-subtitle">Repondez a quelques questions &mdash; notre IA fait le reste.</p>
+      <p class="q-subtitle">R&eacute;pondez &agrave; quelques questions &mdash; notre IA fait le reste.</p>
 
       <div class="q-error" id="formError"></div>
 
@@ -365,6 +365,9 @@
         if (hintEl) {
           if (restantes === 0) {
             hintEl.innerHTML = '<span style="color:#b91c1c;font-weight:600;">\u26A0\uFE0F Limite atteinte \u2014 revenez demain !</span>';
+            // DÃ©sactiver le bouton dÃ¨s le chargement si quota Ã©puisÃ©
+            var btn = document.getElementById('submitBtn');
+            if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
           } else {
             hintEl.innerHTML = 'R&eacute;sultats en moins de 30 secondes &middot; Gratuit &middot; <strong>' + restantes + ' recherche' + (restantes > 1 ? 's' : '') + ' restante' + (restantes > 1 ? 's' : '') + ' aujourd\'hui</strong>';
           }
@@ -393,7 +396,7 @@
       if (!destinataire)      { showError('Veuillez indiquer le destinataire du cadeau.'); return; }
       if (!sel.occasion)      { showError('Veuillez selectionner une occasion.'); return; }
       if (!sel.genre)         { showError('Veuillez selectionner un genre.'); return; }
-      if (!sel.centres.length){ showError('Veuillez selectionner au moins un centre d interet.'); return; }
+      if (!sel.centres.length){ showError("Veuillez s\u00E9lectionner au moins un centre d'int\u00E9r\u00EAt."); return; }
       if (!sel.budget)        { showError('Veuillez selectionner un budget.'); return; }
 
       submitBtn.disabled    = true;
@@ -447,7 +450,7 @@
       } catch (err) {
         showError(err.message || 'Une erreur est survenue. Veuillez reessayer.');
         submitBtn.disabled    = false;
-        submitBtn.textContent = 'Decouvrir mes recommandations';
+        submitBtn.textContent = 'D\u00E9couvrir mes recommandations \u2728';
       }
     }
 
