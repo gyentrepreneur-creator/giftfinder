@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GiftFinder &#8212; Questionnaire</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð</text></svg>">
   <link rel="stylesheet" href="css/style.css">
   <style>
     body {
@@ -265,7 +266,7 @@
       <button class="q-submit" id="submitBtn" onclick="handleSubmit()">
         Decouvrir mes recommandations &#10024;
       </button>
-      <p class="q-hint">Resultats en moins de 30 secondes &middot; Gratuit &middot; 3 recherches/jour</p>
+      <p class="q-hint" id="quota-hint">Resultats en moins de 30 secondes &middot; Gratuit &middot; 3 recherches/jour</p>
 
     </div>
   </div>
@@ -281,8 +282,8 @@
     </div>
     <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
     <div class="footer-social">
-      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">📸 Instagram @GIFTFINDER2.0</a>
-      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">🎵 TikTok @giftfinder2.0</a>
+      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">ð¸ Instagram @GIFTFINDER2.0</a>
+      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">ðµ TikTok @giftfinder2.0</a>
     </div>
   </footer>
 
@@ -349,6 +350,28 @@
         '<a href="historique.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128220; Mes recherches</a>' +
         '<a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>' +
         '<button class="btn-outline" onclick="handleLogout()">Deconnexion</button>';
+
+      // -- Afficher les recherches restantes aujourd'hui --
+      try {
+        const today = new Date().toISOString().slice(0, 10);
+        const { count } = await supabase
+          .from('searches')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', session.user.id)
+          .gte('created_at', today + 'T00:00:00.000Z')
+          .lte('created_at', today + 'T23:59:59.999Z');
+        const restantes = Math.max(0, 3 - (count || 0));
+        const hintEl = document.getElementById('quota-hint');
+        if (hintEl) {
+          if (restantes === 0) {
+            hintEl.innerHTML = '<span style="color:#b91c1c;font-weight:600;">\u26A0\uFE0F Limite atteinte \u2014 revenez demain !</span>';
+          } else {
+            hintEl.innerHTML = 'R&eacute;sultats en moins de 30 secondes &middot; Gratuit &middot; <strong>' + restantes + ' recherche' + (restantes > 1 ? 's' : '') + ' restante' + (restantes > 1 ? 's' : '') + ' aujourd\'hui</strong>';
+          }
+        }
+      } catch (e) {
+        // fail silently, message par defaut reste affichÃ©
+      }
     })();
 
     async function handleLogout() {
