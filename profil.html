@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GiftFinder &mdash; Mon profil</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
   <link rel="stylesheet" href="css/style.css">
   <style>
     body {
@@ -27,7 +28,7 @@
       padding: 32px 20px 60px;
       position: relative;
       z-index: 1;
-      max-width: 560px;
+      max-width: 600px;
       margin: 0 auto;
       width: 100%;
       box-sizing: border-box;
@@ -46,16 +47,6 @@
       color: #888;
       text-align: center;
       margin: 0 0 28px;
-    }
-    .p-email-badge {
-      display: inline-block;
-      background: rgba(60,52,137,0.08);
-      color: #3C3489;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 4px 14px;
-      border-radius: 999px;
-      margin-bottom: 28px;
     }
 
     /* Cards */
@@ -120,7 +111,7 @@
 
     /* Danger zone */
     .p-card.danger {
-      border: 1.5px solid rgba(211, 47, 47, 0.2);
+      border: 1.5px solid rgba(211,47,47,0.2);
       background: #fff8f8;
     }
     .p-card.danger .p-card-title { color: #c62828; }
@@ -155,6 +146,37 @@
     .p-msg.error   { background: rgba(198,40,40,0.08); color: #c62828; }
     .p-msg.info    { background: rgba(60,52,137,0.08); color: #3C3489; }
 
+    /* Historique recherches */
+    .h-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(60,52,137,0.07);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      transition: background .1s;
+      border-radius: 8px;
+      margin: 0 -8px;
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+    .h-item:last-child { border-bottom: none; }
+    .h-item:hover { background: rgba(60,52,137,0.04); }
+    .h-emoji { font-size: 24px; flex-shrink: 0; width: 32px; text-align: center; }
+    .h-info { flex: 1; min-width: 0; }
+    .h-destinataire { font-size: 14px; font-weight: 700; color: #1a1935; }
+    .h-meta { font-size: 12px; color: #999; margin-top: 1px; }
+    .h-badge {
+      font-size: 10px; font-weight: 600;
+      padding: 2px 8px; border-radius: 999px;
+      background: rgba(29,158,117,0.12); color: #1D9E75;
+    }
+    .h-badge.pending { background: rgba(60,52,137,0.1); color: #3C3489; }
+    .h-date { font-size: 11px; color: #ccc; flex-shrink: 0; }
+    .h-empty-msg { text-align: center; padding: 20px 0; color: #aaa; font-size: 13px; }
+
     .footer { position: relative; z-index: 1; }
   </style>
 </head>
@@ -171,7 +193,7 @@
       <span class="gift-icon">&#127873;</span>
       <span class="brand" id="brand-name"></span>
     </div>
-    <div class="navbar-right">
+    <div class="navbar-right" id="nav-right">
       <a href="historique.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128220; Mes recherches</a>
       <button class="btn-outline" style="border-color:#3C3489;color:#3C3489;"
               onclick="window.location.href='questionnaire.html'">Nouvelle recherche</button>
@@ -183,29 +205,38 @@
   <main class="p-main">
 
     <h1 class="p-title">&#128100; Mon profil</h1>
-    <p class="p-subtitle">G&eacute;rez vos informations de connexion</p>
-    <div style="text-align:center;">
-      <span class="p-email-badge" id="current-email-badge">Chargement&hellip;</span>
+    <p class="p-subtitle" id="p-greeting">Chargement&hellip;</p>
+
+    <!-- ① INFOS PERSONNELLES -->
+    <div class="p-card">
+      <div class="p-card-title">&#128101; Informations personnelles</div>
+      <div class="p-field">
+        <label>Pr&eacute;nom</label>
+        <input type="text" id="input-prenom" placeholder="Votre pr&eacute;nom" autocomplete="given-name">
+      </div>
+      <div class="p-field">
+        <label>Adresse e-mail</label>
+        <input type="email" id="input-email-info" disabled placeholder="Chargement&hellip;">
+      </div>
+      <button class="btn-save" id="btn-infos" onclick="saveInfos()">Enregistrer les modifications</button>
+      <div class="p-msg" id="msg-infos"></div>
     </div>
 
-    <!-- CHANGER EMAIL -->
+    <!-- ② SÉCURITÉ -->
     <div class="p-card">
-      <div class="p-card-title">&#9993;&#65039; Modifier l&apos;adresse e-mail</div>
-      <div class="p-field">
-        <label>E-mail actuel</label>
-        <input type="email" id="current-email" disabled placeholder="Chargement&hellip;">
-      </div>
+      <div class="p-card-title">&#128274; S&eacute;curit&eacute;</div>
+
+      <p style="font-size:12px;font-weight:600;color:#888;margin:0 0 10px;text-transform:uppercase;letter-spacing:.5px;">Changer l&apos;adresse e-mail</p>
       <div class="p-field">
         <label>Nouvel e-mail</label>
         <input type="email" id="new-email" placeholder="nouveau@exemple.com" autocomplete="email">
       </div>
-      <button class="btn-save" id="btn-email" onclick="changeEmail()">Mettre &agrave; jour l&apos;e-mail</button>
+      <button class="btn-save" id="btn-email" onclick="changeEmail()" style="margin-bottom:20px;">Mettre &agrave; jour l&apos;e-mail</button>
       <div class="p-msg" id="msg-email"></div>
-    </div>
 
-    <!-- CHANGER MOT DE PASSE -->
-    <div class="p-card">
-      <div class="p-card-title">&#128274; Modifier le mot de passe</div>
+      <hr style="border:none;border-top:1px solid rgba(60,52,137,0.08);margin:16px 0;">
+
+      <p style="font-size:12px;font-weight:600;color:#888;margin:0 0 10px;text-transform:uppercase;letter-spacing:.5px;">Changer le mot de passe</p>
       <div class="p-field">
         <label>Nouveau mot de passe</label>
         <input type="password" id="new-password" placeholder="Minimum 6 caract&egrave;res" autocomplete="new-password">
@@ -218,7 +249,14 @@
       <div class="p-msg" id="msg-password"></div>
     </div>
 
-    <!-- SUPPRIMER LE COMPTE -->
+    <!-- ③ MES RECHERCHES (10 dernières) -->
+    <div class="p-card">
+      <div class="p-card-title">&#128220; Mes derni&egrave;res recherches</div>
+      <div id="hist-loader" style="text-align:center;padding:16px;color:#aaa;font-size:13px;">Chargement&hellip;</div>
+      <div id="hist-list"></div>
+    </div>
+
+    <!-- ④ ZONE DE DANGER -->
     <div class="p-card danger">
       <div class="p-card-title">&#9888;&#65039; Zone de danger</div>
       <p style="font-size:13px;color:#666;margin:0 0 14px;line-height:1.6;">
@@ -261,30 +299,134 @@
     document.getElementById('brand-name').textContent   = APP_NAME;
     document.getElementById('footer-brand').textContent = APP_NAME;
 
-    // Rediriger si non connecte
+    const OCCASION_EMOJI = {
+      'Noel':'\uD83C\uDF84','Anniversaire':'\uD83C\uDF82','Mariage':'\uD83D\uDC8D',
+      'Saint-Valentin':'\u2764\uFE0F','Autre':'\u2728'
+    };
+    const BUDGET_LABEL = {
+      'moins_25':'< 25\u20AC','25_50':'25\u201350\u20AC',
+      '50_100':'50\u2013100\u20AC','100_200':'100\u2013200\u20AC','plus_200':'> 200\u20AC'
+    };
+
+    // ── Init : charge session, infos utilisateur, historique ──
     (async function() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { window.location.href = 'index.html'; return; }
-      var email = session.user.email || '';
-      document.getElementById('current-email').value      = email;
-      document.getElementById('current-email-badge').textContent = email;
+
+      var u = session.user;
+      var emailVal  = u.email || '';
+      var prenomMeta = (u.user_metadata && u.user_metadata.prenom) || '';
+
+      // Essayer de récupérer le prénom depuis public.users si absent du metadata
+      var prenomFinal = prenomMeta;
+      try {
+        var { data: pub } = await supabase.from('users').select('prenom,email').eq('id', u.id).single();
+        if (pub && pub.prenom) prenomFinal = pub.prenom;
+      } catch(e) {}
+
+      // Remplir les champs
+      document.getElementById('input-email-info').value = emailVal;
+      document.getElementById('input-prenom').value     = prenomFinal;
+
+      // Greeting
+      var greet = prenomFinal ? 'Bonjour, ' + prenomFinal + '\u00A0\uD83D\uDC4B' : emailVal;
+      document.getElementById('p-greeting').textContent = greet;
+
+      // Charger l'historique
+      loadHistorique(u.id);
     })();
 
-    // --- Utilitaires ---
-    function showMsg(id, text, type) {
-      var el = document.getElementById(id);
-      el.textContent = text;
-      el.className   = 'p-msg ' + type;
-      el.style.display = 'block';
-    }
-    function hideMsg(id) {
-      document.getElementById(id).style.display = 'none';
-    }
-    function setLoading(btnId, loading) {
-      document.getElementById(btnId).disabled = loading;
+    // ── Charger les 10 dernières recherches ──
+    async function loadHistorique(userId) {
+      var loader = document.getElementById('hist-loader');
+      var list   = document.getElementById('hist-list');
+      try {
+        var { data, error } = await supabase
+          .from('searches')
+          .select('id, destinataire, occasion, budget, statut, created_at')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        loader.style.display = 'none';
+
+        if (error || !data || data.length === 0) {
+          list.innerHTML = '<div class="h-empty-msg">Aucune recherche pour l\u2019instant \u2014 <a href="questionnaire.html" style="color:#3C3489;">lancez-en une !</a></div>';
+          return;
+        }
+
+        data.forEach(function(r) {
+          var emoji  = OCCASION_EMOJI[r.occasion] || '\uD83C\uDF81';
+          var budget = BUDGET_LABEL[r.budget] || r.budget || '';
+          var isDone = r.statut === 'done' || r.statut === 'completed';
+          var date   = new Date(r.created_at).toLocaleDateString('fr-FR', { day:'numeric', month:'short' });
+
+          var a = document.createElement('a');
+          a.className = 'h-item';
+          a.href = 'resultats.html?id=' + r.id;
+          if (!isDone) a.style.opacity = '0.7';
+          a.innerHTML =
+            '<span class="h-emoji">' + emoji + '</span>' +
+            '<span class="h-info">' +
+              '<div class="h-destinataire">' + esc(r.destinataire || 'Cadeau') + '</div>' +
+              '<div class="h-meta">' +
+                (r.occasion ? esc(r.occasion) : '') +
+                (budget ? ' \u00B7 ' + esc(budget) : '') +
+              '</div>' +
+            '</span>' +
+            '<span class="h-badge' + (isDone ? '' : ' pending') + '">' +
+              (isDone ? '\u2713 Pr\u00EAt' : 'En cours') +
+            '</span>' +
+            '<span class="h-date">' + date + '</span>';
+          list.appendChild(a);
+        });
+      } catch(e) {
+        loader.textContent = 'Impossible de charger l\u2019historique.';
+      }
     }
 
-    // --- Changer email ---
+    // ── Utilitaires ──
+    function showMsg(id, text, type) {
+      var el = document.getElementById(id);
+      el.textContent  = text;
+      el.className    = 'p-msg ' + type;
+      el.style.display = 'block';
+    }
+    function hideMsg(id) { document.getElementById(id).style.display = 'none'; }
+    function setLoading(btnId, loading) { document.getElementById(btnId).disabled = loading; }
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── ① Sauvegarder infos personnelles (prénom) ──
+    async function saveInfos() {
+      hideMsg('msg-infos');
+      var prenom = document.getElementById('input-prenom').value.trim();
+      setLoading('btn-infos', true);
+      try {
+        // Mettre à jour dans auth metadata
+        var { error: e1 } = await supabase.auth.updateUser({ data: { prenom: prenom } });
+        // Mettre à jour dans public.users
+        var { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          await supabase.from('users').update({ prenom: prenom }).eq('id', session.user.id);
+        }
+        setLoading('btn-infos', false);
+        if (e1) {
+          showMsg('msg-infos', e1.message || 'Erreur lors de la mise \u00E0 jour.', 'error');
+        } else {
+          document.getElementById('p-greeting').textContent = prenom
+            ? 'Bonjour, ' + prenom + '\u00A0\uD83D\uDC4B'
+            : document.getElementById('input-email-info').value;
+          showMsg('msg-infos', '\u2705 Pr\u00E9nom mis \u00E0 jour avec succ\u00E8s !', 'success');
+        }
+      } catch(err) {
+        setLoading('btn-infos', false);
+        showMsg('msg-infos', (err && err.message) || 'Erreur.', 'error');
+      }
+    }
+
+    // ── ② Changer email ──
     async function changeEmail() {
       hideMsg('msg-email');
       var newEmail = document.getElementById('new-email').value.trim();
@@ -293,17 +435,17 @@
         showMsg('msg-email', 'Adresse e-mail invalide.', 'error'); return;
       }
       setLoading('btn-email', true);
-      var _a = await supabase.auth.updateUser({ email: newEmail });
+      var { error } = await supabase.auth.updateUser({ email: newEmail });
       setLoading('btn-email', false);
-      if (_a.error) {
-        showMsg('msg-email', _a.error.message || 'Erreur lors de la mise \u00E0 jour.', 'error');
+      if (error) {
+        showMsg('msg-email', error.message || 'Erreur lors de la mise \u00E0 jour.', 'error');
       } else {
         document.getElementById('new-email').value = '';
-        showMsg('msg-email', '\u2705 Un e-mail de confirmation a \u00E9t\u00E9 envoy\u00E9 \u00E0 ' + newEmail + '. Cliquez sur le lien pour valider le changement.', 'info');
+        showMsg('msg-email', '\u2705 Un e-mail de confirmation a \u00E9t\u00E9 envoy\u00E9 \u00E0 ' + newEmail + '. Cliquez sur le lien pour valider.', 'info');
       }
     }
 
-    // --- Changer mot de passe ---
+    // ── ② Changer mot de passe ──
     async function changePassword() {
       hideMsg('msg-password');
       var pwd1 = document.getElementById('new-password').value;
@@ -312,54 +454,46 @@
       if (pwd1.length < 6) { showMsg('msg-password', 'Le mot de passe doit contenir au moins 6 caract\u00E8res.', 'error'); return; }
       if (pwd1 !== pwd2) { showMsg('msg-password', 'Les mots de passe ne correspondent pas.', 'error'); return; }
       setLoading('btn-password', true);
-      var _b = await supabase.auth.updateUser({ password: pwd1 });
+      var { error } = await supabase.auth.updateUser({ password: pwd1 });
       setLoading('btn-password', false);
-      if (_b.error) {
-        showMsg('msg-password', _b.error.message || 'Erreur lors de la mise \u00E0 jour.', 'error');
+      if (error) {
+        showMsg('msg-password', error.message || 'Erreur lors de la mise \u00E0 jour.', 'error');
       } else {
-        document.getElementById('new-password').value = '';
+        document.getElementById('new-password').value   = '';
         document.getElementById('confirm-password').value = '';
         showMsg('msg-password', '\u2705 Mot de passe mis \u00E0 jour avec succ\u00E8s !', 'success');
       }
     }
 
-    // --- Validation champ suppression ---
+    // ── ④ Validation champ suppression ──
     function checkDeleteConfirm() {
       var val = document.getElementById('delete-confirm').value;
       document.getElementById('btn-delete').disabled = (val !== 'SUPPRIMER');
     }
 
-    // --- Supprimer le compte ---
+    // ── ④ Supprimer le compte ──
     async function deleteAccount() {
       hideMsg('msg-delete');
-      var val = document.getElementById('delete-confirm').value;
-      if (val !== 'SUPPRIMER') return;
-
+      if (document.getElementById('delete-confirm').value !== 'SUPPRIMER') return;
       setLoading('btn-delete', true);
       showMsg('msg-delete', 'Suppression en cours\u2026', 'info');
-
       try {
-        // 1. Supprimer l'historique de recherches
         var { data: { session } } = await supabase.auth.getSession();
         if (!session) { window.location.href = 'index.html'; return; }
         var uid = session.user.id;
 
-        var { error: delErr } = await supabase
-          .from('searches')
-          .delete()
-          .eq('user_id', uid);
+        // 1. Supprimer les recherches
+        var { error: e1 } = await supabase.from('searches').delete().eq('user_id', uid);
+        if (e1) throw e1;
 
-        if (delErr) throw delErr;
+        // 2. Supprimer le compte via RPC
+        var { error: e2 } = await supabase.rpc('delete_user_account');
+        if (e2) throw e2;
 
-        // 2. Supprimer le compte via fonction SQL
-        var { error: rpcErr } = await supabase.rpc('delete_user_account');
-        if (rpcErr) throw rpcErr;
-
-        // 3. Deconnexion et redirection
+        // 3. Déconnexion et redirection
         await supabase.auth.signOut();
         window.location.href = 'index.html?deleted=1';
-
-      } catch (err) {
+      } catch(err) {
         setLoading('btn-delete', false);
         document.getElementById('delete-confirm').value = '';
         document.getElementById('btn-delete').disabled = true;
@@ -367,7 +501,7 @@
       }
     }
 
-    // --- Deconnexion ---
+    // ── Déconnexion ──
     async function handleLogout() {
       await supabase.auth.signOut();
       window.location.href = 'index.html';
