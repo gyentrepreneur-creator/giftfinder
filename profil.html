@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GiftFinder &mdash; Mon profil</title>
+  <meta name="theme-color" content="#3C3489">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
   <link rel="stylesheet" href="css/style.css">
   <style>
@@ -194,7 +195,6 @@
       <span class="brand" id="brand-name"></span>
     </div>
     <div class="navbar-right" id="nav-right">
-      <a href="historique.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128220; Mes recherches</a>
       <button class="btn-outline" style="border-color:#3C3489;color:#3C3489;"
               onclick="window.location.href='questionnaire.html'">Nouvelle recherche</button>
       <button class="btn-primary" id="btn-logout" onclick="handleLogout()">D&eacute;connexion</button>
@@ -287,8 +287,7 @@
     </div>
     <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
     <div class="footer-social">
-      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">&#128248; Instagram @GIFTFINDER2.0</a>
-      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">&#127925; TikTok @giftfinder2.0</a>
+      <p>📸 Instagram <a href="https://instagram.com/giftfinder2.0" target="_blank">@GIFTFINDER2.0</a> &nbsp;|&nbsp; 🎵 TikTok <a href="https://tiktok.com/@giftfinder2.0" target="_blank">@giftfinder2.0</a></p>
     </div>
   </footer>
 
@@ -300,12 +299,12 @@
     document.getElementById('footer-brand').textContent = APP_NAME;
 
     const OCCASION_EMOJI = {
-      'Noel':'\uD83C\uDF84','Anniversaire':'\uD83C\uDF82','Mariage':'\uD83D\uDC8D',
-      'Saint-Valentin':'\u2764\uFE0F','Autre':'\u2728'
+      'Noel':'🎄','Anniversaire':'🎂','Mariage':'💍',
+      'Saint-Valentin':'❤️','Autre':'✨'
     };
     const BUDGET_LABEL = {
-      'moins_25':'< 25\u20AC','25_50':'25\u201350\u20AC',
-      '50_100':'50\u2013100\u20AC','100_200':'100\u2013200\u20AC','plus_200':'> 200\u20AC'
+      'moins_25':'< 25€','25_50':'25–50€',
+      '50_100':'50–100€','100_200':'100–200€','plus_200':'> 200€'
     };
 
     // ── Init : charge session, infos utilisateur, historique ──
@@ -329,7 +328,7 @@
       document.getElementById('input-prenom').value     = prenomFinal;
 
       // Greeting
-      var greet = prenomFinal ? 'Bonjour, ' + prenomFinal + '\u00A0\uD83D\uDC4B' : emailVal;
+      var greet = prenomFinal ? 'Bonjour, ' + prenomFinal + ' 👋' : emailVal;
       document.getElementById('p-greeting').textContent = greet;
 
       // Charger l'historique
@@ -351,12 +350,12 @@
         loader.style.display = 'none';
 
         if (error || !data || data.length === 0) {
-          list.innerHTML = '<div class="h-empty-msg">Aucune recherche pour l\u2019instant \u2014 <a href="questionnaire.html" style="color:#3C3489;">lancez-en une !</a></div>';
+          list.innerHTML = '<div class="h-empty-msg">Aucune recherche pour l’instant — <a href="questionnaire.html" style="color:#3C3489;">lancez-en une !</a></div>';
           return;
         }
 
         data.forEach(function(r) {
-          var emoji  = OCCASION_EMOJI[r.occasion] || '\uD83C\uDF81';
+          var emoji  = OCCASION_EMOJI[r.occasion] || '🎁';
           var budget = BUDGET_LABEL[r.budget] || r.budget || '';
           var isDone = r.statut === 'done' || r.statut === 'completed';
           var date   = new Date(r.created_at).toLocaleDateString('fr-FR', { day:'numeric', month:'short' });
@@ -371,17 +370,17 @@
               '<div class="h-destinataire">' + esc(r.destinataire || 'Cadeau') + '</div>' +
               '<div class="h-meta">' +
                 (r.occasion ? esc(r.occasion) : '') +
-                (budget ? ' \u00B7 ' + esc(budget) : '') +
+                (budget ? ' · ' + esc(budget) : '') +
               '</div>' +
             '</span>' +
             '<span class="h-badge' + (isDone ? '' : ' pending') + '">' +
-              (isDone ? '\u2713 Pr\u00EAt' : 'En cours') +
+              (isDone ? '✓ Prêt' : 'En cours') +
             '</span>' +
             '<span class="h-date">' + date + '</span>';
           list.appendChild(a);
         });
       } catch(e) {
-        loader.textContent = 'Impossible de charger l\u2019historique.';
+        loader.textContent = 'Impossible de charger l’historique.';
       }
     }
 
@@ -413,12 +412,12 @@
         }
         setLoading('btn-infos', false);
         if (e1) {
-          showMsg('msg-infos', e1.message || 'Erreur lors de la mise \u00E0 jour.', 'error');
+          showMsg('msg-infos', e1.message || 'Erreur lors de la mise à jour.', 'error');
         } else {
           document.getElementById('p-greeting').textContent = prenom
-            ? 'Bonjour, ' + prenom + '\u00A0\uD83D\uDC4B'
+            ? 'Bonjour, ' + prenom + ' 👋'
             : document.getElementById('input-email-info').value;
-          showMsg('msg-infos', '\u2705 Pr\u00E9nom mis \u00E0 jour avec succ\u00E8s !', 'success');
+          showMsg('msg-infos', '✅ Prénom mis à jour avec succès !', 'success');
         }
       } catch(err) {
         setLoading('btn-infos', false);
@@ -431,17 +430,17 @@
       hideMsg('msg-email');
       var newEmail = document.getElementById('new-email').value.trim();
       if (!newEmail) { showMsg('msg-email', 'Veuillez saisir un nouvel e-mail.', 'error'); return; }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+      if (!/^[^s@]+@[^s@]+.[^s@]+$/.test(newEmail)) {
         showMsg('msg-email', 'Adresse e-mail invalide.', 'error'); return;
       }
       setLoading('btn-email', true);
       var { error } = await supabase.auth.updateUser({ email: newEmail });
       setLoading('btn-email', false);
       if (error) {
-        showMsg('msg-email', error.message || 'Erreur lors de la mise \u00E0 jour.', 'error');
+        showMsg('msg-email', error.message || 'Erreur lors de la mise à jour.', 'error');
       } else {
         document.getElementById('new-email').value = '';
-        showMsg('msg-email', '\u2705 Un e-mail de confirmation a \u00E9t\u00E9 envoy\u00E9 \u00E0 ' + newEmail + '. Cliquez sur le lien pour valider.', 'info');
+        showMsg('msg-email', '✅ Un e-mail de confirmation a été envoyé à ' + newEmail + '. Cliquez sur le lien pour valider.', 'info');
       }
     }
 
@@ -451,17 +450,17 @@
       var pwd1 = document.getElementById('new-password').value;
       var pwd2 = document.getElementById('confirm-password').value;
       if (!pwd1) { showMsg('msg-password', 'Veuillez saisir un nouveau mot de passe.', 'error'); return; }
-      if (pwd1.length < 6) { showMsg('msg-password', 'Le mot de passe doit contenir au moins 6 caract\u00E8res.', 'error'); return; }
+      if (pwd1.length < 6) { showMsg('msg-password', 'Le mot de passe doit contenir au moins 6 caractères.', 'error'); return; }
       if (pwd1 !== pwd2) { showMsg('msg-password', 'Les mots de passe ne correspondent pas.', 'error'); return; }
       setLoading('btn-password', true);
       var { error } = await supabase.auth.updateUser({ password: pwd1 });
       setLoading('btn-password', false);
       if (error) {
-        showMsg('msg-password', error.message || 'Erreur lors de la mise \u00E0 jour.', 'error');
+        showMsg('msg-password', error.message || 'Erreur lors de la mise à jour.', 'error');
       } else {
         document.getElementById('new-password').value   = '';
         document.getElementById('confirm-password').value = '';
-        showMsg('msg-password', '\u2705 Mot de passe mis \u00E0 jour avec succ\u00E8s !', 'success');
+        showMsg('msg-password', '✅ Mot de passe mis à jour avec succès !', 'success');
       }
     }
 
@@ -476,7 +475,7 @@
       hideMsg('msg-delete');
       if (document.getElementById('delete-confirm').value !== 'SUPPRIMER') return;
       setLoading('btn-delete', true);
-      showMsg('msg-delete', 'Suppression en cours\u2026', 'info');
+      showMsg('msg-delete', 'Suppression en cours…', 'info');
       try {
         var { data: { session } } = await supabase.auth.getSession();
         if (!session) { window.location.href = 'index.html'; return; }
