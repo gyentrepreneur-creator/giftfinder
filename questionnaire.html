@@ -350,7 +350,7 @@
         '<a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>' +
         '<button class="btn-outline" onclick="handleLogout()">Déconnexion</button>';
 
-      // -- Afficher les recherches restantes aujourd'hui --
+      // -- Afficher les recherches restantes aujourd\'hui --
       try {
         const today = new Date().toISOString().slice(0, 10);
         const { count } = await supabase
@@ -368,7 +368,7 @@
             var btn = document.getElementById('submitBtn');
             if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
           } else {
-            hintEl.innerHTML = 'R&eacute;sultats en moins de 30 secondes &middot; Gratuit &middot; <strong>' + restantes + ' recherche' + (restantes > 1 ? 's' : '') + ' restante' + (restantes > 1 ? 's' : '') + ' aujourd'hui</strong>';
+            hintEl.innerHTML = 'R&eacute;sultats en moins de 30 secondes &middot; Gratuit &middot; <strong>' + restantes + ' recherche' + (restantes > 1 ? 's' : '') + ' restante' + (restantes > 1 ? 's' : '') + ' aujourd\'hui</strong>';
           }
         }
       } catch (e) {
