@@ -284,7 +284,7 @@
 
         const a = document.createElement('a');
         a.className = 'h-card';
-        a.href = isDone ? 'resultats.html?id=' + r.id : '#';
+        a.href = 'resultats.html?id=' + r.id;
         if (!isDone) a.style.opacity = '0.65';
         a.innerHTML =
           '<div class="h-emoji">' + emoji + '</div>' +
