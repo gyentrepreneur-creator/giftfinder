@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GiftFinder &#8212; Questionnaire</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð</text></svg>">
+  <meta name="theme-color" content="#3C3489">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
   <link rel="stylesheet" href="css/style.css">
   <style>
     body {
@@ -203,12 +204,12 @@
       <div class="q-field">
         <label class="q-label" for="destinataire">Pour qui est ce cadeau ? *</label>
         <input class="q-input q-input-full" type="text" id="destinataire"
-               placeholder="Ex : ma mere, mon meilleur ami, mon patron..." maxlength="120">
+               placeholder="Ex : ma m&#232;re, mon meilleur ami, mon patron..." maxlength="120">
       </div>
 
       <!-- 2 . Age -->
       <div class="q-field">
-        <label class="q-label" for="age">Quel age a-t-il / elle ?</label>
+        <label class="q-label" for="age">Quel &acirc;ge a-t-il / elle ?</label>
         <input class="q-input q-input-sm" type="number" id="age"
                placeholder="Ex : 35" min="1" max="120">
       </div>
@@ -217,7 +218,7 @@
       <div class="q-field">
         <label class="q-label">Quelle est l'occasion ? *</label>
         <div class="chips-row" id="grp-occasion">
-          <button type="button" class="chip" data-value="Noel">&#127876; Noel</button>
+          <button type="button" class="chip" data-value="Noel">&#127876; No&euml;l</button>
           <button type="button" class="chip" data-value="Anniversaire">&#127874; Anniversaire</button>
           <button type="button" class="chip" data-value="Mariage">&#128141; Mariage</button>
           <button type="button" class="chip" data-value="Saint-Valentin">&#10084;&#65039; Saint-Valentin</button>
@@ -238,16 +239,16 @@
 
       <!-- 5 . Centres d'interet (multi) -->
       <div class="q-field">
-        <label class="q-label">Centres d'interet (plusieurs choix possibles) *</label>
+        <label class="q-label">Centres d'int&eacute;r&ecirc;t (plusieurs choix possibles) *</label>
         <div class="chips-row" id="grp-centres">
           <button type="button" class="chip multi" data-value="Tech &amp; Gaming">&#127918; Tech &amp; Gaming</button>
-          <button type="button" class="chip multi" data-value="Mode &amp; Beaute">&#128247; Mode &amp; Beaute</button>
+          <button type="button" class="chip multi" data-value="Mode &amp; Beaute">&#128247; Mode &amp; Beaut&eacute;</button>
           <button type="button" class="chip multi" data-value="Sport &amp; Fitness">&#127947; Sport &amp; Fitness</button>
           <button type="button" class="chip multi" data-value="Cuisine &amp; Gastronomie">&#127859; Cuisine &amp; Gastronomie</button>
           <button type="button" class="chip multi" data-value="Lecture &amp; Culture">&#128218; Lecture &amp; Culture</button>
           <button type="button" class="chip multi" data-value="Voyage &amp; Aventure">&#9992;&#65039; Voyage &amp; Aventure</button>
-          <button type="button" class="chip multi" data-value="Art &amp; Creativite">&#127912; Art &amp; Creativite</button>
-          <button type="button" class="chip multi" data-value="Bien-etre &amp; Relaxation">&#129340; Bien-etre &amp; Relaxation</button>
+          <button type="button" class="chip multi" data-value="Art &amp; Creativite">&#127912; Art &amp; Cr&eacute;ativit&eacute;</button>
+          <button type="button" class="chip multi" data-value="Bien-etre &amp; Relaxation">&#129340; Bien-&ecirc;tre &amp; Relaxation</button>
         </div>
       </div>
 
@@ -282,8 +283,7 @@
     </div>
     <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
     <div class="footer-social">
-      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">ð¸ Instagram @GIFTFINDER2.0</a>
-      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">ðµ TikTok @giftfinder2.0</a>
+      <p>📸 Instagram <a href="https://instagram.com/giftfinder2.0" target="_blank">@GIFTFINDER2.0</a> &nbsp;|&nbsp; 🎵 TikTok <a href="https://tiktok.com/@giftfinder2.0" target="_blank">@giftfinder2.0</a></p>
     </div>
   </footer>
 
@@ -347,9 +347,8 @@
         || session.user.email.split('@')[0];
       document.getElementById('nav-right').innerHTML =
         '<span style="font-size:14px;color:#666;">Bonjour, <strong>' + prenom + '</strong></span>' +
-        '<a href="historique.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128220; Mes recherches</a>' +
         '<a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>' +
-        '<button class="btn-outline" onclick="handleLogout()">Deconnexion</button>';
+        '<button class="btn-outline" onclick="handleLogout()">Déconnexion</button>';
 
       // -- Afficher les recherches restantes aujourd'hui --
       try {
@@ -364,16 +363,16 @@
         const hintEl = document.getElementById('quota-hint');
         if (hintEl) {
           if (restantes === 0) {
-            hintEl.innerHTML = '<span style="color:#b91c1c;font-weight:600;">\u26A0\uFE0F Limite atteinte \u2014 revenez demain !</span>';
-            // DÃ©sactiver le bouton dÃ¨s le chargement si quota Ã©puisÃ©
+            hintEl.innerHTML = '<span style="color:#b91c1c;font-weight:600;">⚠️ Limite atteinte — revenez demain !</span>';
+            // Désactiver le bouton dès le chargement si quota épuisé
             var btn = document.getElementById('submitBtn');
             if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
           } else {
-            hintEl.innerHTML = 'R&eacute;sultats en moins de 30 secondes &middot; Gratuit &middot; <strong>' + restantes + ' recherche' + (restantes > 1 ? 's' : '') + ' restante' + (restantes > 1 ? 's' : '') + ' aujourd\'hui</strong>';
+            hintEl.innerHTML = 'R&eacute;sultats en moins de 30 secondes &middot; Gratuit &middot; <strong>' + restantes + ' recherche' + (restantes > 1 ? 's' : '') + ' restante' + (restantes > 1 ? 's' : '') + ' aujourd'hui</strong>';
           }
         }
       } catch (e) {
-        // fail silently, message par defaut reste affichÃ©
+        // fail silently, message par defaut reste affiché
       }
     })();
 
@@ -394,10 +393,10 @@
 
       // Validation
       if (!destinataire)      { showError('Veuillez indiquer le destinataire du cadeau.'); return; }
-      if (!sel.occasion)      { showError('Veuillez s\u00E9lectionner une occasion.'); return; }
-      if (!sel.genre)         { showError('Veuillez s\u00E9lectionner un genre.'); return; }
-      if (!sel.centres.length){ showError("Veuillez s\u00E9lectionner au moins un centre d'int\u00E9r\u00EAt."); return; }
-      if (!sel.budget)        { showError('Veuillez s\u00E9lectionner un budget.'); return; }
+      if (!sel.occasion)      { showError('Veuillez sélectionner une occasion.'); return; }
+      if (!sel.genre)         { showError('Veuillez sélectionner un genre.'); return; }
+      if (!sel.centres.length){ showError("Veuillez sélectionner au moins un centre d'intérêt."); return; }
+      if (!sel.budget)        { showError('Veuillez sélectionner un budget.'); return; }
 
       submitBtn.disabled    = true;
       submitBtn.textContent = 'Analyse en cours...';
@@ -416,7 +415,7 @@
           if (count >= 3) {
             showError('Vous avez atteint la limite de 3 recherches gratuites par jour. Revenez demain !');
             submitBtn.disabled    = false;
-            submitBtn.textContent = 'D\u00E9couvrir mes recommandations \u2728';
+            submitBtn.textContent = 'Découvrir mes recommandations ✨';
             return;
           }
         }
@@ -450,7 +449,7 @@
       } catch (err) {
         showError(err.message || 'Une erreur est survenue. Veuillez reessayer.');
         submitBtn.disabled    = false;
-        submitBtn.textContent = 'D\u00E9couvrir mes recommandations \u2728';
+        submitBtn.textContent = 'Découvrir mes recommandations ✨';
       }
     }
 
