@@ -179,6 +179,493 @@
     .h-empty-msg { text-align: center; padding: 20px 0; color: #aaa; font-size: 13px; }
 
     .footer { position: relative; z-index: 1; }
+  
+  @media (max-width: 768px) {
+    .navbar { padding: 10px 12px !important; gap: 6px !important; }
+    .navbar-right, #nav-right { gap: 6px !important; }
+    .navbar-right a, .navbar-right button, .navbar-right span,
+    #nav-right a, #nav-right button, #nav-right span { font-size: 12px !important; padding: 4px 8px !important; }
+    .btn-outline { font-size: 11px !important; padding: 4px 10px !important; }
+    .btn-primary { font-size: 12px !important; padding: 6px 12px !important; }
+    .profile-card { margin: 10px !important; padding: 20px 15px !important; }
+  }
+  @media (max-width: 480px) {
+    .navbar { flex-wrap: wrap !important; padding: 8px 10px !important; justify-content: center !important; gap: 6px !important; }
+    .navbar-right, #nav-right { width: 100% !important; justify-content: center !important; flex-wrap: wrap !important; gap: 6px !important; }
+    .navbar-right a, .navbar-right button, .navbar-right span,
+    #nav-right a, #nav-right button, #nav-right span { font-size: 11px !important; }
+    .btn-outline { font-size: 10px !important; padding: 3px 8px !important; }
+    .btn-primary { font-size: 11px !important; padding: 5px 10px !important; }
+    .profile-card { margin: 5px !important; padding: 15px 10px !important; }
+    h2 { font-size: 20px !important; }
+  }
+  </style>
+</head>
+<body>
+
+  <div class="deco deco-violet"></div>
+  <div class="deco deco-rose"></div>
+  <div class="deco deco-vert"></div>
+  <div class="deco deco-ambre"></div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <span class="gift-icon">&#127873;</span>
+      <span class="brand" id="brand-name"></span>
+    </div>
+    <div class="navbar-right" id="nav-right">
+        <span id="nav-greeting" style="font-size:14px;color:#666;"></span>
+        <a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>
+      <button class="btn-primary" id="btn-logout" onclick="handleLogout()">D&eacute;connexion</button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="p-main">
+
+    <h1 class="p-title">&#128100; Mon profil</h1>
+    <p class="p-subtitle" id="p-greeting">Chargement&hellip;</p>
+
+    <!-- â  INFOS PERSONNELLES -->
+    <div class="p-card">
+      <div class="p-card-title">&#128101; Informations personnelles</div>
+      <div class="p-field">
+        <label>Pr&eacute;nom</label>
+        <input type="text" id="input-prenom" placeholder="Votre pr&eacute;nom" autocomplete="given-name">
+      </div>
+      <div class="p-field">
+        <label>Adresse e-mail</label>
+        <input type="email" id="input-email-info" disabled placeholder="Chargement&hellip;">
+      </div>
+      <button class="btn-save" id="btn-infos" onclick="saveInfos()">Enregistrer les modifications</button>
+      <div class="p-msg" id="msg-infos"></div>
+    </div>
+
+    <!-- â¡ SÃCURITÃ -->
+    <div class="p-card">
+      <div class="p-card-title">&#128274; S&eacute;curit&eacute;</div>
+
+      <p style="font-size:12px;font-weight:600;color:#888;margin:0 0 10px;text-transform:uppercase;letter-spacing:.5px;">Changer l&apos;adresse e-mail</p>
+      <div class="p-field">
+        <label>Nouvel e-mail</label>
+        <input type="email" id="new-email" placeholder="nouveau@exemple.com" autocomplete="email">
+      </div>
+      <button class="btn-save" id="btn-email" onclick="changeEmail()" style="margin-bottom:20px;">Mettre &agrave; jour l&apos;e-mail</button>
+      <div class="p-msg" id="msg-email"></div>
+
+      <hr style="border:none;border-top:1px solid rgba(60,52,137,0.08);margin:16px 0;">
+
+      <p style="font-size:12px;font-weight:600;color:#888;margin:0 0 10px;text-transform:uppercase;letter-spacing:.5px;">Changer le mot de passe</p>
+      <div class="p-field">
+        <label>Nouveau mot de passe</label>
+        <input type="password" id="new-password" placeholder="Minimum 6 caract&egrave;res" autocomplete="new-password">
+      </div>
+      <div class="p-field">
+        <label>Confirmer le mot de passe</label>
+        <input type="password" id="confirm-password" placeholder="R&eacute;p&eacute;tez le mot de passe" autocomplete="new-password">
+      </div>
+      <button class="btn-save" id="btn-password" onclick="changePassword()">Mettre &agrave; jour le mot de passe</button>
+      <div class="p-msg" id="msg-password"></div>
+    </div>
+
+    <!-- â¢ MES RECHERCHES (10 derniÃ¨res) -->
+    <div class="p-card">
+      <div class="p-card-title">&#128220; Mes derni&egrave;res recherches</div>
+      <div id="hist-loader" style="text-align:center;padding:16px;color:#aaa;font-size:13px;">Chargement&hellip;</div>
+      <div id="hist-list"></div>
+    </div>
+
+    <!-- â£ ZONE DE DANGER -->
+    <div class="p-card danger">
+      <div class="p-card-title">&#9888;&#65039; Zone de danger</div>
+      <p style="font-size:13px;color:#666;margin:0 0 14px;line-height:1.6;">
+        La suppression de votre compte est <strong>irr&eacute;versible</strong>. Toutes vos recherches et donn&eacute;es seront d&eacute;finitivement supprim&eacute;es.
+      </p>
+      <div class="p-field">
+        <label>Tapez <strong>SUPPRIMER</strong> pour confirmer</label>
+        <input type="text" id="delete-confirm" class="danger-input"
+               placeholder="SUPPRIMER" autocomplete="off"
+               oninput="checkDeleteConfirm()">
+      </div>
+      <button class="btn-delete" id="btn-delete" disabled onclick="deleteAccount()">
+        Supprimer d&eacute;finitivement mon compte
+      </button>
+      <div class="p-msg" id="msg-delete"></div>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-top">
+    </div>
+    <div class="footer-links">
+      <a href="mentions-legales.html">Mentions l&eacute;gales</a>
+      <a href="confidentialite.html">Confidentialit&eacute;</a>
+      <a href="cgu.html">CGU</a>
+    </div>
+    <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
+    <div class="footer-social">
+      <p>ð¸ Instagram <a href="https://instagram.com/giftfinder2.0" target="_blank">@GIFTFINDER2.0</a> &nbsp;|&nbsp; ðµ TikTok <a href="https://tiktok.com/@giftfinder2.0" target="_blank">@giftfinder2.0</a></p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script>
+    document.getElementById('brand-name').textContent   = APP_NAME;
+    document.getElementById('footer-brand').textContent = APP_NAME;
+
+    const OCCASION_EMOJI = {
+      'Noel':'\uD83C\uDF84','Anniversaire':'\uD83C\uDF82','Mariage':'\uD83D\uDC8D',
+      'Saint-Valentin':'\u2764\uFE0F','Autre':'\u2728'
+    };
+    const BUDGET_LABEL = {
+      'moins_25':'< 25\u20AC','25_50':'25\u201350\u20AC',
+      '50_100':'50\u2013100\u20AC','100_200':'100\u2013200\u20AC','plus_200':'> 200\u20AC'
+    };
+
+    // ââ Init : charge session, infos utilisateur, historique ââ
+    (async function() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { window.location.href = 'index.html'; return; }
+
+      var u = session.user;
+      var emailVal  = u.email || '';
+      var prenomMeta = (u.user_metadata && u.user_metadata.prenom) || '';
+
+      // Essayer de rÃ©cupÃ©rer le prÃ©nom depuis public.users si absent du metadata
+      var prenomFinal = prenomMeta;
+      try {
+        var { data: pub } = await supabase.from('users').select('prenom,email').eq('id', u.id).single();
+        if (pub && pub.prenom) prenomFinal = pub.prenom;
+      } catch(e) {}
+
+      // Remplir les champs
+      document.getElementById('input-email-info').value = emailVal;
+      document.getElementById('input-prenom').value     = prenomFinal;
+
+      // Greeting
+      var greet = prenomFinal ? 'Bonjour, ' + prenomFinal + '\u00A0\uD83D\uDC4B'
+        : emailVal;
+      document.getElementById('p-greeting').textContent = greet;
+      const navGreet = document.getElementById('nav-greeting');
+      if (navGreet) navGreet.innerHTML = 'Bonjour, <strong>' + prenom + '<\/strong>';
+
+      // Charger l'historique
+      loadHistorique(u.id);
+    })();
+
+    // ââ Charger les 10 derniÃ¨res recherches ââ
+    async function loadHistorique(userId) {
+      var loader = document.getElementById('hist-loader');
+      var list   = document.getElementById('hist-list');
+      try {
+        var { data, error } = await supabase
+          .from('searches')
+          .select('id, destinataire, occasion, budget, statut, created_at')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        loader.style.display = 'none';
+
+        if (error || !data || data.length === 0) {
+          list.innerHTML = '<div class="h-empty-msg">Aucune recherche pour l\u2019instant \u2014 <a href="questionnaire.html" style="color:#3C3489;">lancez-en une !</a></div>';
+          return;
+        }
+
+        data.forEach(function(r) {
+          var emoji  = OCCASION_EMOJI[r.occasion] || '\uD83C\uDF81';
+          var budget = BUDGET_LABELTØcXYÙ]HYÙ]	ÉÎÂ\\ÑÛHHÝ]]OOH	ÙÛIÈÝ]]OOH	ØÛÛ\]Y	ÎÂ\]HH]È]JÜX]YØ]
+KÓØØ[Q]TÝ[Ê	ÙQËÈ^NÛ[Y\XÉË[ÛÜÚÜ	ÈJNÂ\HHØÝ[Y[ÜX]Q[[Y[
+	ØIÊNÂKÛ\ÜÓ[YHH	ÚZ][IÎÂKYH	Ü\Ý[]Ë[ÚYIÈ
+ÈYÂY
+Z\ÑÛJHKÝ[KÜXÚ]HH	ÌÉÎÂK[\SB	ÏÜ[Û\ÜÏHY[[ÚHÈ
+È[[ÚH
+È	ÏÜÜ[È
+Â	ÏÜ[Û\ÜÏHZ[ÈÈ
+Â	Ï]Û\ÜÏHY\Ý[]Z\HÈ
+È\ØÊ\Ý[]Z\H	ÐØYX]IÊH
+È	ÏÙ]È
+Â	Ï]Û\ÜÏH[Y]HÈ
+Â
+ØØØ\Ú[ÛÈ\ØÊØØØ\Ú[ÛH	ÉÊH
+Â
+YÙ]È	ÈLÈ	È
+È\ØÊYÙ]
+H	ÉÊH
+Â	ÏÙ]È
+Â	ÏÜÜ[È
+Â	ÏÜ[Û\ÜÏHXYÙIÈ
+È
+\ÑÛHÈ	ÉÈ	È[[ÉÊH
+È	ÈÈ
+Â
+\ÑÛHÈ	×LÌLÈLP]	È	Ñ[ÛÝ\ÉÊH
+Â	ÏÜÜ[È
+Â	ÏÜ[Û\ÜÏHY]HÈ
+È]H
+È	ÏÜÜ[ÎÂ\Ý\[Ú[
+JNÂJNÂHØ]Ú
+JHÂØY\^ÛÛ[H	Ò[\ÜÜÚXHHÚ\Ù\LNZ\ÝÜ\]YKÎÂBBËÈ8¥ 8¥ ][]Z\\È8¥ 8¥ [Ý[ÛÚÝÓ\ÙÊY^\JHÂ\[HØÝ[Y[Ù][[Y[RY
+Y
+NÂ[^ÛÛ[H^Â[Û\ÜÓ[YHH	Ü[\ÙÈ	È
+È\NÂ[Ý[K\Ü^HH	ØØÚÉÎÂB[Ý[ÛYS\ÙÊY
+HÈØÝ[Y[Ù][[Y[RY
+Y
+KÝ[K\Ü^HH	ÛÛIÎÈB[Ý[ÛÙ]ØY[ÊYØY[ÊHÈØÝ[Y[Ù][[Y[RY
+Y
+K\ØXYHØY[ÎÈB[Ý[Û\ØÊÊHÂ]\Ý[ÊÊK\XÙJÉÙË	É[\ÉÊK\XÙJÏÙË	ÉÉÊK\XÙJÏÙË	ÉÝÉÊK\XÙJÈÙË	É][ÝÉÊNÂBËÈ8¥ 8¥ 8¤hØ]]YØ\\[ÜÈ\ÛÛ[\È
+°ê[ÛJH8¥ 8¥ \Þ[È[Ý[ÛØ]R[ÜÊ
+HÂYS\ÙÊ	Û\ÙËZ[ÜÉÊNÂ\[ÛHHØÝ[Y[Ù][[Y[RY
+	Ú[]\[ÛIÊK[YK[J
+NÂÙ]ØY[Ê	ØZ[ÜÉËYJNÂHÂËÈY]H0èÝ\[È]]Y]Y]B\È\ÜLHHH]ØZ]Ý\X\ÙK]]\]U\Ù\È]NÈ[ÛN[ÛHHJNÂËÈY]H0èÝ\[ÈXXË\Ù\Â\È]NÈÙ\ÜÚ[ÛHHH]ØZ]Ý\X\ÙK]]Ù]Ù\ÜÚ[Û
+NÂY
+Ù\ÜÚ[ÛHÂ]ØZ]Ý\X\ÙKÛJ	Ý\Ù\ÉÊK\]JÈ[ÛN[ÛHJK\J	ÚY	ËÙ\ÜÚ[Û\Ù\Y
+NÂBÙ]ØY[Ê	ØZ[ÜÉË[ÙJNÂY
+LJHÂÚÝÓ\ÙÊ	Û\ÙËZ[ÜÉËLKY\ÜØYÙH	Ñ\]\ÜÈHHZ\ÙHLLÝ\Ë	Ù\ÜÊNÂH[ÙHÂØÝ[Y[Ù][[Y[RY
+	ÜYÜY][ÉÊK^ÛÛ[H[ÛBÈ	ÐÛÝ\	È
+È[ÛH
+È	×LLQÑQÍÂØÝ[Y[Ù][[Y[RY
+	Ú[]Y[XZ[Z[ÉÊK[YNÂÚÝÓ\ÙÊ	Û\ÙËZ[ÜÉË	×LÌ
+HLN[ÛHZ\ÈLLÝ\]XÈÝXØ×LNÈIË	ÜÝXØÙ\ÜÉÊNÂBHØ]Ú
+\HÂÙ]ØY[Ê	ØZ[ÜÉË[ÙJNÂÚÝÓ\ÙÊ	Û\ÙËZ[ÜÉË
+\	\Y\ÜØYÙJH	Ñ\]\Ë	Ù\ÜÊNÂBBËÈ8¥ 8¥ 8¤hHÚ[Ù\[XZ[8¥ 8¥ \Þ[È[Ý[ÛÚ[ÙQ[XZ[
+
+HÂYS\ÙÊ	Û\ÙËY[XZ[	ÊNÂ\]Ñ[XZ[HØÝ[Y[Ù][[Y[RY
+	Û]ËY[XZ[	ÊK[YK[J
+NÂY
+[]Ñ[XZ[
+HÈÚÝÓ\ÙÊ	Û\ÙËY[XZ[	Ë	Õ]Z[^ØZ\Ú\[Ý][K[XZ[Ë	Ù\ÜÊNÈ]\ÈBY
+K××ÐJÐ×ÐJ××ÐJÉË\Ý
+]Ñ[XZ[
+JHÂÚÝÓ\ÙÊ	Û\ÙËY[XZ[	Ë	ÐY\ÜÙHK[XZ[[[YKË	Ù\ÜÊNÈ]\ÂBÙ]ØY[Ê	ØY[XZ[	ËYJNÂ\È\ÜHH]ØZ]Ý\X\ÙK]]\]U\Ù\È[XZ[]Ñ[XZ[JNÂÙ]ØY[Ê	ØY[XZ[	Ë[ÙJNÂY
+\ÜHÂÚÝÓ\ÙÊ	Û\ÙËY[XZ[	Ë\ÜY\ÜØYÙH	Ñ\]\ÜÈHHZ\ÙHLLÝ\Ë	Ù\ÜÊNÂH[ÙHÂØÝ[Y[Ù][[Y[RY
+	Û]ËY[XZ[	ÊK[YHH	ÉÎÂÚÝÓ\ÙÊ	Û\ÙËY[XZ[	Ë	×LÌ
+H[K[XZ[HÛÛ\X][ÛHLN]LNH[ÞWLNHLL	È
+È]Ñ[XZ[
+È	ËÛ\]Y^Ý\HY[Ý\[Y\Ë	Ú[ÉÊNÂBBËÈ8¥ 8¥ 8¤hHÚ[Ù\[ÝH\ÜÙH8¥ 8¥ \Þ[È[Ý[ÛÚ[ÙT\ÜÝÛÜ
+
+HÂYS\ÙÊ	Û\ÙË\\ÜÝÛÜ	ÊNÂ\ÙHHØÝ[Y[Ù][[Y[RY
+	Û]Ë\\ÜÝÛÜ	ÊK[YNÂ\ÙHØÝ[Y[Ù][[Y[RY
+	ØÛÛ\K\\ÜÝÛÜ	ÊK[YNÂY
+\ÙJHÈÚÝÓ\ÙÊ	Û\ÙË\\ÜÝÛÜ	Ë	Õ]Z[^ØZ\Ú\[Ý]X]H[ÝH\ÜÙKË	Ù\ÜÊNÈ]\ÈBY
+ÙK[Ý
+HÈÚÝÓ\ÙÊ	Û\ÙË\\ÜÝÛÜ	Ë	ÓH[ÝH\ÜÙHÚ]ÛÛ[\]H[Ú[È
+Ø\XÝLN\ËË	Ù\ÜÊNÈ]\ÈBY
+ÙHOOHÙHÈÚÝÓ\ÙÊ	Û\ÙË\\ÜÝÛÜ	Ë	Ó\È[ÝÈH\ÜÙHHÛÜ\ÜÛ[\ËË	Ù\ÜÊNÈ]\ÈBÙ]ØY[Ê	Ø\\ÜÝÛÜ	ËYJNÂ\È\ÜHH]ØZ]Ý\X\ÙK]]\]U\Ù\È\ÜÝÛÜÙHJNÂÙ]ØY[Ê	Ø\\ÜÝÛÜ	Ë[ÙJNÂY
+\ÜHÂÚÝÓ\ÙÊ	Û\ÙË\\ÜÝÛÜ	Ë\ÜY\ÜØYÙH	Ñ\]\ÜÈHHZ\ÙHLLÝ\Ë	Ù\ÜÊNÂH[ÙHÂØÝ[Y[Ù][[Y[RY
+	Û]Ë\\ÜÝÛÜ	ÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
+	ØÛÛ\K\\ÜÝÛÜ	ÊK[YHH	ÉÎÂÚÝÓ\ÙÊ	Û\ÙË\\ÜÝÛÜ	Ë	×LÌ
+H[ÝH\ÜÙHZ\ÈLLÝ\]XÈÝXØ×LNÈIË	ÜÝXØÙ\ÜÉÊNÂBBËÈ8¥ 8¥ 8¤hÈ[Y][ÛÚ[\Ý\\ÜÚ[Û8¥ 8¥ [Ý[ÛÚXÚÑ[]PÛÛ\J
+HÂ\[HØÝ[Y[Ù][[Y[RY
+	Ù[]KXÛÛ\IÊK[YNÂØÝ[Y[Ù][[Y[RY
+	ØY[]IÊK\ØXYH
+[OOH	ÔÕTSQTÊNÂBËÈ8¥ 8¥ 8¤hÈÝ\[Y\HÛÛ\H8¥ 8¥ \Þ[È[Ý[Û[]PXØÛÝ[
+
+HÂYS\ÙÊ	Û\ÙËY[]IÊNÂY
+ØÝ[Y[Ù][[Y[RY
+	Ù[]KXÛÛ\IÊK[YHOOH	ÔÕTSQTÊH]\ÂÙ]ØY[Ê	ØY[]IËYJNÂÚÝÓ\ÙÊ	Û\ÙËY[]IË	ÔÝ\\ÜÚ[Û[ÛÝ\×LË	Ú[ÉÊNÂHÂ\È]NÈÙ\ÜÚ[ÛHHH]ØZ]Ý\X\ÙK]]Ù]Ù\ÜÚ[Û
+NÂY
+\Ù\ÜÚ[ÛHÈÚ[ÝËØØ][ÛYH	Ú[^[	ÎÈ]\ÈB\ZYHÙ\ÜÚ[Û\Ù\YÂËÈKÝ\[Y\\ÈXÚ\Ú\Â\È\ÜLHHH]ØZ]Ý\X\ÙKÛJ	ÜÙX\Ú\ÉÊK[]J
+K\J	Ý\Ù\ÚY	ËZY
+NÂY
+LJHÝÈLNÂËÈÝ\[Y\HÛÛ\HXHÂ\È\ÜLHH]ØZ]Ý\X\ÙKÊ	Ù[]WÝ\Ù\ØXØÛÝ[	ÊNÂY
+LHÝÈLÂËÈË0êXÛÛ^[Û]Y\XÝ[Û]ØZ]Ý\X\ÙK]]ÚYÛÝ]
+
+NÂÚ[ÝËØØ][ÛYH	Ú[^[Ù[]YLIÎÂHØ]Ú
+\HÂÙ]ØY[Ê	ØY[]IË[ÙJNÂØÝ[Y[Ù][[Y[RY
+	Ù[]KXÛÛ\IÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
+	ØY[]IÊK\ØXYHYNÂÚÝÓ\ÙÊ	Û\ÙËY[]IË
+\	\Y\ÜØYÙJH	Ñ\]\ÜÈHHÝ\\ÜÚ[ÛË	Ù\ÜÊNÂBBËÈ8¥ 8¥ 0êXÛÛ^[Û8¥ 8¥ \Þ[È[Ý[Û[SÙÛÝ]
+
+HÂ]ØZ]Ý\X\ÙK]]ÚYÛÝ]
+
+NÂÚ[ÝËØØ][ÛYH	Ú[^[	ÎÂBÜØÜ\KKHSÐSHÕÓHUKO]Û\ÜÏH[Ø[KXÝÛK[]HYH\ÝÜ\]YK[Ü[Û\ÜÏH]ZXÛÛÌLÎÏÜÜ[Ü[\ÝÜ\]YOÜÜ[ØOHYH]Y\Ý[ÛZ\K[Û\ÜÏH]XÙ[\Ü[Û\ÜÏH]ZXÛÛÌLÎ
+ÌÎÏÜÜ[Ü[XÚ\ÚOÜÜ[ØOHYHÙ[[Û\ÜÏHXÝ]HÜ[Û\ÜÏH]ZXÛÛÌLLÏÜÜ[Ü[Ù[ÜÜ[ØOÛ]ØÙOÚ[
+<!DOCTYPE html>
+<html lang="fr" translate="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiftFinder &mdash; Mon profil</title>
+  <meta name="theme-color" content="#3C3489">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #EEEDFE 0%, #FBEAF0 50%, #E1F5EE 100%);
+      position: relative;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .deco { position: fixed; border-radius: 50%; opacity: 0.15; pointer-events: none; z-index: 0; }
+    .deco-violet { background: #7F77DD; width: 180px; height: 180px; top: -45px; left: -45px; }
+    .deco-rose   { background: #D4537E; width: 110px; height: 110px; top: 20px; right: -25px; }
+    .deco-vert   { background: #1D9E75; width:  80px; height:  80px; bottom: 80px; right: 40px; }
+    .deco-ambre  { background: #EF9F27; width:  60px; height:  60px; bottom: 60px; left: 40px; }
+
+    .navbar { position: relative; z-index: 10; }
+
+    .p-main {
+      padding: 32px 20px 60px;
+      position: relative;
+      z-index: 1;
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
+      flex: 1;
+    }
+
+    .p-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #26215C;
+      margin: 0 0 6px;
+      text-align: center;
+    }
+    .p-subtitle {
+      font-size: 14px;
+      color: #888;
+      text-align: center;
+      margin: 0 0 28px;
+    }
+
+    /* Cards */
+    .p-card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 2px 16px rgba(60,52,137,0.08), 0 1px 4px rgba(0,0,0,0.04);
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+    .p-card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #26215C;
+      margin: 0 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Form fields */
+    .p-field { margin-bottom: 14px; }
+    .p-field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 5px;
+    }
+    .p-field input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 14px;
+      border: 1.5px solid #e0ddf5;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #222;
+      outline: none;
+      transition: border-color .15s;
+    }
+    .p-field input:focus { border-color: #3C3489; }
+    .p-field input:disabled { background: #f5f5f5; color: #999; cursor: not-allowed; }
+
+    /* Buttons */
+    .btn-save {
+      width: 100%;
+      padding: 11px 0;
+      background: #3C3489;
+      color: #EEEDFE;
+      border: none;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background .15s;
+      margin-top: 4px;
+    }
+    .btn-save:hover { background: #2d2768; }
+    .btn-save:disabled { background: #bbb; cursor: not-allowed; }
+
+    /* Danger zone */
+    .p-card.danger {
+      border: 1.5px solid rgba(211,47,47,0.2);
+      background: #fff8f8;
+    }
+    .p-card.danger .p-card-title { color: #c62828; }
+    .p-field input.danger-input:focus { border-color: #c62828; }
+    .btn-delete {
+      width: 100%;
+      padding: 11px 0;
+      background: #fff;
+      color: #c62828;
+      border: 1.5px solid #c62828;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .15s;
+      margin-top: 4px;
+    }
+    .btn-delete:hover { background: #c62828; color: #fff; }
+    .btn-delete:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Messages feedback */
+    .p-msg {
+      font-size: 13px;
+      font-weight: 500;
+      padding: 9px 14px;
+      border-radius: 10px;
+      margin-top: 10px;
+      display: none;
+    }
+    .p-msg.success { background: rgba(29,158,117,0.1); color: #1D9E75; }
+    .p-msg.error   { background: rgba(198,40,40,0.08); color: #c62828; }
+    .p-msg.info    { background: rgba(60,52,137,0.08); color: #3C3489; }
+
+    /* Historique recherches */
+    .h-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(60,52,137,0.07);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      transition: background .1s;
+      border-radius: 8px;
+      margin: 0 -8px;
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+    .h-item:last-child { border-bottom: none; }
+    .h-item:hover { background: rgba(60,52,137,0.04); }
+    .h-emoji { font-size: 24px; flex-shrink: 0; width: 32px; text-align: center; }
+    .h-info { flex: 1; min-width: 0; }
+    .h-destinataire { font-size: 14px; font-weight: 700; color: #1a1935; }
+    .h-meta { font-size: 12px; color: #999; margin-top: 1px; }
+    .h-badge {
+      font-size: 10px; font-weight: 600;
+      padding: 2px 8px; border-radius: 999px;
+      background: rgba(29,158,117,0.12); color: #1D9E75;
+    }
+    .h-badge.pending { background: rgba(60,52,137,0.1); color: #3C3489; }
+    .h-date { font-size: 11px; color: #ccc; flex-shrink: 0; }
+    .h-empty-msg { text-align: center; padding: 20px 0; color: #aaa; font-size: 13px; }
+
+    .footer { position: relative; z-index: 1; }
   </style>
 </head>
 <body>
