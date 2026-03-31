@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GiftFinder &#8212; Questionnaire</title>
   <meta name="theme-color" content="#3C3489">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð</text></svg>">
   <link rel="stylesheet" href="css/style.css">
   <style>
     body {
@@ -283,7 +283,7 @@
     </div>
     <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
     <div class="footer-social">
-      <p>📸 Instagram <a href="https://instagram.com/giftfinder2.0" target="_blank">@GIFTFINDER2.0</a> &nbsp;|&nbsp; 🎵 TikTok <a href="https://tiktok.com/@giftfinder2.0" target="_blank">@giftfinder2.0</a></p>
+      <p>ð¸ Instagram <a href="https://instagram.com/giftfinder2.0" target="_blank">@GIFTFINDER2.0</a> &nbsp;|&nbsp; ðµ TikTok <a href="https://tiktok.com/@giftfinder2.0" target="_blank">@giftfinder2.0</a></p>
     </div>
   </footer>
 
@@ -348,9 +348,9 @@
       document.getElementById('nav-right').innerHTML =
         '<span style="font-size:14px;color:#666;">Bonjour, <strong>' + prenom + '</strong></span>' +
         '<a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>' +
-        '<button class="btn-outline" onclick="handleLogout()">Déconnexion</button>';
+        '<button class="btn-outline" onclick="handleLogout()">D\u00E9connexion</button>';
 
-      // -- Afficher les recherches restantes aujourd\'hui --
+      // -- Afficher les recherches restantes aujourd'hui --
       try {
         const today = new Date().toISOString().slice(0, 10);
         const { count } = await supabase
@@ -363,8 +363,8 @@
         const hintEl = document.getElementById('quota-hint');
         if (hintEl) {
           if (restantes === 0) {
-            hintEl.innerHTML = '<span style="color:#b91c1c;font-weight:600;">⚠️ Limite atteinte — revenez demain !</span>';
-            // Désactiver le bouton dès le chargement si quota épuisé
+            hintEl.innerHTML = '<span style="color:#b91c1c;font-weight:600;">\u26A0\uFE0F Limite atteinte \u2014 revenez demain !</span>';
+            // DÃ©sactiver le bouton dÃ¨s le chargement si quota Ã©puisÃ©
             var btn = document.getElementById('submitBtn');
             if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
           } else {
@@ -372,7 +372,7 @@
           }
         }
       } catch (e) {
-        // fail silently, message par defaut reste affiché
+        // fail silently, message par defaut reste affichÃ©
       }
     })();
 
@@ -393,10 +393,10 @@
 
       // Validation
       if (!destinataire)      { showError('Veuillez indiquer le destinataire du cadeau.'); return; }
-      if (!sel.occasion)      { showError('Veuillez sélectionner une occasion.'); return; }
-      if (!sel.genre)         { showError('Veuillez sélectionner un genre.'); return; }
-      if (!sel.centres.length){ showError("Veuillez sélectionner au moins un centre d'intérêt."); return; }
-      if (!sel.budget)        { showError('Veuillez sélectionner un budget.'); return; }
+      if (!sel.occasion)      { showError('Veuillez s\u00E9lectionner une occasion.'); return; }
+      if (!sel.genre)         { showError('Veuillez s\u00E9lectionner un genre.'); return; }
+      if (!sel.centres.length){ showError("Veuillez s\u00E9lectionner au moins un centre d'int\u00E9r\u00EAt."); return; }
+      if (!sel.budget)        { showError('Veuillez s\u00E9lectionner un budget.'); return; }
 
       submitBtn.disabled    = true;
       submitBtn.textContent = 'Analyse en cours...';
@@ -415,7 +415,7 @@
           if (count >= 3) {
             showError('Vous avez atteint la limite de 3 recherches gratuites par jour. Revenez demain !');
             submitBtn.disabled    = false;
-            submitBtn.textContent = 'Découvrir mes recommandations ✨';
+            submitBtn.textContent = 'D\u00E9couvrir mes recommandations \u2728';
             return;
           }
         }
@@ -449,7 +449,7 @@
       } catch (err) {
         showError(err.message || 'Une erreur est survenue. Veuillez reessayer.');
         submitBtn.disabled    = false;
-        submitBtn.textContent = 'Découvrir mes recommandations ✨';
+        submitBtn.textContent = 'D\u00E9couvrir mes recommandations \u2728';
       }
     }
 
@@ -460,5 +460,21 @@
       el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   </script>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="mobile-bottom-nav">
+    <a href="historique.html">
+      <span class="nav-icon">&#128203;</span>
+      <span>Historique</span>
+    </a>
+    <a href="questionnaire.html" class="nav-center active">
+      <span class="nav-icon">&#127873;</span>
+      <span>Recherche</span>
+    </a>
+    <a href="profil.html">
+      <span class="nav-icon">&#128100;</span>
+      <span>Profil</span>
+    </a>
+  </nav>
 </body>
 </html>
