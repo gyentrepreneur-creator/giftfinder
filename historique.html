@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GiftFinder &#8212; Mon historique</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>Ã°ÂÂÂ</text></svg>">
   <link rel="stylesheet" href="css/style.css">
   <style>
     body {
@@ -215,10 +215,7 @@
       <a href="cgu.html">CGU</a>
     </div>
     <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
-    <div class="footer-social">
-      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">ð¸ Instagram @GIFTFINDER2.0</a>
-      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">ðµ TikTok @giftfinder2.0</a>
-    </div>
+    <p>📸 Instagram <a href="https://instagram.com/giftfinder2.0" target="_blank">@GIFTFINDER2.0</a> &nbsp;|&nbsp; 🎵 TikTok <a href="https://tiktok.com/@giftfinder2.0" target="_blank">@giftfinder2.0</a></p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -244,23 +241,9 @@
       const prenom = (session.user.user_metadata && session.user.user_metadata.prenom)
         || session.user.email.split('@')[0];
       document.getElementById('nav-right').innerHTML =
-        '<span style="font-size:14px;color:#666;">Bonjour, <strong>' + prenom + '</strong></span>' +
-        '<button class="btn-primary" onclick="window.location.href=\'questionnaire.html\'">+ Nouvelle recherche</button>' +
-        '<a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>' +
-        '<button class="btn-outline" onclick="handleLogout()">D&eacute;connexion</button>';
-
-      const { data, error } = await supabase
-        .from('searches')
-        .select('id, destinataire, occasion, genre, budget, centres_interet, statut, created_at')
-        .eq('user_id', session.user.id)
-        .order('created_at', { ascending: false })
-        .limit(50);
-
-      document.getElementById('loader').style.display = 'none';
-
-      if (error || !data) {
-        document.getElementById('h-sub').textContent = 'Impossible de charger l\'historique.';
-        return;
+          '<span style="font-size:14px;color:#666;">Bonjour, <strong>' + prenom + '</strong></span>' +
+          '<a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>' +
+          '<button class="btn-outline" onclick="handleLogout()">D\u00E9connexion</button>';
       }
 
       const nb = data.length;
