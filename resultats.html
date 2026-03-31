@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GiftFinder &mdash; Vos id&eacute;es cadeaux</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð</text></svg>">
   <link rel="stylesheet" href="css/style.css">
   <style>
     body {
@@ -213,7 +213,7 @@
     <!-- Etat : chargement -->
     <div id="loader" class="r-loader">
       <div class="s-gift">&#127873;</div>
-      <div class="s-spinner"></div>
+      <div class="r-spinner"></div>
       <h2 style="font-size:20px;font-weight:700;color:#26215C;margin:0 0 8px;">Notre IA cherche vos id&eacute;es&hellip;</h2>
       <p style="font-size:14px;color:#666;max-width:300px;line-height:1.6;margin:0;">
         Nous analysons votre profil et trouvons les meilleures id&eacute;es cadeaux.</p>
@@ -222,7 +222,7 @@
     </div>
 
     <!-- Etat : erreur -->
-    <div id="errorState" class="s-error">
+    <div id="errorState" class="r-error">
       <div style="font-size:48px;margin-bottom:16px;">&#128533;</div>
       <h2 style="font-size:20px;font-weight:700;color:#26215C;margin-bottom:8px;">Une erreur est survenue</h2>
       <p style="font-size:14px;color:#666;" id="errorMessage">Impossible de charger les r&eacute;sultats.</p>
@@ -230,7 +230,7 @@
               onclick="window.location.href='questionnaire.html'">R&eacute;essayer</button>
     </div>
 
-    <!-- État : résultats -->
+    <!-- Ãtat : rÃ©sultats -->
     <div id="resultsSection" style="display:none;">
       <div class="r-hdr">
         <h1>&#127873; Vos id&eacute;es cadeaux</h1>
@@ -287,8 +287,8 @@
     </div>
     <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
     <div class="footer-social">
-      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">📸 Instagram @GIFTFINDER2.0</a>
-      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">🎵 TikTok @giftfinder2.0</a>
+      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">ð¸ Instagram @GIFTFINDER2.0</a>
+      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">ðµ TikTok @giftfinder2.0</a>
     </div>
   </footer>
 
@@ -397,11 +397,11 @@
 
         var badge = (p.plateforme || p.platform)
           ? '<span class="r-badge">' + esc(p.plateforme || p.platform) + '</span>' : '';
-        // Compatibilité avec les deux formats de champs (ancien et nouveau)
+        // CompatibilitÃ© avec les deux formats de champs (ancien et nouveau)
         var titre = p.titre || p.nom || p.name || 'Cadeau';
         var prix = p.prix_estime || p.prix || p.price || '';
         var lienBrut = p.lien_recherche || p.lien || p.url || '';
-        // Ajouter le tag affilié Amazon si c'est un lien Amazon
+        // Ajouter le tag affiliÃ© Amazon si c'est un lien Amazon
         var lien = lienBrut;
         if (lienBrut && lienBrut.includes('amazon')) {
           lien = lienBrut + (lienBrut.includes('?') ? '&' : '?') + 'tag=giftfinder0d6-21';
@@ -416,7 +416,7 @@
           '<div class="r-card-body">' +
             badge +
             '<div class="r-card-title">' + esc(titre) + '</div>' +
-            '<div class="s-card-desc">'  + esc(p.description || '') + '</div>' +
+            '<div class="r-card-desc">'  + esc(p.description || '') + '</div>' +
             (prix ? '<div class="r-card-price">~' + esc(String(prix)) + '\u20AC</div>' : '') +
             buyBtn +
           '</div>';
@@ -474,9 +474,9 @@
 
     function handleShare() {
       const url = window.location.href;
-      const text = 'D\u00E9couvrez mes id\u00E9es cadeaux trouv\u00E9es par GiftFinder \u2728 ';
+      const text = 'D\u00E9couvrez mes id\u00E9es cadeaux trouv\u00E9es par ' + APP_NAME + ' \u2728 ';
       if (navigator.share) {
-        navigator.share({ title: 'GiftFinder \u2014 Id\u00E9es cadeaux', text: text, url: url })
+        navigator.share({ title: APP_NAME + ' \u2014 Id\u00E9es cadeaux', text: text, url: url })
           .catch(function() {}); // user cancelled
       } else {
         // Fallback : copier le lien dans le presse-papier
@@ -486,7 +486,7 @@
             document.getElementById('shareConfirm').style.display = 'none';
           }, 3000);
         }).catch(function() {
-          // Fallback ultime si clipboard aussi bloqué
+          // Fallback ultime si clipboard aussi bloquÃ©
           window.prompt('Copiez ce lien :', url);
         });
       }
