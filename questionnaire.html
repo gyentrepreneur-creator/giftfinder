@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GiftFinder &#8212; Questionnaire</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
   <link rel="stylesheet" href="css/style.css">
   <style>
     body {
@@ -264,7 +264,7 @@
       </div>
 
       <button class="q-submit" id="submitBtn" onclick="handleSubmit()">
-        Decouvrir mes recommandations &#10024;
+        D&eacute;couvrir mes recommandations &#10024;
       </button>
       <p class="q-hint" id="quota-hint">Resultats en moins de 30 secondes &middot; Gratuit &middot; 3 recherches/jour</p>
 
@@ -282,8 +282,8 @@
     </div>
     <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
     <div class="footer-social">
-      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">ð¸ Instagram @GIFTFINDER2.0</a>
-      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">ðµ TikTok @giftfinder2.0</a>
+      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">📸 Instagram @GIFTFINDER2.0</a>
+      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">🎵 TikTok @giftfinder2.0</a>
     </div>
   </footer>
 
@@ -365,7 +365,7 @@
         if (hintEl) {
           if (restantes === 0) {
             hintEl.innerHTML = '<span style="color:#b91c1c;font-weight:600;">\u26A0\uFE0F Limite atteinte \u2014 revenez demain !</span>';
-            // DÃ©sactiver le bouton dÃ¨s le chargement si quota Ã©puisÃ©
+            // Désactiver le bouton dès le chargement si quota épuisé
             var btn = document.getElementById('submitBtn');
             if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
           } else {
@@ -373,7 +373,7 @@
           }
         }
       } catch (e) {
-        // fail silently, message par defaut reste affichÃ©
+        // fail silently, message par defaut reste affiché
       }
     })();
 
@@ -394,10 +394,10 @@
 
       // Validation
       if (!destinataire)      { showError('Veuillez indiquer le destinataire du cadeau.'); return; }
-      if (!sel.occasion)      { showError('Veuillez selectionner une occasion.'); return; }
-      if (!sel.genre)         { showError('Veuillez selectionner un genre.'); return; }
+      if (!sel.occasion)      { showError('Veuillez s\u00E9lectionner une occasion.'); return; }
+      if (!sel.genre)         { showError('Veuillez s\u00E9lectionner un genre.'); return; }
       if (!sel.centres.length){ showError("Veuillez s\u00E9lectionner au moins un centre d'int\u00E9r\u00EAt."); return; }
-      if (!sel.budget)        { showError('Veuillez selectionner un budget.'); return; }
+      if (!sel.budget)        { showError('Veuillez s\u00E9lectionner un budget.'); return; }
 
       submitBtn.disabled    = true;
       submitBtn.textContent = 'Analyse en cours...';
@@ -416,7 +416,7 @@
           if (count >= 3) {
             showError('Vous avez atteint la limite de 3 recherches gratuites par jour. Revenez demain !');
             submitBtn.disabled    = false;
-            submitBtn.textContent = 'Decouvrir mes recommandations \u2728';
+            submitBtn.textContent = 'D\u00E9couvrir mes recommandations \u2728';
             return;
           }
         }
