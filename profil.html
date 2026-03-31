@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GiftFinder &mdash; Mon profil</title>
   <meta name="theme-color" content="#3C3489">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð</text></svg>">
   <link rel="stylesheet" href="css/style.css">
   <style>
     body {
@@ -179,22 +179,6 @@
     .h-empty-msg { text-align: center; padding: 20px 0; color: #aaa; font-size: 13px; }
 
     .footer { position: relative; z-index: 1; }
-  
-    @media (max-width: 768px) {
-      .navbar { padding: 12px 16px !important; }
-      .navbar-right { gap: 8px !important; }
-      .navbar-right a, .navbar-right button, .navbar-right span { font-size: 12px !important; }
-      .profile-container, .container, main { padding: 0 16px !important; max-width: 100% !important; }
-      h1, h2 { font-size: 1.4rem !important; }
-      .btn-primary, .btn-outline, button { font-size: 13px !important; }
-      input, select { font-size: 14px !important; }
-      footer { padding: 30px 16px 20px !important; }
-    }
-    @media (max-width: 480px) {
-      .navbar { flex-wrap: wrap !important; gap: 8px !important; }
-      .navbar-right { width: 100% !important; justify-content: flex-end !important; flex-wrap: wrap !important; }
-      h1 { font-size: 1.3rem !important; }
-    }
   </style>
 </head>
 <body>
@@ -223,7 +207,7 @@
     <h1 class="p-title">&#128100; Mon profil</h1>
     <p class="p-subtitle" id="p-greeting">Chargement&hellip;</p>
 
-    <!-- ① INFOS PERSONNELLES -->
+    <!-- â  INFOS PERSONNELLES -->
     <div class="p-card">
       <div class="p-card-title">&#128101; Informations personnelles</div>
       <div class="p-field">
@@ -238,7 +222,7 @@
       <div class="p-msg" id="msg-infos"></div>
     </div>
 
-    <!-- ② SÉCURITÉ -->
+    <!-- â¡ SÃCURITÃ -->
     <div class="p-card">
       <div class="p-card-title">&#128274; S&eacute;curit&eacute;</div>
 
@@ -265,14 +249,14 @@
       <div class="p-msg" id="msg-password"></div>
     </div>
 
-    <!-- ③ MES RECHERCHES (10 dernières) -->
+    <!-- â¢ MES RECHERCHES (10 derniÃ¨res) -->
     <div class="p-card">
       <div class="p-card-title">&#128220; Mes derni&egrave;res recherches</div>
       <div id="hist-loader" style="text-align:center;padding:16px;color:#aaa;font-size:13px;">Chargement&hellip;</div>
       <div id="hist-list"></div>
     </div>
 
-    <!-- ④ ZONE DE DANGER -->
+    <!-- â£ ZONE DE DANGER -->
     <div class="p-card danger">
       <div class="p-card-title">&#9888;&#65039; Zone de danger</div>
       <p style="font-size:13px;color:#666;margin:0 0 14px;line-height:1.6;">
@@ -292,18 +276,19 @@
 
   </main>
 
-  <footer style="text-align:center;padding:40px 20px 30px;color:#888;font-size:13px;border-top:1px solid #eee;margin-top:60px;">
-    <div style="display:flex;justify-content:center;gap:40px;margin-bottom:20px;flex-wrap:wrap;">
-      <a href="https://instagram.com/giftfinder2.0" target="_blank" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:8px;">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="#E1306C" stroke-width="2"/><circle cx="12" cy="12" r="5" stroke="#E1306C" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.5" fill="#E1306C"/></svg>
-        <span style="color:#E1306C;font-weight:600;font-size:13px;">@GIFTFINDER2.0</span>
-      </a>
-      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:8px;">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.16 15a6.34 6.34 0 0 0 6.33 6.34 6.34 6.34 0 0 0 6.34-6.34V8.77a8.18 8.18 0 0 0 4.76 1.52v-3.4a4.85 4.85 0 0 1-1-.2z" fill="#000"/></svg>
-        <span style="color:#000;font-weight:600;font-size:13px;">@giftfinder2.0</span>
-      </a>
+  <footer class="footer">
+    <div class="footer-top">
+      <span id="footer-brand"></span> &mdash; <a href="questionnaire.html">Nouvelle recherche</a>
     </div>
-    <p style="margin:5px 0;"><a href="mentions-legales.html" style="color:#888;">Mentions légales</a> | <a href="confidentialite.html" style="color:#888;">Confidentialité</a> | <a href="cgu.html" style="color:#888;">CGU</a></p>
+    <div class="footer-links">
+      <a href="mentions-legales.html">Mentions l&eacute;gales</a>
+      <a href="confidentialite.html">Confidentialit&eacute;</a>
+      <a href="cgu.html">CGU</a>
+    </div>
+    <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
+    <div class="footer-social">
+      <p>ð¸ Instagram <a href="https://instagram.com/giftfinder2.0" target="_blank">@GIFTFINDER2.0</a> &nbsp;|&nbsp; ðµ TikTok <a href="https://tiktok.com/@giftfinder2.0" target="_blank">@giftfinder2.0</a></p>
+    </div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -314,15 +299,15 @@
     document.getElementById('footer-brand').textContent = APP_NAME;
 
     const OCCASION_EMOJI = {
-      'Noel':'🎄','Anniversaire':'🎂','Mariage':'💍',
-      'Saint-Valentin':'❤️','Autre':'✨'
+      'Noel':'\uD83C\uDF84','Anniversaire':'\uD83C\uDF82','Mariage':'\uD83D\uDC8D',
+      'Saint-Valentin':'\u2764\uFE0F','Autre':'\u2728'
     };
     const BUDGET_LABEL = {
-      'moins_25':'< 25€','25_50':'25–50€',
-      '50_100':'50–100€','100_200':'100–200€','plus_200':'> 200€'
+      'moins_25':'< 25\u20AC','25_50':'25\u201350\u20AC',
+      '50_100':'50\u2013100\u20AC','100_200':'100\u2013200\u20AC','plus_200':'> 200\u20AC'
     };
 
-    // ── Init : charge session, infos utilisateur, historique ──
+    // ââ Init : charge session, infos utilisateur, historique ââ
     (async function() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { window.location.href = 'index.html'; return; }
@@ -331,7 +316,7 @@
       var emailVal  = u.email || '';
       var prenomMeta = (u.user_metadata && u.user_metadata.prenom) || '';
 
-      // Essayer de récupérer le prénom depuis public.users si absent du metadata
+      // Essayer de rÃ©cupÃ©rer le prÃ©nom depuis public.users si absent du metadata
       var prenomFinal = prenomMeta;
       try {
         var { data: pub } = await supabase.from('users').select('prenom,email').eq('id', u.id).single();
@@ -343,14 +328,15 @@
       document.getElementById('input-prenom').value     = prenomFinal;
 
       // Greeting
-      var greet = prenomFinal ? 'Bonjour, ' + prenomFinal + ' 👋' : emailVal;
+      var greet = prenomFinal ? 'Bonjour, ' + prenomFinal + '\u00A0\uD83D\uDC4B'
+        : emailVal;
       document.getElementById('p-greeting').textContent = greet;
 
       // Charger l'historique
       loadHistorique(u.id);
     })();
 
-    // ── Charger les 10 dernières recherches ──
+    // ââ Charger les 10 derniÃ¨res recherches ââ
     async function loadHistorique(userId) {
       var loader = document.getElementById('hist-loader');
       var list   = document.getElementById('hist-list');
@@ -365,161 +351,116 @@
         loader.style.display = 'none';
 
         if (error || !data || data.length === 0) {
-          list.innerHTML = '<div class="h-empty-msg">Aucune recherche pour l’instant — <a href="questionnaire.html" style="color:#3C3489;">lancez-en une !</a></div>';
+          list.innerHTML = '<div class="h-empty-msg">Aucune recherche pour l\u2019instant \u2014 <a href="questionnaire.html" style="color:#3C3489;">lancez-en une !</a></div>';
           return;
         }
 
         data.forEach(function(r) {
-          var emoji  = OCCASION_EMOJI[r.occasion] || '🎁';
-          var budget = BUDGET_LABEL[r.budget] || r.budget || '';
-          var isDone = r.statut === 'done' || r.statut === 'completed';
-          var date   = new Date(r.created_at).toLocaleDateString('fr-FR', { day:'numeric', month:'short' });
+          var emoji  = OCCASION_EMOJI[r.occasion] || '\uD83C\uDF81';
+          var budget = BUDGET_LABELTØcXYÙ]HYÙ]	ÉÎÂ\\ÑÛHHÝ]]OOH	ÙÛIÈÝ]]OOH	ØÛÛ\]Y	ÎÂ\]HH]È]JÜX]YØ]
+KÓØØ[Q]TÝ[Ê	ÙQËÈ^NÛ[Y\XÉË[ÛÜÚÜ	ÈJNÂ\HHØÝ[Y[ÜX]Q[[Y[
+	ØIÊNÂKÛ\ÜÓ[YHH	ÚZ][IÎÂKYH	Ü\Ý[]Ë[ÚYIÈ
+ÈYÂY
+Z\ÑÛJHKÝ[KÜXÚ]HH	ÌÉÎÂK[\SB	ÏÜ[Û\ÜÏHY[[ÚHÈ
+È[[ÚH
+È	ÏÜÜ[È
+Â	ÏÜ[Û\ÜÏHZ[ÈÈ
+Â	Ï]Û\ÜÏHY\Ý[]Z\HÈ
+È\ØÊ\Ý[]Z\H	ÐØYX]IÊH
+È	ÏÙ]È
+Â	Ï]Û\ÜÏH[Y]HÈ
+Â
+ØØØ\Ú[ÛÈ\ØÊØØØ\Ú[ÛH	ÉÊH
+Â
+YÙ]È	ÈLÈ	È
+È\ØÊYÙ]
+H	ÉÊH
+Â	ÏÙ]È
+Â	ÏÜÜ[È
+Â	ÏÜ[Û\ÜÏHXYÙIÈ
+È
+\ÑÛHÈ	ÉÈ	È[[ÉÊH
+È	ÈÈ
+Â
+\ÑÛHÈ	×LÌLÈLP]	È	Ñ[ÛÝ\ÉÊH
+Â	ÏÜÜ[È
+Â	ÏÜ[Û\ÜÏHY]HÈ
+È]H
+È	ÏÜÜ[ÎÂ\Ý\[Ú[
+JNÂJNÂHØ]Ú
+JHÂØY\^ÛÛ[H	Ò[\ÜÜÚXHHÚ\Ù\LNZ\ÝÜ\]YKÎÂBBËÈ8¥ 8¥ ][]Z\\È8¥ 8¥ [Ý[ÛÚÝÓ\ÙÊY^\JHÂ\[HØÝ[Y[Ù][[Y[RY
+Y
+NÂ[^ÛÛ[H^Â[Û\ÜÓ[YHH	Ü[\ÙÈ	È
+È\NÂ[Ý[K\Ü^HH	ØØÚÉÎÂB[Ý[ÛYS\ÙÊY
+HÈØÝ[Y[Ù][[Y[RY
+Y
+KÝ[K\Ü^HH	ÛÛIÎÈB[Ý[ÛÙ]ØY[ÊYØY[ÊHÈØÝ[Y[Ù][[Y[RY
+Y
+K\ØXYHØY[ÎÈB[Ý[Û\ØÊÊHÂ]\Ý[ÊÊK\XÙJÉÙË	É[\ÉÊK\XÙJÏÙË	ÉÉÊK\XÙJÏÙË	ÉÝÉÊK\XÙJÈÙË	É][ÝÉÊNÂBËÈ8¥ 8¥ 8¤hØ]]YØ\\[ÜÈ\ÛÛ[\È
+°ê[ÛJH8¥ 8¥ \Þ[È[Ý[ÛØ]R[ÜÊ
+HÂYS\ÙÊ	Û\ÙËZ[ÜÉÊNÂ\[ÛHHØÝ[Y[Ù][[Y[RY
+	Ú[]\[ÛIÊK[YK[J
+NÂÙ]ØY[Ê	ØZ[ÜÉËYJNÂHÂËÈY]H0èÝ\[È]]Y]Y]B\È\ÜLHHH]ØZ]Ý\X\ÙK]]\]U\Ù\È]NÈ[ÛN[ÛHHJNÂËÈY]H0èÝ\[ÈXXË\Ù\Â\È]NÈÙ\ÜÚ[ÛHHH]ØZ]Ý\X\ÙK]]Ù]Ù\ÜÚ[Û
+NÂY
+Ù\ÜÚ[ÛHÂ]ØZ]Ý\X\ÙKÛJ	Ý\Ù\ÉÊK\]JÈ[ÛN[ÛHJK\J	ÚY	ËÙ\ÜÚ[Û\Ù\Y
+NÂBÙ]ØY[Ê	ØZ[ÜÉË[ÙJNÂY
+LJHÂÚÝÓ\ÙÊ	Û\ÙËZ[ÜÉËLKY\ÜØYÙH	Ñ\]\ÜÈHHZ\ÙHLLÝ\Ë	Ù\ÜÊNÂH[ÙHÂØÝ[Y[Ù][[Y[RY
+	ÜYÜY][ÉÊK^ÛÛ[H[ÛBÈ	ÐÛÝ\	È
+È[ÛH
+È	×LLQÑQÍÂØÝ[Y[Ù][[Y[RY
+	Ú[]Y[XZ[Z[ÉÊK[YNÂÚÝÓ\ÙÊ	Û\ÙËZ[ÜÉË	×LÌ
+HLN[ÛHZ\ÈLLÝ\]XÈÝXØ×LNÈIË	ÜÝXØÙ\ÜÉÊNÂBHØ]Ú
+\HÂÙ]ØY[Ê	ØZ[ÜÉË[ÙJNÂÚÝÓ\ÙÊ	Û\ÙËZ[ÜÉË
+\	\Y\ÜØYÙJH	Ñ\]\Ë	Ù\ÜÊNÂBBËÈ8¥ 8¥ 8¤hHÚ[Ù\[XZ[8¥ 8¥ \Þ[È[Ý[ÛÚ[ÙQ[XZ[
 
-          var a = document.createElement('a');
-          a.className = 'h-item';
-          a.href = 'resultats.html?id=' + r.id;
-          if (!isDone) a.style.opacity = '0.7';
-          a.innerHTML =
-            '<span class="h-emoji">' + emoji + '</span>' +
-            '<span class="h-info">' +
-              '<div class="h-destinataire">' + esc(r.destinataire || 'Cadeau') + '</div>' +
-              '<div class="h-meta">' +
-                (r.occasion ? esc(r.occasion) : '') +
-                (budget ? ' · ' + esc(budget) : '') +
-              '</div>' +
-            '</span>' +
-            '<span class="h-badge' + (isDone ? '' : ' pending') + '">' +
-              (isDone ? '✓ Prêt' : 'En cours') +
-            '</span>' +
-            '<span class="h-date">' + date + '</span>';
-          list.appendChild(a);
-        });
-      } catch(e) {
-        loader.textContent = 'Impossible de charger l’historique.';
-      }
-    }
+HÂYS\ÙÊ	Û\ÙËY[XZ[	ÊNÂ\]Ñ[XZ[HØÝ[Y[Ù][[Y[RY
+	Û]ËY[XZ[	ÊK[YK[J
+NÂY
+[]Ñ[XZ[
+HÈÚÝÓ\ÙÊ	Û\ÙËY[XZ[	Ë	Õ]Z[^ØZ\Ú\[Ý][K[XZ[Ë	Ù\ÜÊNÈ]\ÈBY
+K××ÐJÐ×ÐJ××ÐJÉË\Ý
+]Ñ[XZ[
+JHÂÚÝÓ\ÙÊ	Û\ÙËY[XZ[	Ë	ÐY\ÜÙHK[XZ[[[YKË	Ù\ÜÊNÈ]\ÂBÙ]ØY[Ê	ØY[XZ[	ËYJNÂ\È\ÜHH]ØZ]Ý\X\ÙK]]\]U\Ù\È[XZ[]Ñ[XZ[JNÂÙ]ØY[Ê	ØY[XZ[	Ë[ÙJNÂY
+\ÜHÂÚÝÓ\ÙÊ	Û\ÙËY[XZ[	Ë\ÜY\ÜØYÙH	Ñ\]\ÜÈHHZ\ÙHLLÝ\Ë	Ù\ÜÊNÂH[ÙHÂØÝ[Y[Ù][[Y[RY
+	Û]ËY[XZ[	ÊK[YHH	ÉÎÂÚÝÓ\ÙÊ	Û\ÙËY[XZ[	Ë	×LÌ
+H[K[XZ[HÛÛ\X][ÛHLN]LNH[ÞWLNHLL	È
+È]Ñ[XZ[
+È	ËÛ\]Y^Ý\HY[Ý\[Y\Ë	Ú[ÉÊNÂBBËÈ8¥ 8¥ 8¤hHÚ[Ù\[ÝH\ÜÙH8¥ 8¥ \Þ[È[Ý[ÛÚ[ÙT\ÜÝÛÜ
 
-    // ── Utilitaires ──
-    function showMsg(id, text, type) {
-      var el = document.getElementById(id);
-      el.textContent  = text;
-      el.className    = 'p-msg ' + type;
-      el.style.display = 'block';
-    }
-    function hideMsg(id) { document.getElementById(id).style.display = 'none'; }
-    function setLoading(btnId, loading) { document.getElementById(btnId).disabled = loading; }
-    function esc(s) {
-      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
+HÂYS\ÙÊ	Û\ÙË\\ÜÝÛÜ	ÊNÂ\ÙHHØÝ[Y[Ù][[Y[RY
+	Û]Ë\\ÜÝÛÜ	ÊK[YNÂ\ÙHØÝ[Y[Ù][[Y[RY
+	ØÛÛ\K\\ÜÝÛÜ	ÊK[YNÂY
+\ÙJHÈÚÝÓ\ÙÊ	Û\ÙË\\ÜÝÛÜ	Ë	Õ]Z[^ØZ\Ú\[Ý]X]H[ÝH\ÜÙKË	Ù\ÜÊNÈ]\ÈBY
+ÙK[Ý
+HÈÚÝÓ\ÙÊ	Û\ÙË\\ÜÝÛÜ	Ë	ÓH[ÝH\ÜÙHÚ]ÛÛ[\]H[Ú[È
+Ø\XÝLN\ËË	Ù\ÜÊNÈ]\ÈBY
+ÙHOOHÙHÈÚÝÓ\ÙÊ	Û\ÙË\\ÜÝÛÜ	Ë	Ó\È[ÝÈH\ÜÙHHÛÜ\ÜÛ[\ËË	Ù\ÜÊNÈ]\ÈBÙ]ØY[Ê	Ø\\ÜÝÛÜ	ËYJNÂ\È\ÜHH]ØZ]Ý\X\ÙK]]\]U\Ù\È\ÜÝÛÜÙHJNÂÙ]ØY[Ê	Ø\\ÜÝÛÜ	Ë[ÙJNÂY
+\ÜHÂÚÝÓ\ÙÊ	Û\ÙË\\ÜÝÛÜ	Ë\ÜY\ÜØYÙH	Ñ\]\ÜÈHHZ\ÙHLLÝ\Ë	Ù\ÜÊNÂH[ÙHÂØÝ[Y[Ù][[Y[RY
+	Û]Ë\\ÜÝÛÜ	ÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
+	ØÛÛ\K\\ÜÝÛÜ	ÊK[YHH	ÉÎÂÚÝÓ\ÙÊ	Û\ÙË\\ÜÝÛÜ	Ë	×LÌ
+H[ÝH\ÜÙHZ\ÈLLÝ\]XÈÝXØ×LNÈIË	ÜÝXØÙ\ÜÉÊNÂBBËÈ8¥ 8¥ 8¤hÈ[Y][ÛÚ[\Ý\\ÜÚ[Û8¥ 8¥ [Ý[ÛÚXÚÑ[]PÛÛ\J
+HÂ\[HØÝ[Y[Ù][[Y[RY
+	Ù[]KXÛÛ\IÊK[YNÂØÝ[Y[Ù][[Y[RY
+	ØY[]IÊK\ØXYH
+[OOH	ÔÕTSQTÊNÂBËÈ8¥ 8¥ 8¤hÈÝ\[Y\HÛÛ\H8¥ 8¥ \Þ[È[Ý[Û[]PXØÛÝ[
 
-    // ── ① Sauvegarder infos personnelles (prénom) ──
-    async function saveInfos() {
-      hideMsg('msg-infos');
-      var prenom = document.getElementById('input-prenom').value.trim();
-      setLoading('btn-infos', true);
-      try {
-        // Mettre à jour dans auth metadata
-        var { error: e1 } = await supabase.auth.updateUser({ data: { prenom: prenom } });
-        // Mettre à jour dans public.users
-        var { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          await supabase.from('users').update({ prenom: prenom }).eq('id', session.user.id);
-        }
-        setLoading('btn-infos', false);
-        if (e1) {
-          showMsg('msg-infos', e1.message || 'Erreur lors de la mise à jour.', 'error');
-        } else {
-          document.getElementById('p-greeting').textContent = prenom
-            ? 'Bonjour, ' + prenom + ' 👋'
-            : document.getElementById('input-email-info').value;
-          showMsg('msg-infos', '✅ Prénom mis à jour avec succès !', 'success');
-        }
-      } catch(err) {
-        setLoading('btn-infos', false);
-        showMsg('msg-infos', (err && err.message) || 'Erreur.', 'error');
-      }
-    }
+HÂYS\ÙÊ	Û\ÙËY[]IÊNÂY
+ØÝ[Y[Ù][[Y[RY
+	Ù[]KXÛÛ\IÊK[YHOOH	ÔÕTSQTÊH]\ÂÙ]ØY[Ê	ØY[]IËYJNÂÚÝÓ\ÙÊ	Û\ÙËY[]IË	ÔÝ\\ÜÚ[Û[ÛÝ\×LË	Ú[ÉÊNÂHÂ\È]NÈÙ\ÜÚ[ÛHHH]ØZ]Ý\X\ÙK]]Ù]Ù\ÜÚ[Û
+NÂY
+\Ù\ÜÚ[ÛHÈÚ[ÝËØØ][ÛYH	Ú[^[	ÎÈ]\ÈB\ZYHÙ\ÜÚ[Û\Ù\YÂËÈKÝ\[Y\\ÈXÚ\Ú\Â\È\ÜLHHH]ØZ]Ý\X\ÙKÛJ	ÜÙX\Ú\ÉÊK[]J
+K\J	Ý\Ù\ÚY	ËZY
+NÂY
+LJHÝÈLNÂËÈÝ\[Y\HÛÛ\HXHÂ\È\ÜLHH]ØZ]Ý\X\ÙKÊ	Ù[]WÝ\Ù\ØXØÛÝ[	ÊNÂY
+LHÝÈLÂËÈË0êXÛÛ^[Û]Y\XÝ[Û]ØZ]Ý\X\ÙK]]ÚYÛÝ]
 
-    // ── ② Changer email ──
-    async function changeEmail() {
-      hideMsg('msg-email');
-      var newEmail = document.getElementById('new-email').value.trim();
-      if (!newEmail) { showMsg('msg-email', 'Veuillez saisir un nouvel e-mail.', 'error'); return; }
-      if (!/^[^s@]+@[^s@]+.[^s@]+$/.test(newEmail)) {
-        showMsg('msg-email', 'Adresse e-mail invalide.', 'error'); return;
-      }
-      setLoading('btn-email', true);
-      var { error } = await supabase.auth.updateUser({ email: newEmail });
-      setLoading('btn-email', false);
-      if (error) {
-        showMsg('msg-email', error.message || 'Erreur lors de la mise à jour.', 'error');
-      } else {
-        document.getElementById('new-email').value = '';
-        showMsg('msg-email', '✅ Un e-mail de confirmation a été envoyé à ' + newEmail + '. Cliquez sur le lien pour valider.', 'info');
-      }
-    }
+NÂÚ[ÝËØØ][ÛYH	Ú[^[Ù[]YLIÎÂHØ]Ú
+\HÂÙ]ØY[Ê	ØY[]IË[ÙJNÂØÝ[Y[Ù][[Y[RY
+	Ù[]KXÛÛ\IÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
+	ØY[]IÊK\ØXYHYNÂÚÝÓ\ÙÊ	Û\ÙËY[]IË
+\	\Y\ÜØYÙJH	Ñ\]\ÜÈHHÝ\\ÜÚ[ÛË	Ù\ÜÊNÂBBËÈ8¥ 8¥ 0êXÛÛ^[Û8¥ 8¥ \Þ[È[Ý[Û[SÙÛÝ]
 
-    // ── ② Changer mot de passe ──
-    async function changePassword() {
-      hideMsg('msg-password');
-      var pwd1 = document.getElementById('new-password').value;
-      var pwd2 = document.getElementById('confirm-password').value;
-      if (!pwd1) { showMsg('msg-password', 'Veuillez saisir un nouveau mot de passe.', 'error'); return; }
-      if (pwd1.length < 6) { showMsg('msg-password', 'Le mot de passe doit contenir au moins 6 caractères.', 'error'); return; }
-      if (pwd1 !== pwd2) { showMsg('msg-password', 'Les mots de passe ne correspondent pas.', 'error'); return; }
-      setLoading('btn-password', true);
-      var { error } = await supabase.auth.updateUser({ password: pwd1 });
-      setLoading('btn-password', false);
-      if (error) {
-        showMsg('msg-password', error.message || 'Erreur lors de la mise à jour.', 'error');
-      } else {
-        document.getElementById('new-password').value   = '';
-        document.getElementById('confirm-password').value = '';
-        showMsg('msg-password', '✅ Mot de passe mis à jour avec succès !', 'success');
-      }
-    }
+HÂ]ØZ]Ý\X\ÙK]]ÚYÛÝ]
 
-    // ── ④ Validation champ suppression ──
-    function checkDeleteConfirm() {
-      var val = document.getElementById('delete-confirm').value;
-      document.getElementById('btn-delete').disabled = (val !== 'SUPPRIMER');
-    }
-
-    // ── ④ Supprimer le compte ──
-    async function deleteAccount() {
-      hideMsg('msg-delete');
-      if (document.getElementById('delete-confirm').value !== 'SUPPRIMER') return;
-      setLoading('btn-delete', true);
-      showMsg('msg-delete', 'Suppression en cours…', 'info');
-      try {
-        var { data: { session } } = await supabase.auth.getSession();
-        if (!session) { window.location.href = 'index.html'; return; }
-        var uid = session.user.id;
-
-        // 1. Supprimer les recherches
-        var { error: e1 } = await supabase.from('searches').delete().eq('user_id', uid);
-        if (e1) throw e1;
-
-        // 2. Supprimer le compte via RPC
-        var { error: e2 } = await supabase.rpc('delete_user_account');
-        if (e2) throw e2;
-
-        // 3. Déconnexion et redirection
-        await supabase.auth.signOut();
-        window.location.href = 'index.html?deleted=1';
-      } catch(err) {
-        setLoading('btn-delete', false);
-        document.getElementById('delete-confirm').value = '';
-        document.getElementById('btn-delete').disabled = true;
-        showMsg('msg-delete', (err && err.message) || 'Erreur lors de la suppression.', 'error');
-      }
-    }
-
-    // ── Déconnexion ──
-    async function handleLogout() {
-      await supabase.auth.signOut();
-      window.location.href = 'index.html';
-    }
-  </script>
-</body>
-</html>
+NÂÚ[ÝËØØ][ÛYH	Ú[^[	ÎÂBÜØÜ\KKHSÐSHÕÓHUKO]Û\ÜÏH[Ø[KXÝÛK[]HYH\ÝÜ\]YK[Ü[Û\ÜÏH]ZXÛÛÌLÎÏÜÜ[Ü[\ÝÜ\]YOÜÜ[ØOHYH]Y\Ý[ÛZ\K[Û\ÜÏH]XÙ[\Ü[Û\ÜÏH]ZXÛÛÌLÎ
+ÌÎÏÜÜ[Ü[XÚ\ÚOÜÜ[ØOHYHÙ[[Û\ÜÏHXÝ]HÜ[Û\ÜÏH]ZXÛÛÌLLÏÜÜ[Ü[Ù[ÜÜ[ØOÛ]ØÙOÚ[
