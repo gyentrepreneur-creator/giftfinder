@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GiftFinder &mdash; Vos id&eacute;es cadeaux</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
   <link rel="stylesheet" href="css/style.css">
   <style>
     body {
@@ -212,7 +212,7 @@
 
     <!-- Etat : chargement -->
     <div id="loader" class="r-loader">
-      <div class="s-gift">&#127873;</div>
+      <div class="r-gift">&#127873;</div>
       <div class="r-spinner"></div>
       <h2 style="font-size:20px;font-weight:700;color:#26215C;margin:0 0 8px;">Notre IA cherche vos id&eacute;es&hellip;</h2>
       <p style="font-size:14px;color:#666;max-width:300px;line-height:1.6;margin:0;">
@@ -230,7 +230,7 @@
               onclick="window.location.href='questionnaire.html'">R&eacute;essayer</button>
     </div>
 
-    <!-- Ãtat : rÃ©sultats -->
+    <!-- État : résultats -->
     <div id="resultsSection" style="display:none;">
       <div class="r-hdr">
         <h1>&#127873; Vos id&eacute;es cadeaux</h1>
@@ -287,8 +287,8 @@
     </div>
     <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
     <div class="footer-social">
-      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">ð¸ Instagram @GIFTFINDER2.0</a>
-      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">ðµ TikTok @giftfinder2.0</a>
+      <a href="https://instagram.com/GIFTFINDER2.0" target="_blank" rel="noopener">📸 Instagram @GIFTFINDER2.0</a>
+      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" rel="noopener">🎵 TikTok @giftfinder2.0</a>
     </div>
   </footer>
 
@@ -322,11 +322,11 @@
     async function checkStatus() {
       pollCount++;
       document.getElementById('pollingStatus').textContent =
-        'V\u00E9rification #' + pollCount + '... (' + (pollCount * POLLING_INTERVAL / 1000) + 's)';
+        'Vérification #' + pollCount + '... (' + (pollCount * POLLING_INTERVAL / 1000) + 's)';
 
       if (pollCount > MAX_POLLS) {
         stopPolling();
-        showError('D\u00E9lai d\'attente d\u00E9pass\u00E9. Veuillez rafra\u00EEchir ou relancer une recherche.');
+        showError('Délai d\'attente dépassé. Veuillez rafraîchir ou relancer une recherche.');
         return;
       }
 
@@ -344,7 +344,7 @@
           displayResults(data);
         } else if (data.statut === 'error' || data.statut === 'failed') {
           stopPolling();
-          showError('Erreur lors de la g\u00E9n\u00E9ration. Veuillez r\u00E9essayer.');
+          showError('Erreur lors de la génération. Veuillez réessayer.');
         }
       } catch (err) {
         console.error('Erreur polling :', err.message);
@@ -364,17 +364,17 @@
           ? JSON.parse(data.suggestions)
           : (Array.isArray(data.suggestions) ? data.suggestions : []);
       } catch (e) {
-        showError('Format de r\u00E9sultats invalide.');
+        showError('Format de résultats invalide.');
         return;
       }
 
       if (!products.length) {
-        showError('Aucun r\u00E9sultat trouv\u00E9. Veuillez relancer une recherche.');
+        showError('Aucun résultat trouvé. Veuillez relancer une recherche.');
         return;
       }
 
       // Sous-titre
-      var budgetLabel = { moins_25:'< 25\u20AC', '25_50':'25-50\u20AC', '50_100':'50-100\u20AC', '100_200':'100-200\u20AC', plus_200:'> 200\u20AC' };
+      var budgetLabel = { moins_25:'< 25€', '25_50':'25-50€', '50_100':'50-100€', '100_200':'100-200€', plus_200:'> 200€' };
       document.getElementById('resultsSubtitle').textContent =
         'Pour ' + (data.destinataire || 'votre proche') +
         (data.occasion ? ' - ' + data.occasion : '') +
@@ -397,11 +397,11 @@
 
         var badge = (p.plateforme || p.platform)
           ? '<span class="r-badge">' + esc(p.plateforme || p.platform) + '</span>' : '';
-        // CompatibilitÃ© avec les deux formats de champs (ancien et nouveau)
+        // Compatibilité avec les deux formats de champs (ancien et nouveau)
         var titre = p.titre || p.nom || p.name || 'Cadeau';
         var prix = p.prix_estime || p.prix || p.price || '';
         var lienBrut = p.lien_recherche || p.lien || p.url || '';
-        // Ajouter le tag affiliÃ© Amazon si c'est un lien Amazon
+        // Ajouter le tag affilié Amazon si c'est un lien Amazon
         var lien = lienBrut;
         if (lienBrut && lienBrut.includes('amazon')) {
           lien = lienBrut + (lienBrut.includes('?') ? '&' : '?') + 'tag=giftfinder0d6-21';
@@ -417,7 +417,7 @@
             badge +
             '<div class="r-card-title">' + esc(titre) + '</div>' +
             '<div class="r-card-desc">'  + esc(p.description || '') + '</div>' +
-            (prix ? '<div class="r-card-price">~' + esc(String(prix)) + '\u20AC</div>' : '') +
+            (prix ? '<div class="r-card-price">~' + esc(String(prix)) + '€</div>' : '') +
             buyBtn +
           '</div>';
 
@@ -444,11 +444,11 @@
         const btnEl = document.getElementById('ctaNewSearch');
         if (!msgEl) return;
         if (restantes === 0) {
-          msgEl.innerHTML = '<span style="color:#b91c1c;font-weight:600;">\u26A0\uFE0F Limite atteinte \u2014 revenez demain !</span>';
+          msgEl.innerHTML = '<span style="color:#b91c1c;font-weight:600;">⚠️ Limite atteinte — revenez demain !</span>';
           if (btnEl) { btnEl.disabled = true; btnEl.style.opacity = '0.45'; btnEl.style.cursor = 'not-allowed'; }
         } else {
           msgEl.innerHTML = '<strong>' + restantes + ' recherche' + (restantes > 1 ? 's' : '') +
-            ' restante' + (restantes > 1 ? 's' : '') + ' aujourd\u2019hui</strong> \u2014 profitez-en\u00A0!';
+            ' restante' + (restantes > 1 ? 's' : '') + ' aujourd\'hui</strong> — profitez-en !';
         }
       } catch (e) {
         var msgEl = document.getElementById('ctaQuotaMsg');
@@ -474,9 +474,9 @@
 
     function handleShare() {
       const url = window.location.href;
-      const text = 'D\u00E9couvrez mes id\u00E9es cadeaux trouv\u00E9es par ' + APP_NAME + ' \u2728 ';
+      const text = 'Découvrez mes idées cadeaux trouvées par ' + APP_NAME + ' ✨ ';
       if (navigator.share) {
-        navigator.share({ title: APP_NAME + ' \u2014 Id\u00E9es cadeaux', text: text, url: url })
+        navigator.share({ title: APP_NAME + ' — Idées cadeaux', text: text, url: url })
           .catch(function() {}); // user cancelled
       } else {
         // Fallback : copier le lien dans le presse-papier
@@ -486,7 +486,7 @@
             document.getElementById('shareConfirm').style.display = 'none';
           }, 3000);
         }).catch(function() {
-          // Fallback ultime si clipboard aussi bloquÃ©
+          // Fallback ultime si clipboard aussi bloqué
           window.prompt('Copiez ce lien :', url);
         });
       }
