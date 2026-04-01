@@ -743,25 +743,19 @@
       try {
         var { data: { session } } = await supabase.auth.getSession();
         if (!session) { window.location.href = 'index.html'; return; }
-        var uid = session.user.id;
+        // Appel Edge Function : suppression complète (tables + auth.users)
+        var resp = await fetch('https://dzlyrswuyafxjswuxdcu.supabase.co/functions/v1/delete-user', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + session.access_token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ reason: reasonText })
+        });
 
-        // 1. Enregistrer la raison (optionnel, ignore si la table n'existe pas)
-        await supabase.from('deletion_feedback').insert([{
-          user_id: uid, reason: reasonText
-        }]).then(() => {}).catch(() => {});
+        var result = await resp.json();
+        if (!resp.ok) throw new Error(result.error || 'Erreur serveur');
 
-        // 2. Supprimer les recherches
-        var { error: e1 } = await supabase.from('searches').delete().eq('user_id', uid);
-        if (e1) throw e1;
-
-        // 3. Supprimer les résultats partagés
-        await supabase.from('shared_results').delete().eq('user_id', uid).then(() => {}).catch(() => {});
-
-        // 4. Supprimer le profil utilisateur
-        await supabase.from('users').delete().eq('id', uid).then(() => {}).catch(() => {});
-
-        // 5. Déconnexion et redirection
-        await supabase.auth.signOut();
         window.location.href = 'index.html?deleted=1';
 
       } catch(err) {
