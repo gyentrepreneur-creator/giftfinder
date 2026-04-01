@@ -11,7 +11,7 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: linear-gradient(135deg, #EEEDFE 0%, #FBEAF0 50%, #E1F5EE 100%);h
+      background: linear-gradient(135deg, #EEEDFE 0%, #FBEAF0 50%, #E1F5EE 100%);
       position: relative;
       overflow-x: hidden;
       display: flex;
@@ -264,6 +264,19 @@
         </div>
       </div>
 
+      <!-- 7 . Infos supplémentaires (optionnel) -->
+      <div class="q-field">
+        <label class="q-label" for="infos-sup">
+          Dis-moi en plus <span style="font-size:11px;font-weight:400;color:#aaa;">(facultatif)</span>
+        </label>
+        <textarea id="infos-sup" class="q-input q-input-full"
+          placeholder="Ex : il adore la F1 et voyage souvent, elle vient d&rsquo;emm&eacute;nager, c&rsquo;est pour un coll&egrave;gue&#8230;"
+          rows="3"
+          maxlength="400"
+          style="resize:vertical;min-height:72px;line-height:1.55;"></textarea>
+        <div style="font-size:11px;color:#bbb;text-align:right;margin-top:4px;" id="infos-sup-count">0 / 400</div>
+      </div>
+
       <button class="q-submit" id="submitBtn" onclick="handleSubmit()">
         D&eacute;couvrir mes recommandations &#10024;
       </button>
@@ -332,6 +345,11 @@
         }
         updateProgress();
       });
+    });
+
+    // -- Compteur caractères textarea --
+    document.getElementById('infos-sup').addEventListener('input', function() {
+      document.getElementById('infos-sup-count').textContent = this.value.length + ' / 400';
     });
 
     // -- Barre de progression --
@@ -443,17 +461,20 @@
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) { window.location.href = 'index.html'; return; }
 
+        const infosSup = document.getElementById('infos-sup').value.trim() || null;
+
         const { data, error } = await supabase
           .from('searches')
           .insert([{
-            user_id:          session.user.id,
-            destinataire:     destinataire,
-            age:              age,
-            occasion:         sel.occasion,
-            genre:            sel.genre,
-            centres_interet:  sel.centres,
-            budget:           sel.budget,
-            statut:           'pending'
+            user_id:                session.user.id,
+            destinataire:           destinataire,
+            age:                    age,
+            occasion:               sel.occasion,
+            genre:                  sel.genre,
+            centres_interet:        sel.centres,
+            budget:                 sel.budget,
+            infos_supplementaires:  infosSup,
+            statut:                 'pending'
           }])
           .select('id')
           .single();
