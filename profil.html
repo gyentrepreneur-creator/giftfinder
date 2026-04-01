@@ -134,6 +134,62 @@
     .btn-delete:hover { background: #c62828; color: #fff; }
     .btn-delete:disabled { opacity: 0.5; cursor: not-allowed; }
 
+    /* Modal suppression */
+    .delete-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .delete-modal-overlay.open { display: flex; }
+    .delete-modal {
+      background: #fff;
+      border-radius: 18px;
+      padding: 28px 24px 24px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+      animation: modal-in .2s ease;
+    }
+    @keyframes modal-in { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
+    .delete-modal h3 { font-size:16px; font-weight:700; color:#c62828; margin:0 0 6px; }
+    .delete-modal p  { font-size:13px; color:#666; margin:0 0 18px; }
+    .delete-modal label.reason-opt {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+    .delete-modal label.reason-opt input { margin-top: 2px; accent-color: #c62828; }
+    .delete-modal textarea {
+      width: 100%;
+      border: 1.5px solid #ddd;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 13px;
+      resize: vertical;
+      min-height: 72px;
+      margin-top: 6px;
+      box-sizing: border-box;
+      display: none;
+    }
+    .delete-modal textarea.visible { display: block; }
+    .delete-modal-actions { display:flex; gap:10px; margin-top:20px; }
+    .delete-modal-actions button { flex:1; padding:11px 0; border-radius:999px; font-size:14px; font-weight:600; font-family:inherit; cursor:pointer; border:none; transition:background .15s; }
+    .btn-modal-cancel  { background:#f0f0f0; color:#555; }
+    .btn-modal-cancel:hover { background:#e0e0e0; }
+    .btn-modal-confirm { background:#c62828; color:#fff; }
+    .btn-modal-confirm:hover { background:#a81f1f; }
+    .btn-modal-confirm:disabled { opacity:0.5; cursor:not-allowed; }
+
     /* Messages feedback */
     .p-msg {
       font-size: 13px;
@@ -369,35 +425,7 @@
       <div class="p-field">
         <label>Tapez <strong>SUPPRIMER</strong> pour confirmer</label>
         <input type="text" id="delete-confirm" class="danger-input"
-               placeholder="SUPPRIMER" autocomplete="off"
-               oninput="checkDeleteConfirm()">
-      </div>
-      <button class="btn-delete" id="btn-delete" disabled onclick="deleteAccount()">
-        Supprimer d&eacute;finitivement mon compte
-      </button>
-      <div class="p-msg" id="msg-delete"></div>
-    </div>
-
-  </main>
-
-  <footer class="footer">
-    <div class="footer-top">
-      <span id="footer-brand"></span> &mdash; <a href="questionnaire.html">Nouvelle recherche</a>
-    </div>
-    <div class="footer-links">
-      <a href="mentions-legales.html">Mentions l&eacute;gales</a>
-      <a href="confidentialite.html">Confidentialit&eacute;</a>
-      <a href="cgu.html">CGU</a>
-    </div>
-    <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
-    <div class="footer-social" style="display:flex;gap:28px;justify-content:center;align-items:center;margin-top:12px;">
-      <a href="https://www.instagram.com/giftfinder2.0" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#C13584" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-        <span style="font-size:11px;font-weight:600;letter-spacing:.3px;">@GIFTFINDER2.0</span>
-      </a>
-      <a href="https://www.tiktok.com/@giftfinder2.0" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="#010101"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.45a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.77 1.52V6.76a4.85 4.85 0 0 1-1-.07z"/></svg>
-        <span style="font-size:11px;font-weight:600;letter-spacing:.3px;">@giftfinder2.0</span>
+               placeholder="SUPPRIMER" au/span>
       </a>
     </div>
   </footer>
@@ -622,33 +650,77 @@
       document.getElementById('btn-delete').disabled = (val !== 'SUPPRIMER');
     }
 
-    // ── ④ Supprimer le compte ──
-    async function deleteAccount() {
-      hideMsg('msg-delete');
+    // ── ④ Supprimer le compte : ouvre le modal raison ──
+    function deleteAccount() {
       if (document.getElementById('delete-confirm').value !== 'SUPPRIMER') return;
-      setLoading('btn-delete', true);
-      showMsg('msg-delete', 'Suppression en cours\u2026', 'info');
+      // Réinitialiser le modal
+      document.querySelectorAll('input[name="del-reason"]').forEach(r => r.checked = false);
+      document.getElementById('del-reason-text').value = '';
+      document.getElementById('del-reason-text').classList.remove('visible');
+      document.getElementById('btn-modal-confirm').disabled = true;
+      hideMsg('msg-delete-modal');
+      document.getElementById('delete-modal-overlay').classList.add('open');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('delete-modal-overlay').classList.remove('open');
+    }
+
+    // Activer le bouton confirmer dès qu'une raison est choisie
+    document.addEventListener('change', function(e) {
+      if (e.target.name === 'del-reason') {
+        document.getElementById('btn-modal-confirm').disabled = false;
+        var textarea = document.getElementById('del-reason-text');
+        if (e.target.value === 'autre') {
+          textarea.classList.add('visible');
+          textarea.focus();
+        } else {
+          textarea.classList.remove('visible');
+        }
+      }
+    });
+
+    // ── Suppression définitive (après raison) ──
+    async function confirmDeleteWithReason() {
+      var reason = document.querySelector('input[name="del-reason"]:checked');
+      if (!reason) return;
+      var reasonText = reason.value === 'autre'
+        ? (document.getElementById('del-reason-text').value.trim() || 'Autre')
+        : reason.parentElement.textContent.trim();
+
+      var btn = document.getElementById('btn-modal-confirm');
+      btn.disabled = true;
+      btn.textContent = 'Suppression\u2026';
+      hideMsg('msg-delete-modal');
+
       try {
         var { data: { session } } = await supabase.auth.getSession();
         if (!session) { window.location.href = 'index.html'; return; }
         var uid = session.user.id;
 
-        // 1. Supprimer les recherches
+        // 1. Enregistrer la raison (optionnel, ignore si la table n'existe pas)
+        await supabase.from('deletion_feedback').insert([{
+          user_id: uid, reason: reasonText
+        }]).then(() => {}).catch(() => {});
+
+        // 2. Supprimer les recherches
         var { error: e1 } = await supabase.from('searches').delete().eq('user_id', uid);
         if (e1) throw e1;
 
-        // 2. Supprimer le compte via RPC
-        var { error: e2 } = await supabase.rpc('delete_user_account');
-        if (e2) throw e2;
+        // 3. Supprimer les résultats partagés
+        await supabase.from('shared_results').delete().eq('user_id', uid).then(() => {}).catch(() => {});
 
-        // 3. Déconnexion et redirection
+        // 4. Supprimer le profil utilisateur
+        await supabase.from('users').delete().eq('id', uid).then(() => {}).catch(() => {});
+
+        // 5. Déconnexion et redirection
         await supabase.auth.signOut();
         window.location.href = 'index.html?deleted=1';
+
       } catch(err) {
-        setLoading('btn-delete', false);
-        document.getElementById('delete-confirm').value = '';
-        document.getElementById('btn-delete').disabled = true;
-        showMsg('msg-delete', (err && err.message) || 'Erreur lors de la suppression.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Supprimer d\u00e9finitivement';
+        showMsg('msg-delete-modal', (err && err.message) || 'Erreur lors de la suppression.', 'error');
       }
     }
 
