@@ -9,7 +9,9 @@
   <meta name="description" content="GiftFinder trouve 9 idées cadeaux personnalisées en 30 secondes grâce à l'IA. Saisissez l'âge, l'occasion et le budget — recevez des liens Amazon directs.">
   <meta name="keywords" content="idée cadeau, cadeau personnalisé, cadeau anniversaire, cadeau noël, cadeau homme, cadeau femme, idée cadeau IA">
   <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#3C3489">
   <link rel="canonical" href="https://giftfinder-cyan.vercel.app/">
+  <link rel="manifest" href="/manifest.json">
 
   <!-- Open Graph (Facebook / LinkedIn) -->
   <meta property="og:type"        content="website">
@@ -48,34 +50,12 @@
 
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
   <link rel="stylesheet" href="css/style.css">
-<style>
-    @media (max-width: 768px) {
-      .navbar { padding: 12px 16px !important; }
-      .navbar-right { gap: 8px !important; }
-      .navbar-right a, .navbar-right button, .navbar-right span { font-size: 12px !important; }
-      .btn-primary, .btn-outline { padding: 8px 14px !important; font-size: 13px !important; }
-      h1 { font-size: 1.8rem !important; }
-      .hero { padding: 40px 16px !important; }
-      .subtitle { font-size: 14px !important; }
-      .features { flex-direction: column !important; gap: 24px !important; padding: 0 16px !important; }
-      .feature-card { min-width: auto !important; }
-      .occasions { flex-wrap: wrap !important; gap: 10px !important; padding: 0 16px !important; }
-      .occasion-tag { font-size: 13px !important; padding: 8px 14px !important; }
-      footer { padding: 30px 16px 20px !important; }
-    }
-    @media (max-width: 480px) {
-      .navbar { flex-wrap: wrap !important; gap: 8px !important; }
-      .navbar-right { width: 100% !important; justify-content: flex-end !important; flex-wrap: wrap !important; }
-      h1 { font-size: 1.5rem !important; }
-      .btn-primary { width: 100% !important; text-align: center !important; }
-    }
-  </style>
-  </head>
+</head>
 <body>
 
   <nav class="navbar">
     <div class="navbar-left">
-      <span class="gift-icon">&#127873;</span>
+      <span class="gift-icon">🎁</span>
       <span class="brand" id="brand-name"></span>
     </div>
     <div class="navbar-right" id="nav-right">
@@ -132,20 +112,19 @@
     <span class="pill pill-autre">＋ Autre</span>
   </section>
 
-  <footer style="text-align:center;padding:40px 20px 30px;color:#888;font-size:13px;border-top:1px solid #eee;margin-top:60px;">
-    <div style="display:flex;justify-content:center;gap:40px;margin-bottom:20px;flex-wrap:wrap;">
-      <a href="https://instagram.com/giftfinder2.0" target="_blank" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:8px;">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="#E1306C" stroke-width="2"/><circle cx="12" cy="12" r="5" stroke="#E1306C" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.5" fill="#E1306C"/></svg>
-        <span style="color:#E1306C;font-weight:600;font-size:13px;">@GIFTFINDER2.0</span>
-      </a>
-      <a href="https://tiktok.com/@giftfinder2.0" target="_blank" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:8px;">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.16 15a6.34 6.34 0 0 0 6.33 6.34 6.34 6.34 0 0 0 6.34-6.34V8.77a8.18 8.18 0 0 0 4.76 1.52v-3.4a4.85 4.85 0 0 1-1-.2z" fill="#000"/></svg>
-        <span style="color:#000;font-weight:600;font-size:13px;">@giftfinder2.0</span>
-      </a>
+  <footer class="footer">
+    <div class="footer-top">
+      Déjà un compte ? <a href="#" onclick="openAuth('login'); return false;">Se connecter</a>
     </div>
-    <p style="margin:10px 0 5px;">En tant que Partenaire Amazon, je réalise un bénéfice sur les achats remplissant les conditions requises.</p>
-    <p style="margin:5px 0;">Déjà un compte ? <a href="index.html" style="color:#3C3489;">Se connecter</a></p>
-    <p style="margin:5px 0;"><a href="mentions-legales.html" style="color:#888;">Mentions légales</a> | <a href="confidentialite.html" style="color:#888;">Confidentialité</a> | <a href="cgu.html" style="color:#888;">CGU</a></p>
+    <div class="footer-links">
+      <a href="mentions-legales.html">Mentions légales</a>
+      <a href="confidentialite.html">Confidentialité</a>
+      <a href="cgu.html">CGU</a>
+    </div>
+    <p class="footer-amazon">En tant que Partenaire Amazon, je réalise un bénéfice sur les achats remplissant les conditions requises.</p>
+    <div class="footer-social">
+      <p>📸 Instagram <a href="https://instagram.com/giftfinder2.0" target="_blank">@GIFTFINDER2.0</a> &nbsp;|&nbsp; 🎵 TikTok <a href="https://tiktok.com/@giftfinder2.0" target="_blank">@giftfinder2.0</a></p>
+    </div>
   </footer>
 
   <div class="auth-overlay" id="authOverlay" style="display:none;">
@@ -170,7 +149,7 @@
         Pas encore de compte ? <a onclick="toggleAuthMode()">S'inscrire</a>
       </p>
       <p class="auth-toggle" id="forgotPasswordLink" style="margin-top:8px;">
-        <a onclick="handleForgotPassword()" style="color:#888;font-size:12px;">Mot de passe oublié ?</a>
+        <a onclick="handleForgotPassword()" style="color:#888;font-size:12px;">Mot de passe oubli&eacute; ?</a>
       </p>
       <div class="auth-error" id="authSuccess" style="background:#f0fdf4;color:#15803d;border-color:#bbf7d0;display:none;"></div>
     </div>
@@ -180,7 +159,7 @@
   <div id="deletedToast" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
     background:#1a1935;color:#fff;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:500;
     z-index:200;box-shadow:0 4px 20px rgba(0,0,0,0.2);">
-    &#10003; Votre compte a été supprimé avec succès.
+    &#10003; Votre compte a &eacute;t&eacute; supprim&eacute; avec succ&egrave;s.
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -212,7 +191,6 @@
 
     function toggleAuthMode() { openAuth(authMode === 'login' ? 'signup' : 'login'); }
 
-    // Afficher/masquer le lien "Mot de passe oublié" selon le mode
     const origOpenAuth = openAuth;
     function updateForgotLink() {
       const fl = document.getElementById('forgotPasswordLink');
@@ -220,7 +198,6 @@
       if (fl) fl.style.display = authMode === 'login' ? 'block' : 'none';
       if (as) as.style.display = 'none';
     }
-    // Patch openAuth pour mettre à jour le lien à chaque ouverture
     const _origOpen = openAuth;
     window.openAuth = function(mode) {
       _origOpen(mode);
@@ -249,7 +226,7 @@
         errorEl.textContent = error.message || 'Erreur lors de l\'envoi du mail.';
         errorEl.style.display = 'block';
       } else {
-        successEl.textContent = '\u2705 Un e-mail de réinitialisation a été envoyé à ' + email;
+        successEl.textContent = '\u2705 Un e-mail de r\u00e9initialisation a \u00e9t\u00e9 envoy\u00e9 \u00e0 ' + email;
         successEl.style.display = 'block';
       }
     }
@@ -258,7 +235,6 @@
       if (e.target === this) this.style.display = 'none';
     });
 
-    // Afficher toast si compte supprimé
     (function() {
       const p = new URLSearchParams(window.location.search);
       if (p.get('deleted') === '1') {
@@ -268,7 +244,6 @@
           setTimeout(function() { t.style.opacity = '0'; t.style.transition = 'opacity 0.5s'; }, 3500);
           setTimeout(function() { t.style.display = 'none'; }, 4100);
         }
-        // Nettoyer l'URL
         history.replaceState(null, '', window.location.pathname);
       }
     })();
@@ -322,11 +297,67 @@
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         document.getElementById('nav-right').innerHTML =
-          '<span style="font-size:14px;color:#666;">Bonjour, <strong>' + prenom + '</strong></span>' +
           '<a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>' +
-          '<button class="btn-outline" onclick="handleLogout()">D\u00E9connexion</button>';
+          '<button class="btn-primary" onclick="window.location.href=\'questionnaire.html\'">Trouver un cadeau</button>';
       }
     })();
+
+    // ── Social proof dynamique ──
+    (async function loadSocialProof() {
+      try {
+        var now = new Date();
+        var firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+        var results = await Promise.all([
+          supabase.from('searches').select('id', { count: 'exact', head: true }).in('statut', ['done', 'completed']),
+          supabase.from('searches').select('id', { count: 'exact', head: true }).in('statut', ['done', 'completed']).gte('created_at', firstOfMonth)
+        ]);
+
+        var totalCount = results[0].count || 0;
+        var monthCount = results[1].count || 0;
+
+        if (totalCount > 0) {
+          var displayTotal = totalCount >= 1000
+            ? '+' + (Math.floor(totalCount / 100) * 100).toLocaleString('fr-FR') + ' cadeaux trouvés'
+            : '+' + totalCount + ' cadeau' + (totalCount > 1 ? 'x' : '') + ' trouvé' + (totalCount > 1 ? 's' : '');
+
+          var badgeEl = document.querySelector('.badge');
+          if (badgeEl) {
+            var dotEl = badgeEl.querySelector('.dot');
+            badgeEl.innerHTML = '';
+            if (dotEl) badgeEl.appendChild(dotEl); else { var d = document.createElement('span'); d.className = 'dot'; badgeEl.appendChild(d); }
+            badgeEl.appendChild(document.createTextNode(' ' + displayTotal));
+          }
+
+          var ratingEl = document.querySelector('.rating-text');
+          if (ratingEl) ratingEl.textContent = displayTotal;
+        }
+
+        if (monthCount >= 3) {
+          var monthLabel = '+' + monthCount + ' cadeau' + (monthCount > 1 ? 'x' : '') + ' ce mois';
+          var heroSection = document.querySelector('.hero');
+          if (heroSection && !document.getElementById('stat-mois')) {
+            var statEl = document.createElement('div');
+            statEl.id = 'stat-mois';
+            statEl.style.cssText = 'font-size:12px;color:#888;margin-top:-10px;margin-bottom:10px;text-align:center;';
+            statEl.textContent = '\uD83D\uDCC5 ' + monthLabel;
+            var badge = heroSection.querySelector('.badge');
+            if (badge && badge.nextSibling) {
+              heroSection.insertBefore(statEl, badge.nextSibling);
+            }
+          }
+        }
+      } catch(e) {
+        // Fail silently
+      }
+    })();
+
+    // Enregistrement du Service Worker (PWA)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js').catch(function() {});
+      });
+    }
   </script>
 </body>
 </html>
