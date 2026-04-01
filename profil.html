@@ -234,60 +234,8 @@
     .h-date { font-size: 11px; color: #ccc; flex-shrink: 0; }
     .h-empty-msg { text-align: center; padding: 20px 0; color: #aaa; font-size: 13px; }
 
-    /* Gamification */
-    .gamif-counter {
-      text-align: center;
-      padding: 16px 0 20px;
-    }
-    .gamif-count {
-      display: block;
-      font-size: 52px;
-      font-weight: 800;
-      color: #3C3489;
-      line-height: 1;
-    }
-    .gamif-label {
-      display: block;
-      font-size: 14px;
-      color: #888;
-      margin-top: 6px;
-    }
-    .gamif-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      border-top: 1px solid rgba(60,52,137,0.07);
-      margin-top: 16px;
-      padding-top: 16px;
-    }
-    .gamif-badge {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      border-radius: 14px;
-      padding: 12px 14px;
-      min-width: 68px;
-      text-align: center;
-      transition: all .2s;
-    }
-    .gamif-badge.unlocked {
-      background: linear-gradient(135deg, rgba(60,52,137,0.12) 0%, rgba(29,158,117,0.10) 100%);
-      box-shadow: 0 2px 8px rgba(60,52,137,0.12);
-    }
-    .gamif-badge.locked {
-      background: rgba(60,52,137,0.05);
-      opacity: 0.4;
-      filter: grayscale(1);
-    }
-    .gamif-badge-icon { font-size: 28px; }
-    .gamif-badge-name { font-size: 11px; font-weight: 700; color: #26215C; }
-    .gamif-badge-req  { font-size: 10px; color: #aaa; }
-
     .footer { position: relative; z-index: 1; }
-
-    /* Toggle switch */
+  /* Toggle switch */
     .toggle-switch { position: relative; display: inline-block; width: 46px; height: 26px; }
     .toggle-switch input { opacity: 0; width: 0; height: 0; }
     .toggle-slider {
@@ -383,19 +331,6 @@
       <div class="p-card-title">&#128220; Mes derni&egrave;res recherches</div>
       <div id="hist-loader" style="text-align:center;padding:16px;color:#aaa;font-size:13px;">Chargement&hellip;</div>
       <div id="hist-list"></div>
-    </div>
-
-    <!-- ③b BADGES & COMPTEUR CADEAUX -->
-    <div class="p-card" style="display:none;">
-      <div class="p-card-title">&#127942; Mes badges</div>
-      <div id="gamif-loader" style="text-align:center;padding:16px;color:#aaa;font-size:13px;">Chargement&hellip;</div>
-      <div id="gamif-content" style="display:none;">
-        <div class="gamif-counter">
-          <span class="gamif-count" id="gamif-count">0</span>
-          <span class="gamif-label">cadeaux trouv&eacute;s &#127873;</span>
-        </div>
-        <div class="gamif-badges" id="gamif-badges"></div>
-      </div>
     </div>
 
     <!-- ④ NOTIFICATIONS -->
@@ -519,7 +454,6 @@
 
       // Charger l'historique, la gamification et les préférences notifs
       loadHistorique(u.id);
-      loadGamification(u.id);
       loadNotifPrefs(u.id);
     })();
 
@@ -572,45 +506,6 @@
       }
     }
 
-    // ── Gamification : badges & compteur ──
-    async function loadGamification(userId) {
-      try {
-        var { count } = await supabase
-          .from('searches')
-          .select('id', { count: 'exact', head: true })
-          .eq('user_id', userId)
-          .in('statut', ['done', 'completed']);
-
-        var total = count || 0;
-        document.getElementById('gamif-count').textContent = total;
-        document.getElementById('gamif-loader').style.display = 'none';
-        document.getElementById('gamif-content').style.display = 'block';
-
-        var BADGES = [
-          { icon: '\uD83C\uDF31', name: 'D\u00E9butant',   req: 1,  label: '1 cadeau' },
-          { icon: '\u2B50',       name: 'Expert',            req: 5,  label: '5 cadeaux' },
-          { icon: '\uD83C\uDFC6', name: 'Champion',          req: 10, label: '10 cadeaux' },
-          { icon: '\uD83D\uDC8E', name: 'L\u00E9gende',      req: 25, label: '25 cadeaux' },
-          { icon: '\uD83D\uDE80', name: 'Maestro',           req: 50, label: '50 cadeaux' }
-        ];
-
-        var badgesEl = document.getElementById('gamif-badges');
-        BADGES.forEach(function(b) {
-          var unlocked = total >= b.req;
-          var div = document.createElement('div');
-          div.className = 'gamif-badge ' + (unlocked ? 'unlocked' : 'locked');
-          div.title = unlocked ? b.name + ' d\u00E9bloqu\u00E9 !' : 'D\u00E9bloquer \u00E0 ' + b.label;
-          div.innerHTML =
-            '<span class="gamif-badge-icon">' + b.icon + '</span>' +
-            '<span class="gamif-badge-name">' + b.name + '</span>' +
-            '<span class="gamif-badge-req">' + b.label + '</span>';
-          badgesEl.appendChild(div);
-        });
-      } catch(e) {
-        document.getElementById('gamif-loader').textContent = 'Impossible de charger les badges.';
-      }
-    }
-
     // ── Utilitaires ──
     function showMsg(id, text, type) {
       var el = document.getElementById(id);
@@ -648,7 +543,7 @@
         }
       } catch(err) {
         setLoading('btn-infos', false);
-        showMsg('msg-infos', (err && err.message) || 'Erreur.', 'error');
+        showMsg(msg-infos', (err && err.message) || 'Erreur.', 'error');
       }
     }
 
@@ -743,6 +638,7 @@
       try {
         var { data: { session } } = await supabase.auth.getSession();
         if (!session) { window.location.href = 'index.html'; return; }
+
         // Appel Edge Function : suppression complète (tables + auth.users)
         var resp = await fetch('https://dzlyrswuyafxjswuxdcu.supabase.co/functions/v1/delete-user', {
           method: 'POST',
