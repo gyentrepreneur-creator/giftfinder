@@ -425,7 +425,54 @@
       <div class="p-field">
         <label>Tapez <strong>SUPPRIMER</strong> pour confirmer</label>
         <input type="text" id="delete-confirm" class="danger-input"
-               placeholder="SUPPRIMER" au/span>
+               placeholder="SUPPRIMER" autocomplete="off"
+               oninput="checkDeleteConfirm()">
+      </div>
+      <button class="btn-delete" id="btn-delete" disabled onclick="deleteAccount()">
+        Supprimer d&eacute;finitivement mon compte
+      </button>
+      <div class="p-msg" id="msg-delete"></div>
+    </div>
+
+  <!-- Modal : raison suppression -->
+  <div class="delete-modal-overlay" id="delete-modal-overlay">
+    <div class="delete-modal">
+      <h3>&#128722; Pourquoi supprimez-vous votre compte ?</h3>
+      <p>Votre r&eacute;ponse nous aide &agrave; am&eacute;liorer GiftFinder.</p>
+      <label class="reason-opt"><input type="radio" name="del-reason" value="plus-utilise"> Je n&#39;utilise plus l&#39;application</label>
+      <label class="reason-opt"><input type="radio" name="del-reason" value="pas-trouve"> Je n&#39;ai pas trouv&eacute; ce que je cherchais</label>
+      <label class="reason-opt"><input type="radio" name="del-reason" value="quota"> Le quota de recherches est trop limit&eacute;</label>
+      <label class="reason-opt"><input type="radio" name="del-reason" value="technique"> Probl&egrave;me technique</label>
+      <label class="reason-opt"><input type="radio" name="del-reason" value="autre"> Autre raison</label>
+      <textarea id="del-reason-text" placeholder="Pr&eacute;cisez si vous le souhaitez&#8230;"></textarea>
+      <div class="delete-modal-actions">
+        <button class="btn-modal-cancel" onclick="closeDeleteModal()">Annuler</button>
+        <button class="btn-modal-confirm" id="btn-modal-confirm" disabled onclick="confirmDeleteWithReason()">Supprimer d&eacute;finitivement</button>
+      </div>
+      <div class="p-msg" id="msg-delete-modal" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-top">
+      <span id="footer-brand"></span> &mdash; <a href="questionnaire.html">Nouvelle recherche</a>
+    </div>
+    <div class="footer-links">
+      <a href="mentions-legales.html">Mentions l&eacute;gales</a>
+      <a href="confidentialite.html">Confidentialit&eacute;</a>
+      <a href="cgu.html">CGU</a>
+    </div>
+    <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
+    <div class="footer-social" style="display:flex;gap:28px;justify-content:center;align-items:center;margin-top:12px;">
+      <a href="https://www.instagram.com/giftfinder2.0" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#C13584" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        <span style="font-size:11px;font-weight:600;letter-spacing:.3px;">@GIFTFINDER2.0</span>
+      </a>
+      <a href="https://www.tiktok.com/@giftfinder2.0" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="#010101"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.45a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.77 1.52V6.76a4.85 4.85 0 0 1-1-.07z"/></svg>
+        <span style="font-size:11px;font-weight:600;letter-spacing:.3px;">@giftfinder2.0</span>
       </a>
     </div>
   </footer>
