@@ -231,9 +231,15 @@
               onclick="window.location.href='questionnaire.html'">R&eacute;essayer</button>
     </div>
 
-    <!-- État : r\u00E9sultats -->
+    <!-- État : résultats -->
     <div id="resultsSection" style="display:none;">
-      <div class=�w"ֆG"#�ƃ�b3#s�s3�f�2�BfV7WFS�W26FVW������7G��S�&f��B�6��S�G��6���#�3ccc�"�C�'&W7V�G57V'F�F�R#�2fV7WFS��V7F����fV7WFS�W2"��G&R��W"f�W3�����F�c��F�b6�73�'"�w&�B"�C�'&W7V�G4w&�B#���F�cࠢ���&�WF��'FvR6�-->
+      <div class="r-hdr">
+        <h1>&#127873; Vos id&eacute;es cadeaux</h1>
+        <p style="font-size:14px;color:#666;" id="resultsSubtitle">S&eacute;lectionn&eacute;es par notre IA pour vous</p>
+      </div>
+      <div class="r-grid" id="resultsGrid"></div>
+
+      <!-- Bouton partage social -->
       <div id="shareSection" style="text-align:center;margin-top:36px;padding-top:28px;border-top:1px solid rgba(60,52,137,0.1);">
         <p style="font-size:13px;color:#888;margin-bottom:14px;">Vous avez aim&eacute; ces suggestions ?</p>
         <button id="shareBtn" onclick="handleShare()" style="
@@ -361,86 +367,97 @@
     function displayResults(data) {
       _currentData = data; // sauvegarde pour handleShare
       document.getElementById('loader').style.display = 'none';
+      document.getElementById('resultsSection').style.display = 'block'; // affiché tôt pour éviter page blanche
 
-      var products = [];
       try {
-        products = typeof data.suggestions === 'string'
-          ? JSON.parse(data.suggestions)
-          : (Array.isArray(data.suggestions) ? data.suggestions : []);
+        var products = [];
+        try {
+          products = typeof data.suggestions === 'string'
+            ? JSON.parse(data.suggestions)
+            : (Array.isArray(data.suggestions) ? data.suggestions : []);
+        } catch (e) {
+          showError('Format de r\u00E9sultats invalide.');
+          return;
+        }
+
+        if (!products.length) {
+          showError('Aucun r\u00E9sultat trouv\u00E9. Veuillez relancer une recherche.');
+          return;
+        }
+
+        // ── Analytics : results_viewed ──
+        if (window.GFAnalytics) {
+          GFAnalytics.track('results_viewed', {
+            search_id:    searchId,
+            nb_products:  products.length,
+            occasion:     data.occasion,
+            budget:       data.budget
+          });
+        }
+
+        // Sous-titre + titre onglet
+        var budgetLabel = { moins_25:'< 25\u20AC', '25_50':'25-50\u20AC', '50_100':'50-100\u20AC', '100_200':'100-200\u20AC', plus_200:'> 200\u20AC' };
+        document.getElementById('resultsSubtitle').textContent =
+          'Pour ' + (data.destinataire || 'votre proche') +
+          (data.occasion ? ' - ' + data.occasion : '') +
+          (data.budget   ? ' - Budget ' + (budgetLabel[data.budget] || data.budget) : '');
+        if (data.destinataire) {
+          document.title = 'Cadeaux pour ' + data.destinataire + ' \u2014 ' + APP_NAME;
+        }
+
+        var grid = document.getElementById('resultsGrid');
+        grid.innerHTML = '';
+
+        products.slice(0, 9).forEach(function(p) {
+          try {
+            var card = document.createElement('div');
+            card.className = 'r-card';
+
+            var imgHtml;
+            if (p.image || p.img) {
+              imgHtml = '<div class="r-card-img"><img src="' + esc(p.image || p.img) +
+                        '" alt="' + esc(p.nom || p.name || '') + '" onerror="this.parentElement.innerHTML=\'&#127873;\'"></div>';
+            } else {
+              imgHtml = '<div class="r-card-img">&#127873;</div>';
+            }
+
+            var badge = (p.plateforme || p.platform)
+              ? '<span class="r-badge">' + esc(p.plateforme || p.platform) + '</span>' : '';
+            // Compatibilité avec les deux formats de champs (ancien et nouveau)
+            var titre = p.titre || p.nom || p.name || 'Cadeau';
+            var prix = p.prix_estime || p.prix || p.price || '';
+            var lienBrut = p.lien_recherche || p.lien || p.url || '';
+            // Ajouter le tag affilié Amazon si c'est un lien Amazon
+            var lien = lienBrut;
+            if (lienBrut && lienBrut.includes('amazon')) {
+              lien = lienBrut + (lienBrut.includes('?') ? '&' : '?') + 'tag=giftfinder0d6-21';
+            }
+
+            var buyBtn = lien
+              ? '<a class="r-card-btn" href="' + esc(lien) + '" target="_blank" rel="noopener" onclick="if(window.GFAnalytics)GFAnalytics.track(\'product_clicked\',{search_id:\'' + searchId + '\',titre:\'' + esc(titre).replace(/'/g,"\\'") + '\',lien:\'' + esc(lien) + '\'})">Voir le produit &rarr;</a>'
+              : '<a class="r-card-btn" href="https://www.amazon.fr/s?k=' + encodeURIComponent(titre) + '&tag=giftfinder0d6-21" target="_blank" rel="noopener" onclick="if(window.GFAnalytics)GFAnalytics.track(\'product_clicked\',{search_id:\'' + searchId + '\',titre:\'' + esc(titre).replace(/'/g,"\\'") + '\'})">Rechercher sur Amazon &rarr;</a>';
+
+            card.innerHTML =
+              imgHtml +
+              '<div class="r-card-body">' +
+                badge +
+                '<div class="r-card-title">' + esc(titre) + '</div>' +
+                '<div class="r-card-desc">'  + esc(p.description || '') + '</div>' +
+                (prix ? '<div class="r-card-price">~' + esc(String(prix)) + '\u20AC</div>' : '') +
+                buyBtn +
+              '</div>';
+
+            grid.appendChild(card);
+          } catch (cardErr) {
+            console.error('Erreur carte produit :', cardErr);
+          }
+        });
+
+        updateNewSearchCTA();
       } catch (e) {
-        showError('Format de r\u00E9sultats invalide.');
-        return;
+        console.error('displayResults erreur :', e);
+        showError('Erreur lors de l\'affichage. Veuillez rafra\u00EEchir la page.');
       }
-
-      if (!products.length) {
-        showError('Aucun r\u00E9sultat trouv\u00E9. Veuillez relancer une recherche.');
-        return;
-      }
-
-      // ── Analytics : results_viewed ──
-      GFAnalytics.track('results_viewed', {
-        search_id:    searchId,
-        nb_products:  products.length,
-        occasion:     data.occasion,
-        budget:       data.budget
-      });
-
-      // Sous-titre + titre onglet
-      var budgetLabel = { moins_25:'< 25\u20AC', '25_50':'25-50\u20AC', '50_100':'50-100\u20AC', '100_200':'100-200\u20AC', plus_200:'> 200\u20AC' };
-      document.getElementById('resultsSubtitle').textContent =
-        'Pour ' + (data.destinataire || 'votre proche') +
-        (data.occasion ? ' - ' + data.occasion : '') +
-        (data.budget   ? ' - Budget ' + (budgetLabel[data.budget] || data.budget) : '');
-      if (data.destinataire) {
-        document.title = 'Cadeaux pour ' + data.destinataire + ' \u2014 ' + APP_NAME;
-      }
-
-      var grid = document.getElementById('resultsGrid');
-      grid.innerHTML = '';
-
-      products.slice(0, 9).forEach(function(p) {
-        var card = document.createElement('div');
-        card.className = 'r-card';
-
-        var imgHtml;
-        if (p.image || p.img) {
-          imgHtml = '<div class="r-card-img"><img src="' + esc(p.image || p.img) +
-                    '" alt="' + esc(p.nom || p.name || '') + '" onerror="this.parentElement.innerHTML=\'&#127873;\'"></div>';
-        } else {
-          imgHtml = '<div class="r-card-img">&#127873;</div>';
-        }
-
-        var badge = (p.plateforme || p.platform)
-          ? '<span class="r-badge">' + esc(p.plateforme || p.platform) + '</span>' : '';
-        // Compatibilité avec les deux formats de champs (ancien et nouveau)
-        var titre = p.titre || p.nom || p.name || 'Cadeau';
-        var prix = p.prix_estime || p.prix || p.price || '';
-        var lienBrut = p.lien_recherche || p.lien || p.url || '';
-        // Ajouter le tag affilié Amazon si c'est un lien Amazon
-        var lien = lienBrut;
-        if (lienBrut && lienBrut.includes('amazon')) {
-          lien = lienBrut + (lienBrut.includes('?') ? '&' : '?') + 'tag=giftfinder0d6-21';
-        }
-
-        var buyBtn = lien
-          ? '<a class="r-card-btn" href="' + esc(lien) + '" target="_blank" rel="noopener" onclick="GFAnalytics.track(\'product_clicked\',{search_id:\'' + searchId + '\',titre:\'' + esc(titre).replace(/'/g,"\\'") + '\',lien:\'' + esc(lien) + '\'})">Voir le produit &rarr;</a>'
-          : '<a class="r-card-btn" href="https://www.amazon.fr/s?k=' + encodeURIComponent(titre) + '&tag=giftfinder0d6-21" target="_blank" rel="noopener" onclick="GFAnalytics.track(\'product_clicked\',{search_id:\'' + searchId + '\',titre:\'' + esc(titre).replace(/'/g,"\\'") + '\'})">Rechercher sur Amazon &rarr;</a>';
-
-        card.innerHTML =
-          imgHtml +
-          '<div class="r-card-body">' +
-            badge +
-            '<div class="r-card-title">' + esc(titre) + '</div>' +
-            '<div class="r-card-desc">'  + esc(p.description || '') + '</div>' +
-            (prix ? '<div class="r-card-price">~' + esc(String(prix)) + '\u20AC</div>' : '') +
-            buyBtn +
-          '</div>';
-
-        grid.appendChild(card);
-      });
-
-      document.getElementById('resultsSection').style.display = 'block';
-      updateNewSearchCTA();
     }
 
     async function updateNewSearchCTA() {
@@ -492,7 +509,7 @@
       if (btn) { btn.disabled = true; btn.textContent = '\u23F3 G\u00E9n\u00E9ration du lien\u2026'; }
 
       // ── Analytics : share_clicked ──
-      GFAnalytics.track('share_clicked', { search_id: searchId });
+      if (window.GFAnalytics) GFAnalytics.track('share_clicked', { search_id: searchId });
 
       try {
         // Générer un token unique (UUID v4)
