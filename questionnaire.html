@@ -111,7 +111,7 @@
       transition: all 0.15s;
       user-select: none;
       font-family: inherit;
-      line-height: 1.4;
+  2   line-height: 1.4;
     }
     .chip:hover {
       background: rgba(60,52,137,0.07);
@@ -360,28 +360,32 @@
         '<a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>';
 
       // -- Afficher les recherches restantes aujourd'hui --
-      try {
-        const today = new Date().toISOString().slice(0, 10);
-        const { count } = await supabase
-          .from('searches')
-          .select('id', { count: 'exact', head: true })
-          .eq('user_id', session.user.id)
-          .gte('created_at', today + 'T00:00:00.000Z')
-          .lte('created_at', today + 'T23:59:59.999Z');
-        const restantes = Math.max(0, 3 - (count || 0));
-        const hintEl = document.getElementById('quota-hint');
-        if (hintEl) {
-          if (restantes === 0) {
-            hintEl.innerHTML = '<span style="color:#b91c1c;font-weight:600;">\u26A0\uFE0F Limite atteinte \u2014 revenez demain !</span>';
-            // Désactiver le bouton dès le chargement si quota épuisé
-            var btn = document.getElementById('submitBtn');
-            if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
-          } else {
-            hintEl.innerHTML = 'R&eacute;sultats en moins de 30 secondes &middot; Gratuit &middot; <strong>' + restantes + ' recherche' + (restantes > 1 ? 's' : '') + ' restante' + (restantes > 1 ? 's' : '') + ' aujourd\'hui</strong>';
+      // Admin bypass : pas de limite pour les comptes propriétaires
+      const ADMIN_EMAILS = ['gyentrepreneur@gmail.com', 'genegylan@gmail.com'];
+      if (!ADMIN_EMAILS.includes(session.user.email)) {
+        try {
+          const today = new Date().toISOString().slice(0, 10);
+          const { count } = await supabase
+            .from('searches')
+            .select('id', { count: 'exact', head: true })
+            .eq('user_id', session.user.id)
+            .gte('created_at', today + 'T00:00:00.000Z')
+            .lte('created_at', today + 'T23:59:59.999Z');
+          const restantes = Math.max(0, 3 - (count || 0));
+          const hintEl = document.getElementById('quota-hint');
+          if (hintEl) {
+            if (restantes === 0) {
+              hintEl.innerHTML = '<span style="color:#b91c1c;font-weight:600;">\u26A0\uFE0F Limite atteinte \u2014 revenez demain !</span>';
+              // Désactiver le bouton dès le chargement si quota épuisé
+              var btn = document.getElementById('submitBtn');
+              if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
+            } else {
+              hintEl.innerHTML = 'R&eacute;sultats en moins de 30 secondes &middot; Gratuit &middot; <strong>' + restantes + ' recherche' + (restantes > 1 ? 's' : '') + ' restante' + (restantes > 1 ? 's' : '') + ' aujourd\'hui</strong>';
+            }
           }
+        } catch (e) {
+          // fail silently, message par defaut reste affiché
         }
-      } catch (e) {
-        // fail silently, message par defaut reste affiché
       }
     })();
 
@@ -411,9 +415,11 @@
       submitBtn.textContent = 'Analyse en cours...';
 
       // -- Limite : 3 recherches gratuites par jour --
+      // Admin bypass : pas de limite pour le compte propriétaire
       try {
         const { data: { session: sess } } = await supabase.auth.getSession();
-        if (sess) {
+        const ADMIN_EMAILS_2 = ['gyentrepreneur@gmail.com', 'genegylan@gmail.com'];
+        if (sess && !ADMIN_EMAILS_2.includes(sess.user.email)) {
           const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
           const { count } = await supabase
             .from('searches')
