@@ -192,6 +192,32 @@
       max-width: 240px;
     }
 
+    /* -- Filtres occasion -- */
+    .h-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .h-filter-chip {
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1.5px solid rgba(60,52,137,0.22);
+      background: rgba(255,255,255,0.75);
+      color: #3C3489;
+      cursor: pointer;
+      transition: all .15s;
+      font-family: inherit;
+    }
+    .h-filter-chip:hover { background: rgba(60,52,137,0.07); }
+    .h-filter-chip.active {
+      background: #3C3489;
+      color: #EEEDFE;
+      border-color: #3C3489;
+    }
+
     .footer { position: relative; z-index: 1; }
 
     @media (max-width: 540px) {
@@ -219,6 +245,16 @@
   <main class="h-main">
     <h1 class="h-title">&#128220; Mes recherches</h1>
     <p class="h-sub" id="h-sub">Chargement...</p>
+
+    <!-- Filtres par occasion -->
+    <div class="h-filters" id="h-filters">
+      <button type="button" class="h-filter-chip active" data-filter="">Toutes</button>
+      <button type="button" class="h-filter-chip" data-filter="Anniversaire">&#127874; Anniversaire</button>
+      <button type="button" class="h-filter-chip" data-filter="Noel">&#127876; No&euml;l</button>
+      <button type="button" class="h-filter-chip" data-filter="Mariage">&#128141; Mariage</button>
+      <button type="button" class="h-filter-chip" data-filter="Saint-Valentin">&#10084;&#65039; Saint-Valentin</button>
+      <button type="button" class="h-filter-chip" data-filter="Autre">&#10024; Autre</button>
+    </div>
 
     <!-- Loader initial -->
     <div id="loader" class="h-loader">
@@ -291,13 +327,14 @@
       '50_100': '50-100 \u20AC', '100_200': '100-200 \u20AC', 'plus_200': '> 200 \u20AC'
     };
 
-    var PAGE_SIZE  = 20;
-    var MAX_TOTAL  = 150;
-    var _offset    = 0;
-    var _loading   = false;
-    var _done      = false;
-    var _userId    = null;
-    var _totalDB   = 0;
+    var PAGE_SIZE    = 20;
+    var MAX_TOTAL    = 150;
+    var _offset      = 0;
+    var _loading     = false;
+    var _done        = false;
+    var _userId      = null;
+    var _totalDB     = 0;
+    var _activeFilter = ''; // '' = toutes les occasions
 
     function updateSubtitle() {
       var el = document.getElementById('h-sub');
@@ -316,7 +353,7 @@
     function renderCard(liste, r) {
       var emoji   = OCCASION_EMOJI[r.occasion] || '\uD83C\uDF81';
       var budget  = BUDGET_LABEL[r.budget] || r.budget || '';
-      var centres = (r.centres_interet || []).slice(0, 2).join(', ');
+      var centres= (r.centres_interet || []).slice(0, 2).join(', ');
       var isDone  = r.statut === 'done' || r.statut === 'completed';
       var date    = new Date(r.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
 
@@ -352,12 +389,14 @@
       var from = _offset;
       var to   = Math.min(_offset + PAGE_SIZE - 1, MAX_TOTAL - 1);
 
-      var res = await supabase
+      var query = supabase
         .from('searches')
         .select('id, destinataire, occasion, genre, budget, centres_interet, statut, created_at')
         .eq('user_id', _userId)
         .order('created_at', { ascending: false })
         .range(from, to);
+      if (_activeFilter) query = query.eq('occasion', _activeFilter);
+      var res = await query;
 
       document.getElementById('scroll-loader').style.display = 'none';
       document.getElementById('loader').style.display = 'none';
@@ -398,6 +437,35 @@
       var scrollBottom = document.documentElement.scrollHeight - window.scrollY - window.innerHeight;
       if (scrollBottom < 300) { loadMore(); }
     }
+
+    // ── Filtres : reset + rechargement ──
+    function resetList() {
+      _offset = 0;
+      _loading = false;
+      _done = false;
+      _totalDB = 0;
+      document.getElementById('liste').innerHTML = '';
+      document.getElementById('empty').style.display = 'none';
+      document.getElementById('fin-message').style.display = 'none';
+      document.getElementById('loader').style.display = 'block';
+    }
+
+    document.getElementById('h-filters').addEventListener('click', async function(e) {
+      var chip = e.target.closest('.h-filter-chip');
+      if (!chip || !_userId) return;
+      // Mettre à jour le chip actif
+      document.querySelectorAll('.h-filter-chip').forEach(function(c) { c.classList.remove('active'); });
+      chip.classList.add('active');
+      _activeFilter = chip.dataset.filter;
+      // Recompter le total avec le filtre
+      var countQuery = supabase.from('searches').select('id', { count: 'exact', head: true }).eq('user_id', _userId);
+      if (_activeFilter) countQuery = countQuery.eq('occasion', _activeFilter);
+      var countRes = await countQuery;
+      _totalDB = countRes.count || 0;
+      resetList();
+      updateSubtitle();
+      await loadMore();
+    });
 
     (async function init() {
       var sess = await supabase.auth.getSession();
