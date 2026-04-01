@@ -237,7 +237,7 @@
         <h1>&#127873; Vos id&eacute;es cadeaux</h1>
         <p style="font-size:14px;color:#666;" id="resultsSubtitle">S&eacute;lectionn&eacute;es par notre IA pour vous</p>
       </div>
-      <div class="r-grid" id="resultsGrid"></div>
+      <div class="s-grid" id="resultsGrid"></div>
 
       <!-- Bouton partage social -->
       <div id="shareSection" style="text-align:center;margin-top:36px;padding-top:28px;border-top:1px solid rgba(60,52,137,0.1);">
@@ -464,6 +464,13 @@
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
+        // Admin bypass : recherches illimitées
+        const ADMIN_EMAILS = ['gyentrepreneur@gmail.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
+        if (ADMIN_EMAILS.includes(session.user.email)) {
+          var msgEl = document.getElementById('ctaQuotaMsg');
+          if (msgEl) msgEl.innerHTML = '<strong>Recherches illimitées</strong> 🎉';
+          return;
+        }
         const today = new Date().toISOString().slice(0, 10);
         const { count } = await supabase
           .from('searches')
@@ -471,7 +478,7 @@
           .eq('user_id', session.user.id)
           .gte('created_at', today + 'T00:00:00.000Z')
           .lte('created_at', today + 'T23:59:59.999Z');
-        const restantes = Math.max(0, 3 - (count || 0));
+        const restantes = Math.max(0, 10 - (count || 0));
         const msgEl = document.getElementById('ctaQuotaMsg');
         const btnEl = document.getElementById('ctaNewSearch');
         if (!msgEl) return;
@@ -574,7 +581,7 @@
     // Enregistrement du Service Worker (PWA)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/service-worker.js').catch(function() {});
+    0   navigator.serviceWorker.register('/service-worker.js').catch(function() {});
       });
     }
   </script>
