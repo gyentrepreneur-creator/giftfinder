@@ -448,9 +448,6 @@
             return;
           }
         }
-      } catch (limitErr) {    return;
-          }
-        }
       } catch (limitErr) {
         console.warn('Impossible de verifier la limite quotidienne :', limitErr.message);
         // On laisse passer si la verification echoue (fail-open)
