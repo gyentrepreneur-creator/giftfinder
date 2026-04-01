@@ -355,29 +355,9 @@
       const prenom = (session.user.user_metadata && session.user.user_metadata.prenom)
         || session.user.email.split('@')[0];
 
-      // Charger le compteur de cadeaux trouvés pour la navbar
-      var giftsCount = 0;
-      try {
-        var { count: gc } = await supabase
-          .from('searches')
-          .select('id', { count: 'exact', head: true })
-          .eq('user_id', session.user.id)
-          .in('statut', ['done', 'completed']);
-        giftsCount = gc || 0;
-      } catch(e) { /* fail silently */ }
-
-      var badgeHtml = giftsCount > 0
-        ? '<span title="Cadeaux trouv\u00E9s" style="font-size:13px;color:#3C3489;font-weight:700;background:rgba(60,52,137,0.09);padding:4px 10px;border-radius:999px;">' +
-          '\uD83C\uDF81\u00A0' + giftsCount + ' cadeau' + (giftsCount > 1 ? 'x' : '') +
-          '</span>'
-        : '';
-
       document.getElementById('nav-right').innerHTML =
-        '<span style="font-size:14px;color:#666;">Bonjour, <strong>' + prenom + '</strong></span>' +
-        badgeHtml +
         '<a href="historique.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128203; Historique</a>' +
-        '<a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>' +
-        '<button class="btn-outline" onclick="handleLogout()">D\u00E9connexion</button>';
+        '<a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>';
 
       // -- Afficher les recherches restantes aujourd'hui --
       try {
