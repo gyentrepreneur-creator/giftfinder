@@ -18,7 +18,7 @@
     }
     .deco {
       position: fixed;
-      border-radius: 50%;
+  3   border-radius: 50%;
       opacity: 0.15;
       pointer-events: none;
       z-index: 0;
@@ -237,7 +237,7 @@
         <h1>&#127873; Vos id&eacute;es cadeaux</h1>
         <p style="font-size:14px;color:#666;" id="resultsSubtitle">S&eacute;lectionn&eacute;es par notre IA pour vous</p>
       </div>
-      <div class="s-grid" id="resultsGrid"></div>
+      <div class="r-grid" id="resultsGrid"></div>
 
       <!-- Bouton partage social -->
       <div id="shareSection" style="text-align:center;margin-top:36px;padding-top:28px;border-top:1px solid rgba(60,52,137,0.1);">
@@ -467,8 +467,8 @@
         // Admin bypass : recherches illimitées
         const ADMIN_EMAILS = ['gyentrepreneur@gmail.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
         if (ADMIN_EMAILS.includes(session.user.email)) {
-          var msgEl = document.getElementById('ctaQuotaMsg');
-          if (msgEl) msgEl.innerHTML = '<strong>Recherches illimitées</strong> 🎉';
+          const adminEl = document.getElementById('ctaQuotaMsg');
+          if (adminEl) adminEl.innerHTML = '<strong>Recherches illimitées</strong> 🎉';
           return;
         }
         const today = new Date().toISOString().slice(0, 10);
@@ -581,7 +581,7 @@
     // Enregistrement du Service Worker (PWA)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
-    0   navigator.serviceWorker.register('/service-worker.js').catch(function() {});
+        navigator.serviceWorker.register('/service-worker.js').catch(function() {});
       });
     }
   </script>
