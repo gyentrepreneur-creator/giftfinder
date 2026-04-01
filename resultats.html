@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GiftFinder &mdash; Vos id&eacute;es cadeaux</title>
   <meta name="theme-color" content="#3C3489">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
+  <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="css/style.css">
   <style>
     body {
@@ -230,7 +231,7 @@
               onclick="window.location.href='questionnaire.html'">R&eacute;essayer</button>
     </div>
 
-    <!-- Ãtat : rÃ©sultats -->
+    <!-- État : résultats -->
     <div id="resultsSection" style="display:none;">
       <div class="r-hdr">
         <h1>&#127873; Vos id&eacute;es cadeaux</h1>
@@ -287,7 +288,7 @@
     </div>
     <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
     <div class="footer-social">
-      <p>ð¸ Instagram <a href="https://instagram.com/giftfinder2.0" target="_blank">@GIFTFINDER2.0</a> &nbsp;|&nbsp; ðµ TikTok <a href="https://tiktok.com/@giftfinder2.0" target="_blank">@giftfinder2.0</a></p>
+      <p>📸 Instagram <a href="https://instagram.com/giftfinder2.0" target="_blank">@GIFTFINDER2.0</a> &nbsp;|&nbsp; 🎵 TikTok <a href="https://tiktok.com/@giftfinder2.0" target="_blank">@giftfinder2.0</a></p>
     </div>
   </footer>
 
@@ -303,9 +304,10 @@
 
     if (!searchId) showError('Aucun identifiant de recherche fourni. Veuillez relancer une recherche.');
 
-    let pollInterval = null;
-    let pollCount    = 0;
-    const MAX_POLLS  = 60;
+    let pollInterval  = null;
+    let pollCount     = 0;
+    const MAX_POLLS   = 60;
+    let _currentData  = null;
 
     (async function() {
       const { data: { session } } = await supabase.auth.getSession();
@@ -355,6 +357,7 @@
     }
 
     function displayResults(data) {
+      _currentData = data;
       document.getElementById('loader').style.display = 'none';
 
       var products = [];
@@ -372,7 +375,6 @@
         return;
       }
 
-      // Sous-titre + titre onglet
       var budgetLabel = { moins_25:'< 25\u20AC', '25_50':'25-50\u20AC', '50_100':'50-100\u20AC', '100_200':'100-200\u20AC', plus_200:'> 200\u20AC' };
       document.getElementById('resultsSubtitle').textContent =
         'Pour ' + (data.destinataire || 'votre proche') +
@@ -399,11 +401,9 @@
 
         var badge = (p.plateforme || p.platform)
           ? '<span class="r-badge">' + esc(p.plateforme || p.platform) + '</span>' : '';
-        // CompatibilitÃ© avec les deux formats de champs (ancien et nouveau)
         var titre = p.titre || p.nom || p.name || 'Cadeau';
         var prix = p.prix_estime || p.prix || p.price || '';
         var lienBrut = p.lien_recherche || p.lien || p.url || '';
-        // Ajouter le tag affiliÃ© Amazon si c'est un lien Amazon
         var lien = lienBrut;
         if (lienBrut && lienBrut.includes('amazon')) {
           lien = lienBrut + (lienBrut.includes('?') ? '&' : '?') + 'tag=giftfinder0d6-21';
@@ -474,30 +474,71 @@
       startPolling();
     }
 
-    function handleShare() {
-      const url = window.location.href;
-      const text = 'D\u00E9couvrez mes id\u00E9es cadeaux trouv\u00E9es par ' + APP_NAME + ' \u2728 ';
-      if (navigator.share) {
-        navigator.share({ title: APP_NAME + ' \u2014 Id\u00E9es cadeaux', text: text, url: url })
-          .catch(function() {}); // user cancelled
-      } else {
-        // Fallback : copier le lien dans le presse-papier
-        navigator.clipboard.writeText(url).then(function() {
+    async function handleShare() {
+      var btn = document.getElementById('shareBtn');
+      if (btn) { btn.disabled = true; btn.textContent = '\u23F3 G\u00E9n\u00E9ration du lien\u2026'; }
+
+      try {
+        var token = (crypto.randomUUID ? crypto.randomUUID() :
+          'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0;
+            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+          })
+        );
+
+        var expires = new Date();
+        expires.setDate(expires.getDate() + 30);
+
+        var payload = {
+          token:        token,
+          suggestions:  _currentData ? _currentData.suggestions : null,
+          destinataire: _currentData ? (_currentData.destinataire || null) : null,
+          occasion:     _currentData ? (_currentData.occasion     || null) : null,
+          budget:       _currentData ? (_currentData.budget       || null) : null,
+          expires_at:   expires.toISOString()
+        };
+
+        var { error } = await supabase.from('shared_results').insert([payload]);
+        if (error) throw error;
+
+        var shareUrl = 'https://giftfinder-cyan.vercel.app/shared.html?token=' + token;
+        var text = 'D\u00E9couvrez ces id\u00E9es cadeaux trouv\u00E9es par ' + APP_NAME + ' \u2728 ';
+
+        if (navigator.share) {
+          await navigator.share({ title: APP_NAME + ' \u2014 Id\u00E9es cadeaux', text: text, url: shareUrl })
+            .catch(function() {});
+        } else {
+          await navigator.clipboard.writeText(shareUrl).catch(function() {
+            window.prompt('Copiez ce lien de partage :', shareUrl);
+          });
           document.getElementById('shareConfirm').style.display = 'block';
           setTimeout(function() {
             document.getElementById('shareConfirm').style.display = 'none';
           }, 3000);
-        }).catch(function() {
-          // Fallback ultime si clipboard aussi bloquÃ©
-          window.prompt('Copiez ce lien :', url);
-        });
+        }
+      } catch (err) {
+        console.error('Erreur partage :', err);
+        var fallbackUrl = window.location.href;
+        navigator.clipboard.writeText(fallbackUrl).then(function() {
+          document.getElementById('shareConfirm').style.display = 'block';
+          setTimeout(function() { document.getElementById('shareConfirm').style.display = 'none'; }, 3000);
+        }).catch(function() { window.prompt('Copiez ce lien :', fallbackUrl); });
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = '&#128279; Partager ces id\u00E9es cadeaux'; }
       }
     }
 
     function esc(s) {
       return String(s)
         .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        .replace(/>/g,'&gt;').replace(/\"/g,'&quot;');
+    }
+
+    // Enregistrement du Service Worker (PWA)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js').catch(function() {});
+      });
     }
   </script>
 
