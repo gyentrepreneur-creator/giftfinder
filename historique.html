@@ -33,7 +33,7 @@
 
     .h-main {
       flex: 1;
-      padding: 40px 20px 60px;
+      padding: 40px 20px 80px;
       position: relative;
       z-index: 1;
       max-width: 860px;
@@ -142,7 +142,7 @@
       margin-bottom: 24px;
     }
 
-    /* -- Loader -- */
+    /* -- Loader initial -- */
     .h-loader {
       text-align: center;
       padding: 80px 20px;
@@ -158,6 +158,39 @@
       margin: 0 auto 16px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* -- Scroll loader (bas de liste) -- */
+    .h-scroll-loader {
+      display: none;
+      text-align: center;
+      padding: 24px 0 8px;
+      color: #aaa;
+      font-size: 13px;
+    }
+    .h-scroll-loader .h-mini-spinner {
+      width: 22px; height: 22px;
+      border: 2px solid rgba(60,52,137,0.15);
+      border-top-color: #3C3489;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 0 auto 8px;
+    }
+
+    /* -- Fin de l'historique -- */
+    .h-fin {
+      display: none;
+      text-align: center;
+      padding: 28px 20px 8px;
+      font-size: 13px;
+      color: #bbb;
+    }
+    .h-fin span {
+      display: inline-block;
+      border-top: 1px solid #e0e0e0;
+      padding-top: 16px;
+      width: 100%;
+      max-width: 240px;
+    }
 
     .footer { position: relative; z-index: 1; }
 
@@ -187,16 +220,27 @@
     <h1 class="h-title">&#128220; Mes recherches</h1>
     <p class="h-sub" id="h-sub">Chargement...</p>
 
-    <!-- Loader -->
+    <!-- Loader initial -->
     <div id="loader" class="h-loader">
       <div class="h-spinner"></div>
       Chargement de vos recherches...
     </div>
 
-    <!-- Liste -->
+    <!-- Liste des cards -->
     <div id="liste"></div>
 
-    <!-- Vide -->
+    <!-- Loader scroll (entre chaque tranche) -->
+    <div id="scroll-loader" class="h-scroll-loader">
+      <div class="h-mini-spinner"></div>
+      Chargement...
+    </div>
+
+    <!-- Fin de l'historique -->
+    <div id="fin-message" class="h-fin">
+      <span>&#10003; Fin de l&rsquo;historique</span>
+    </div>
+
+    <!-- Empty state -->
     <div id="empty" class="h-empty" style="display:none;">
       <div class="h-empty-icon">&#127873;</div>
       <h2>Aucune recherche pour l'instant</h2>
@@ -238,80 +282,148 @@
     var footerBrandEl = document.getElementById('footer-brand');
     if (footerBrandEl) footerBrandEl.textContent = APP_NAME;
 
-    const OCCASION_EMOJI = {
+    var OCCASION_EMOJI = {
       'Noel': '\uD83C\uDF84', 'Anniversaire': '\uD83C\uDF82', 'Mariage': '\uD83D\uDC8D',
       'Saint-Valentin': '\u2764\uFE0F', 'Autre': '\u2728'
     };
-    const BUDGET_LABEL = {
+    var BUDGET_LABEL = {
       'moins_25': '< 25 \u20AC', '25_50': '25-50 \u20AC',
       '50_100': '50-100 \u20AC', '100_200': '100-200 \u20AC', 'plus_200': '> 200 \u20AC'
     };
 
-    (async function() {
-      const { data: { session } } = await supabase.auth.getSession();
+    var PAGE_SIZE  = 20;
+    var MAX_TOTAL  = 150;
+    var _offset    = 0;
+    var _loading   = false;
+    var _done      = false;
+    var _userId    = null;
+    var _totalDB   = 0;
+
+    function updateSubtitle() {
+      var el = document.getElementById('h-sub');
+      if (_totalDB === 0) { el.textContent = 'Aucune recherche encore.'; return; }
+      var shown = Math.min(_offset, MAX_TOTAL);
+      var total = Math.min(_totalDB, MAX_TOTAL);
+      if (_done || shown >= total) {
+        el.innerHTML = total === 1
+          ? '1 recherche effectu\u00e9e'
+          : total + ' recherches effectu\u00e9es';
+      } else {
+        el.innerHTML = shown + ' sur ' + total + ' recherches';
+      }
+    }
+
+    function renderCard(liste, r) {
+      var emoji   = OCCASION_EMOJI[r.occasion] || '\uD83C\uDF81';
+      var budget  = BUDGET_LABEL[r.budget] || r.budget || '';
+      var centres = (r.centres_interet || []).slice(0, 2).join(', ');
+      var isDone  = r.statut === 'done' || r.statut === 'completed';
+      var date    = new Date(r.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+
+      var a = document.createElement('a');
+      a.className = 'h-card';
+      a.href = 'resultats.html?id=' + r.id;
+      a.innerHTML =
+        '<div class="h-emoji">' + emoji + '</div>' +
+        '<div class="h-info">' +
+          '<div class="h-info-top">' +
+            '<span class="h-destinataire">' + esc(r.destinataire || 'Cadeau') + '</span>' +
+            (r.occasion ? '<span class="h-badge">' + esc(r.occasion) + '</span>' : '') +
+            (isDone
+              ? '<span class="h-badge h-badge-done">\u2713 Termin\u00e9</span>'
+              : '<span class="h-badge">En cours...</span>') +
+          '</div>' +
+          '<div class="h-meta">' +
+            (budget ? 'Budget ' + esc(budget) : '') +
+            (centres ? ' \u00b7 ' + esc(centres) : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="h-date">' + date + '</div>' +
+        '<div class="h-arrow">\u203A</div>';
+
+      liste.appendChild(a);
+    }
+
+    async function loadMore() {
+      if (_loading || _done) return;
+      _loading = true;
+      document.getElementById('scroll-loader').style.display = 'block';
+
+      var from = _offset;
+      var to   = Math.min(_offset + PAGE_SIZE - 1, MAX_TOTAL - 1);
+
+      var res = await supabase
+        .from('searches')
+        .select('id, destinataire, occasion, genre, budget, centres_interet, statut, created_at')
+        .eq('user_id', _userId)
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      document.getElementById('scroll-loader').style.display = 'none';
+      document.getElementById('loader').style.display = 'none';
+
+      if (res.error || !res.data) {
+        _loading = false;
+        return;
+      }
+
+      var data = res.data;
+
+      if (data.length === 0 && _offset === 0) {
+        document.getElementById('empty').style.display = 'block';
+        _done = true;
+        _loading = false;
+        updateSubtitle();
+        return;
+      }
+
+      var liste = document.getElementById('liste');
+      data.forEach(function(r) { renderCard(liste, r); });
+      _offset += data.length;
+
+      var maxReached = _offset >= MAX_TOTAL;
+      var noMore     = data.length < PAGE_SIZE;
+
+      if (maxReached || noMore) {
+        _done = true;
+        document.getElementById('fin-message').style.display = 'block';
+      }
+
+      updateSubtitle();
+      _loading = false;
+    }
+
+    function onScroll() {
+      if (_done || _loading) return;
+      var scrollBottom = document.documentElement.scrollHeight - window.scrollY - window.innerHeight;
+      if (scrollBottom < 300) { loadMore(); }
+    }
+
+    (async function init() {
+      var sess = await supabase.auth.getSession();
+      var session = sess.data.session;
       if (!session) { window.location.href = 'index.html'; return; }
 
-      const prenom = (session.user.user_metadata && session.user.user_metadata.prenom)
-        || session.user.email.split('@')[0];
+      _userId = session.user.id;
 
       document.getElementById('nav-right').innerHTML =
         '<a href="questionnaire.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#127873; Recherche</a>' +
         '<a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>';
 
-      const { data, error } = await supabase
+      // Compte total pour le sous-titre
+      var countRes = await supabase
         .from('searches')
-        .select('id, destinataire, occasion, genre, budget, centres_interet, statut, created_at')
-        .eq('user_id', session.user.id)
-        .order('created_at', { ascending: false })
-        .limit(50);
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', _userId);
+      _totalDB = countRes.count || 0;
 
-      document.getElementById('loader').style.display = 'none';
+      updateSubtitle();
 
-      if (error || !data) {
-        document.getElementById('h-sub').textContent = 'Impossible de charger l\'historique.';
-        return;
-      }
+      // Première tranche
+      await loadMore();
 
-      const nb = data.length;
-      document.getElementById('h-sub').innerHTML =
-        nb === 0 ? 'Aucune recherche encore.' :
-        nb === 1 ? '1 recherche effectu&eacute;e' :
-        nb + ' recherches effectu&eacute;es';
-
-      if (nb === 0) {
-        document.getElementById('empty').style.display = 'block';
-        return;
-      }
-
-      const liste = document.getElementById('liste');
-      data.forEach(function(r) {
-        const emoji   = OCCASION_EMOJI[r.occasion] || '\uD83C\uDF81';
-        const budget  = BUDGET_LABEL[r.budget] || r.budget || '';
-        const centres = (r.centres_interet || []).slice(0, 2).join(', ');
-        const isDone  = r.statut === 'done' || r.statut === 'completed';
-        const date    = new Date(r.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-
-        const a = document.createElement('a');
-        a.className = 'h-card';
-        a.href = 'resultats.html?id=' + r.id;
-        a.innerHTML =
-          '<div class="h-emoji">' + emoji + '</div>' +
-          '<div class="h-info">' +
-            '<div class="h-info-top">' +
-              '<span class="h-destinataire">' + esc(r.destinataire || 'Cadeau') + '</span>' +
-              (r.occasion ? '<span class="h-badge">' + esc(r.occasion) + '</span>' : '') +
-              (isDone ? '<span class="h-badge h-badge-done">\u2713 Termin&eacute;</span>' : '<span class="h-badge">En cours...</span>') +
-            '</div>' +
-            '<div class="h-meta">' +
-              (budget ? 'Budget ' + esc(budget) : '') +
-              (centres ? ' &middot; ' + esc(centres) : '') +
-            '</div>' +
-          '</div>' +
-          '<div class="h-date">' + date + '</div>' +
-          '<div class="h-arrow">\u203A</div>';
-
-        liste.appendChild(a);
-      });
+      // Scroll listener
+      window.addEventListener('scroll', onScroll, { passive: true });
     })();
 
     async function handleLogout() {
