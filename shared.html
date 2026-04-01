@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="fr" translate="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Idées cadeaux partagées — GiftFinder</title>
+  <meta name="description" content="Découvrez ces idées cadeaux trouvées par GiftFinder, l'IA qui personnalise vos suggestions cadeau.">
+  <meta name="theme-color" content="#3C3489">
+  <meta name="robots" content="noindex, follow">
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website">
+  <meta property="og:title"       content="Idées cadeaux — GiftFinder">
+  <meta property="og:description" content="Découvrez ces idées cadeaux personnalisées par l'IA GiftFinder !">
+  <meta property="og:image"       content="https://giftfinder-cyan.vercel.app/og-image.png">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #EEEDFE 0%, #FBEAF0 50%, #E1F5EE 100%);
+      position: relative;
+      overflow-x: hidden;
+    }
+    .deco {
+      position: fixed;
+      border-radius: 50%;
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .deco-violet { background: #7F77DD; width: 180px; height: 180px; top: -45px; left: -45px; }
+    .deco-rose   { background: #D4537E; width: 110px; height: 110px; top: 20px; right: -25px; }
+    .deco-vert   { background: #1D9E75; width:  80px; height:  80px; bottom: 80px; right: 40px; }
+    .deco-ambre  { background: #EF9F27; width:  60px; height:  60px; bottom: 60px; left: 40px; }
+
+    .navbar { position: relative; z-index: 10; }
+
+    .s-main {
+      padding: 40px 20px 80px;
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* Loader */
+    .s-loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 420px;
+      text-align: center;
+    }
+    .s-gift { font-size: 56px; margin-bottom: 12px; animation: gift-bounce 1.4s ease-in-out infinite; }
+    @keyframes gift-bounce {
+      0%,100% { transform: translateY(0) rotate(0deg); }
+      30%     { transform: translateY(-10px) rotate(-6deg); }
+      70%     { transform: translateY(-5px) rotate(6deg); }
+    }
+    .s-spinner {
+      width: 44px; height: 44px;
+      border: 3px solid rgba(60,52,137,0.15);
+      border-top-color: #3C3489;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Error */
+    .s-error {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 380px;
+      text-align: center;
+    }
+
+    /* Header résultats */
+    .s-hdr { text-align: center; margin-bottom: 28px; }
+    .s-hdr h1 { font-size: 26px; font-weight: 700; color: #26215C; margin-bottom: 8px; }
+
+    /* Bandeau "partagé par" */
+    .s-shared-by {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(60,52,137,0.07);
+      border-radius: 999px;
+      padding: 8px 20px;
+      font-size: 13px;
+      color: #3C3489;
+      font-weight: 500;
+      margin-bottom: 32px;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Grid */
+    .s-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    /* Card */
+    .s-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 16px rgba(60,52,137,0.08), 0 1px 4px rgba(0,0,0,0.04);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .s-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(60,52,137,0.15); }
+    .s-card-img {
+      height: 192px;
+      background: linear-gradient(135deg, #7F77DD 0%, #D4537E 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .s-card-img img { width: 100%; height: 100%; object-fit: cover; }
+    .s-card-body { padding: 16px; display: flex; flex-direction: column; flex: 1; gap: 6px; }
+    .s-badge {
+      display: inline-flex;
+      align-self: flex-start;
+      font-size: 10px;
+      font-weight: 700;
+      color: #3C3489;
+      background: rgba(60,52,137,0.08);
+      padding: 3px 9px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .s-card-title { font-size: 14px; font-weight: 700; color: #1a1935; line-height: 1.35; }
+    .s-card-desc {
+      font-size: 12px; color: #666; line-height: 1.55; flex: 1;
+      display: -webkit-box; -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .s-card-price { font-size: 26px; font-weight: 700; color: #3C3489; line-height: 1; }
+    .s-card-btn {
+      display: block;
+      text-align: center;
+      background: #3C3489;
+      color: #EEEDFE;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background .15s;
+      margin-top: 4px;
+    }
+    .s-card-btn:hover { background: #2d2768; color: #EEEDFE; }
+
+    /* CTA inscription */
+    .s-cta-signup {
+      text-align: center;
+      margin-top: 48px;
+      padding: 32px 24px;
+      background: linear-gradient(135deg, rgba(60,52,137,0.08) 0%, rgba(212,83,126,0.06) 100%);
+      border-radius: 20px;
+      border: 1.5px solid rgba(60,52,137,0.12);
+    }
+    .s-cta-signup h2 { font-size: 20px; font-weight: 700; color: #26215C; margin-bottom: 8px; }
+    .s-cta-signup p  { font-size: 14px; color: #666; margin-bottom: 20px; }
+    .s-cta-btn {
+      display: inline-block;
+      background: #3C3489;
+      color: #EEEDFE;
+      padding: 14px 36px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background .15s;
+    }
+    .s-cta-btn:hover { background: #2d2768; color: #EEEDFE; }
+
+    .footer { position: relative; z-index: 1; }
+
+    @media (max-width: 860px) { .s-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 540px) { .s-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <div class="deco deco-violet"></div>
+  <div class="deco deco-rose"></div>
+  <div class="deco deco-vert"></div>
+  <div class="deco deco-ambre"></div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <span class="gift-icon">&#127873;</span>
+      <span class="brand" id="brand-name"></span>
+    </div>
+    <div class="navbar-right">
+      <a href="index.html" class="btn-primary" style="text-decoration:none;">
+        Essayer gratuitement &#10024;
+      </a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="s-main">
+
+    <!-- Loader -->
+    <div id="loader" class="s-loader">
+      <div class="s-gift">&#127873;</div>
+      <div class="s-spinner"></div>
+      <h2 style="font-size:20px;font-weight:700;color:#26215C;margin:0 0 8px;">Chargement des id&eacute;es&hellip;</h2>
+      <p style="font-size:14px;color:#666;">Quelques secondes&hellip;</p>
+    </div>
+
+    <!-- Erreur -->
+    <div id="errorState" class="s-error">
+      <div style="font-size:48px;margin-bottom:16px;">&#128533;</div>
+      <h2 style="font-size:20px;font-weight:700;color:#26215C;margin-bottom:8px;">Lien invalide ou expir&eacute;</h2>
+      <p style="font-size:14px;color:#666;margin-bottom:24px;" id="errorMessage">
+        Ce lien de partage n&rsquo;existe pas ou a expir&eacute;.
+      </p>
+      <a href="index.html" class="btn-primary" style="text-decoration:none;display:inline-block;padding:12px 28px;">
+        Cr&eacute;er mes propres id&eacute;es cadeaux &#10024;
+      </a>
+    </div>
+
+    <!-- Résultats -->
+    <div id="resultsSection" style="display:none;">
+
+      <div class="s-hdr">
+        <div class="s-shared-by">
+          &#127873; Id&eacute;es cadeaux partag&eacute;es via <strong id="brand-name-inline"></strong>
+        </div>
+        <h1 id="resultsTitle">Id&eacute;es cadeaux</h1>
+        <p style="font-size:14px;color:#666;" id="resultsSubtitle"></p>
+      </div>
+
+      <div class="s-grid" id="resultsGrid"></div>
+
+      <!-- CTA inscription -->
+      <div class="s-cta-signup">
+        <h2>&#127873; Trouvez vos propres id&eacute;es cadeaux !</h2>
+        <p>Essayez <span id="brand-cta"></span> gratuitement — 9 suggestions personnalis&eacute;es par l&rsquo;IA en 30 secondes.</p>
+        <a href="index.html" class="s-cta-btn">Commencer gratuitement &#10024;</a>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-top">
+      <span id="footer-brand"></span> &mdash; <a href="index.html">Trouver mes cadeaux</a>
+    </div>
+    <div class="footer-links">
+      <a href="mentions-legales.html">Mentions l&eacute;gales</a>
+      <a href="confidentialite.html">Confidentialit&eacute;</a>
+      <a href="cgu.html">CGU</a>
+    </div>
+    <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
+    <div class="footer-social">
+      <p>📸 Instagram <a href="https://instagram.com/giftfinder2.0" target="_blank">@GIFTFINDER2.0</a> &nbsp;|&nbsp; 🎵 TikTok <a href="https://tiktok.com/@giftfinder2.0" target="_blank">@giftfinder2.0</a></p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script>
+    // Injection APP_NAME
+    document.querySelectorAll('#brand-name, #brand-name-inline, #brand-cta, #footer-brand').forEach(function(el) {
+      el.textContent = APP_NAME;
+    });
+
+    // Récupération du token depuis l'URL
+    var params = new URLSearchParams(window.location.search);
+    var token  = params.get('token');
+
+    if (!token) {
+      showError('Aucun token de partage fourni dans l\'URL.');
+    } else {
+      loadSharedResults(token);
+    }
+
+    async function loadSharedResults(token) {
+      try {
+        var { data, error } = await supabase
+          .from('shared_results')
+          .select('suggestions, destinataire, occasion, budget, expires_at')
+          .eq('token', token)
+          .single();
+
+        if (error || !data) {
+          showError('Ce lien de partage n\'existe pas ou a expir\u00e9.');
+          return;
+        }
+
+        // V\u00e9rifier expiration
+        if (data.expires_at && new Date(data.expires_at) < new Date()) {
+          showError('Ce lien de partage a expir\u00e9 (validit\u00e9 30 jours).');
+          return;
+        }
+
+        displayResults(data);
+      } catch (err) {
+        showError('Erreur de chargement : ' + err.message);
+      }
+    }
+
+    function displayResults(data) {
+      document.getElementById('loader').style.display = 'none';
+
+      var products = [];
+      try {
+        products = typeof data.suggestions === 'string'
+          ? JSON.parse(data.suggestions)
+          : (Array.isArray(data.suggestions) ? data.suggestions : []);
+      } catch(e) {
+        showError('Format de donn\u00e9es invalide.');
+        return;
+      }
+
+      if (!products.length) {
+        showError('Aucun r\u00e9sultat dans ce partage.');
+        return;
+      }
+
+      // Titre et sous-titre
+      var budgetLabel = { moins_25:'< 25\u20ac', '25_50':'25-50\u20ac', '50_100':'50-100\u20ac', '100_200':'100-200\u20ac', plus_200:'> 200\u20ac' };
+      document.getElementById('resultsTitle').textContent =
+        '\ud83c\udf81 Id\u00e9es cadeaux' + (data.destinataire ? ' pour ' + data.destinataire : '');
+      document.getElementById('resultsSubtitle').textContent =
+        (data.occasion ? data.occasion : '') +
+        (data.budget   ? (data.occasion ? ' \u2014 ' : '') + 'Budget ' + (budgetLabel[data.budget] || data.budget) : '') +
+        ' \u2014 Trouv\u00e9es par ' + APP_NAME;
+
+      // Remplissage de la grille
+      var grid = document.getElementById('resultsGrid');
+      grid.innerHTML = '';
+
+      products.slice(0, 9).forEach(function(p) {
+        var card = document.createElement('div');
+        card.className = 's-card';
+
+        var imgHtml = (p.image || p.img)
+          ? '<div class="s-card-img"><img src="' + esc(p.image || p.img) +
+            '" alt="' + esc(p.nom || p.name || '') + '" onerror="this.parentElement.innerHTML=\'&#127873;\'"></div>'
+          : '<div class="s-card-img">&#127873;</div>';
+
+        var badge = (p.plateforme || p.platform)
+          ? '<span class="s-badge">' + esc(p.plateforme || p.platform) + '</span>' : '';
+
+        var titre  = p.titre || p.nom || p.name || 'Cadeau';
+        var prix   = p.prix_estime || p.prix || p.price || '';
+        var lienBrut = p.lien_recherche || p.lien || p.url || '';
+        var lien = lienBrut;
+        if (lienBrut && lienBrut.includes('amazon')) {
+          lien = lienBrut + (lienBrut.includes('?') ? '&' : '?') + 'tag=giftfinder0d6-21';
+        }
+
+        var buyBtn = lien
+          ? '<a class="s-card-btn" href="' + esc(lien) + '" target="_blank" rel="noopener">Voir le produit &rarr;</a>'
+          : '<a class="s-card-btn" href="https://www.amazon.fr/s?k=' + encodeURIComponent(titre) + '&tag=giftfinder0d6-21" target="_blank" rel="noopener">Rechercher sur Amazon &rarr;</a>';
+
+        card.innerHTML =
+          imgHtml +
+          '<div class="s-card-body">' +
+            badge +
+            '<div class="s-card-title">' + esc(titre) + '</div>' +
+            '<div class="s-card-desc">'  + esc(p.description || '') + '</div>' +
+            (prix ? '<div class="s-card-price">~' + esc(String(prix)) + '\u20ac</div>' : '') +
+            buyBtn +
+          '</div>';
+
+        grid.appendChild(card);
+      });
+
+      document.getElementById('resultsSection').style.display = 'block';
+    }
+
+    function showError(msg) {
+      document.getElementById('loader').style.display     = 'none';
+      document.getElementById('errorState').style.display = 'flex';
+      if (msg) document.getElementById('errorMessage').textContent = msg;
+    }
+
+    function esc(s) {
+      return String(s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/\"/g,'&quot;');
+    }
+
+    // Enregistrement du service worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js').catch(function() {});
+      });
+    }
+  </script>
+</body>
+</html>
