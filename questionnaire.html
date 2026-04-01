@@ -11,7 +11,7 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: linear-gradient(135deg, #EEEDFE 0%, #FBEAF0 50%, #E1F5EE 100%);
+      background: linear-gradient(135deg, #EEEDFE 0%, #FBEAF0 50%, #E1F5EE 100%);h
       position: relative;
       overflow-x: hidden;
       display: flex;
@@ -414,7 +414,7 @@
       submitBtn.disabled    = true;
       submitBtn.textContent = 'Analyse en cours...';
 
-      // -- Limite : 3 recherches gratuites par jour --
+      // -- Limite : 10 recherches gratuites par jour --
       // Admin bypass : pas de limite pour le compte propriétaire
       try {
         const { data: { session: sess } } = await supabase.auth.getSession();
