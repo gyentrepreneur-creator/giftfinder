@@ -5,14 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GiftFinder &mdash; Vos id&eacute;es cadeaux</title>
   <meta name="theme-color" content="#3C3489">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð</text></svg>">
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
   <style>
     body {
       margin: 0;
       min-height: 100vh;
-      background: linear-gradient(135deg, #EEEDFE 0%, #FBEAF0 50%, #E1F5EE 100%);
+      background: linear-gradient(135deg, #EEEDFE 0%, #FCEAF0 50%, #E1F5EE 100%);
       position: relative;
       overflow-x: hidden;
     }
@@ -231,9 +232,9 @@
               onclick="window.location.href='questionnaire.html'">R&eacute;essayer</button>
     </div>
 
-    <!-- État : résultats -->
+    <!-- Ãtat : rÃ©sultats -->
     <div id="resultsSection" style="display:none;">
-      <div class="r-hdr">
+      <div class="r-hdr anim-fade-up anim-hero">
         <h1>&#127873; Vos id&eacute;es cadeaux</h1>
         <p style="font-size:14px;color:#666;" id="resultsSubtitle">S&eacute;lectionn&eacute;es par notre IA pour vous</p>
       </div>
@@ -303,6 +304,7 @@
   <script src="js/config.js"></script>
   <script src="js/supabase-init.js"></script>
   <script src="js/analytics.js"></script>
+  <script src="js/animate.js"></script>
   <script>
     document.getElementById('brand-name').textContent   = APP_NAME;
     document.getElementById('footer-brand').textContent = APP_NAME;
@@ -315,7 +317,7 @@
     let pollInterval  = null;
     let pollCount     = 0;
     const MAX_POLLS   = 60;
-    let _currentData  = null; // stocke les données pour handleShare
+    let _currentData  = null; // stocke les donnÃ©es pour handleShare
 
     (async function() {
       const { data: { session } } = await supabase.auth.getSession();
@@ -367,7 +369,7 @@
     function displayResults(data) {
       _currentData = data; // sauvegarde pour handleShare
       document.getElementById('loader').style.display = 'none';
-      document.getElementById('resultsSection').style.display = 'block'; // affiché tôt pour éviter page blanche
+      document.getElementById('resultsSection').style.display = 'block'; // affichÃ© tÃ´t pour Ã©viter page blanche
 
       try {
         var products = [];
@@ -385,7 +387,7 @@
           return;
         }
 
-        // ── Analytics : results_viewed ──
+        // ââ Analytics : results_viewed ââ
         if (window.GFAnalytics) {
           GFAnalytics.track('results_viewed', {
             search_id:    searchId,
@@ -423,11 +425,11 @@
 
             var badge = (p.plateforme || p.platform)
               ? '<span class="r-badge">' + esc(p.plateforme || p.platform) + '</span>' : '';
-            // Compatibilité avec les deux formats de champs (ancien et nouveau)
+            // CompatibilitÃ© avec les deux formats de champs (ancien et nouveau)
             var titre = p.titre || p.nom || p.name || 'Cadeau';
             var prix = p.prix_estime || p.prix || p.price || '';
             var lienBrut = p.lien_recherche || p.lien || p.url || '';
-            // Ajouter le tag affilié Amazon si c'est un lien Amazon
+            // Ajouter le tag affiliÃ© Amazon si c'est un lien Amazon
             var lien = lienBrut;
             if (lienBrut && lienBrut.includes('amazon')) {
               lien = lienBrut + (lienBrut.includes('?') ? '&' : '?') + 'tag=giftfinder0d6-21';
@@ -453,6 +455,11 @@
           }
         });
 
+        // DÃ©clencher les animations des cartes + confetti
+        if (typeof window.animateResultCards === 'function') {
+          window.animateResultCards();
+        }
+
         updateNewSearchCTA();
       } catch (e) {
         console.error('displayResults erreur :', e);
@@ -464,11 +471,11 @@
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
-        // Admin bypass : recherches illimitées
+        // Admin bypass : recherches illimitÃ©es
         const ADMIN_EMAILS = ['gyentrepreneur@gmail.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
         if (ADMIN_EMAILS.includes(session.user.email)) {
           const adminEl = document.getElementById('ctaQuotaMsg');
-          if (adminEl) adminEl.innerHTML = '<strong>Recherches illimitées</strong> 🎉';
+          if (adminEl) adminEl.innerHTML = '<strong>Recherches illimitÃ©es</strong> ð';
           return;
         }
         const today = new Date().toISOString().slice(0, 10);
@@ -515,11 +522,11 @@
       var btn = document.getElementById('shareBtn');
       if (btn) { btn.disabled = true; btn.textContent = '\u23F3 G\u00E9n\u00E9ration du lien\u2026'; }
 
-      // ── Analytics : share_clicked ──
+      // ââ Analytics : share_clicked ââ
       if (window.GFAnalytics) GFAnalytics.track('share_clicked', { search_id: searchId });
 
       try {
-        // Générer un token unique (UUID v4)
+        // GÃ©nÃ©rer un token unique (UUID v4)
         var token = (crypto.randomUUID ? crypto.randomUUID() :
           'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
             var r = Math.random() * 16 | 0;
