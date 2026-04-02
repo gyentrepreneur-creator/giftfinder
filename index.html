@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GiftFinder — Trouvez le cadeau parfait</title>
+  <title>GiftFinder â Trouvez le cadeau parfait</title>
 
   <!-- SEO -->
-  <meta name="description" content="GiftFinder trouve 9 idées cadeaux personnalisées en 30 secondes grâce à l'IA. Saisissez l'âge, l'occasion et le budget — recevez des liens Amazon directs.">
-  <meta name="keywords" content="idée cadeau, cadeau personnalisé, cadeau anniversaire, cadeau noël, cadeau homme, cadeau femme, idée cadeau IA">
+  <meta name="description" content="GiftFinder trouve 9 idÃ©es cadeaux personnalisÃ©es en 30 secondes grÃ¢ce Ã  l'IA. Saisissez l'Ã¢ge, l'occasion et le budget â recevez des liens Amazon directs.">
+  <meta name="keywords" content="idÃ©e cadeau, cadeau personnalisÃ©, cadeau anniversaire, cadeau noÃ«l, cadeau homme, cadeau femme, idÃ©e cadeau IA">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#3C3489">
   <link rel="canonical" href="https://giftfinder-cyan.vercel.app/">
@@ -16,16 +16,16 @@
   <!-- Open Graph (Facebook / LinkedIn) -->
   <meta property="og:type"        content="website">
   <meta property="og:url"         content="https://giftfinder-cyan.vercel.app/">
-  <meta property="og:title"       content="GiftFinder — Trouvez le cadeau parfait">
-  <meta property="og:description" content="9 idées cadeaux personnalisées en 30 secondes grâce à l'IA. Anniversaire, Noël, Mariage… l'IA trouve le cadeau parfait selon l'âge, les goûts et le budget.">
+  <meta property="og:title"       content="GiftFinder â Trouvez le cadeau parfait">
+  <meta property="og:description" content="9 idÃ©es cadeaux personnalisÃ©es en 30 secondes grÃ¢ce Ã  l'IA. Anniversaire, NoÃ«l, Mariageâ¦ l'IA trouve le cadeau parfait selon l'Ã¢ge, les goÃ»ts et le budget.">
   <meta property="og:image"       content="https://giftfinder-cyan.vercel.app/og-image.png">
   <meta property="og:locale"      content="fr_FR">
   <meta property="og:site_name"   content="GiftFinder">
 
   <!-- Twitter Card -->
   <meta name="twitter:card"        content="summary_large_image">
-  <meta name="twitter:title"       content="GiftFinder — Trouvez le cadeau parfait">
-  <meta name="twitter:description" content="9 idées cadeaux personnalisées en 30 secondes grâce à l'IA. Essayez gratuitement !">
+  <meta name="twitter:title"       content="GiftFinder â Trouvez le cadeau parfait">
+  <meta name="twitter:description" content="9 idÃ©es cadeaux personnalisÃ©es en 30 secondes grÃ¢ce Ã  l'IA. Essayez gratuitement !">
   <meta name="twitter:image"       content="https://giftfinder-cyan.vercel.app/og-image.png">
   <meta name="twitter:site"        content="@giftfinder2.0">
 
@@ -36,7 +36,7 @@
     "@type": "WebApplication",
     "name": "GiftFinder",
     "url": "https://giftfinder-cyan.vercel.app/",
-    "description": "Application IA de recommandation de cadeaux personnalisés. Trouvez le cadeau parfait pour n'importe quelle occasion.",
+    "description": "Application IA de recommandation de cadeaux personnalisÃ©s. Trouvez le cadeau parfait pour n'importe quelle occasion.",
     "applicationCategory": "LifestyleApplication",
     "operatingSystem": "All",
     "inLanguage": "fr",
@@ -48,14 +48,15 @@
   }
   </script>
 
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð</text></svg>">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
 </head>
 <body>
 
   <nav class="navbar">
     <div class="navbar-left">
-      <span class="gift-icon">🎁</span>
+      <span class="gift-icon">ð</span>
       <span class="brand" id="brand-name"></span>
     </div>
     <div class="navbar-right" id="nav-right">
@@ -65,64 +66,67 @@
   </nav>
 
   <section class="hero">
-    <div class="badge">
+    <div class="badge anim-fade-up anim-hero anim-delay-1">
       <span class="dot"></span>
-      +1 000 cadeaux trouvés
+      +1 000 cadeaux trouvÃ©s
     </div>
-    <h1>Fini les cadeaux<br><span class="highlight">ratés</span></h1>
-    <p class="subtitle">
-      Décrivez la personne, l'occasion et votre budget.<br>
-      Notre IA trouve 9 idées parfaites en quelques secondes.
+    <h1 class="anim-fade-up anim-hero anim-delay-2">Fini les cadeaux<br><span class="highlight">ratÃ©s</span></h1>
+    <p class="subtitle anim-fade-up anim-hero anim-delay-3">
+      DÃ©crivez la personne, l'occasion et votre budget.<br>
+      Notre IA trouve 9 idÃ©es parfaites en quelques secondes.
     </p>
-    <div class="avatars-row">
+    <div class="avatars-row anim-fade-up anim-hero anim-delay-4">
       <span class="avatar avatar-ml">ML</span>
       <span class="avatar avatar-jd">JD</span>
       <span class="avatar avatar-sr">SR</span>
       <span class="avatar avatar-ak">AK</span>
-      <span class="stars">★★★★★</span>
-      <span class="rating-text">+1 000 cadeaux trouvés</span>
+      <span class="stars">âââââ</span>
+      <span class="rating-text">+1 000 cadeaux trouvÃ©s</span>
     </div>
-    <button class="btn-cta" onclick="handleHeroCta()">Trouver un cadeau →</button>
-    <span class="cta-sub">Gratuit · Sans carte bancaire</span>
+    <button class="btn-cta anim-fade-up anim-hero anim-delay-5" onclick="handleHeroCta()">Trouver un cadeau â</button>
+    <span class="cta-sub anim-fade-in anim-hero anim-delay-6">Gratuit Â· Sans carte bancaire</span>
   </section>
 
   <section class="arguments">
-    <div class="argument">
-      <div class="arg-icon">🎯</div>
-      <h3>100% personnalisé</h3>
-      <p>Des suggestions adaptées à la personne,<br>à l'occasion et à votre budget.</p>
+    <div class="argument anim-fade-up anim-delay-1">
+      <div class="arg-icon">ð¯</div>
+      <h3>100% personnalisÃ©</h3>
+      <p>Des suggestions adaptÃ©es Ã  la personne,<br>Ã  l'occasion et Ã  votre budget.</p>
     </div>
-    <div class="argument">
-      <div class="arg-icon">⚡</div>
-      <h3>Prêt en 30 secondes</h3>
-      <p>Répondez à 4 questions simples<br>et laissez l'IA faire le reste.</p>
+    <div class="argument anim-fade-up anim-delay-2">
+      <div class="arg-icon">â¡</div>
+      <h3>PrÃªt en 30 secondes</h3>
+      <p>RÃ©pondez Ã  4 questions simples<br>et laissez l'IA faire le reste.</p>
     </div>
-    <div class="argument">
-      <div class="arg-icon">🔗</div>
-      <h3>Liens vérifiés</h3>
-      <p>Chaque suggestion inclut un lien direct<br>vers Amazon, Fnac, Shein…</p>
+    <div class="argument anim-fade-up anim-delay-3">
+      <div class="arg-icon">ð</div>
+      <h3>Liens vÃ©rifiÃ©s</h3>
+      <p>Chaque suggestion inclut un lien direct<br>vers Amazon, Fnac, Sheinâ¦</p>
     </div>
   </section>
 
   <section class="pills">
-    <span class="pill pill-noel">🎄 Noël</span>
-    <span class="pill pill-valentin">❤️ Saint-Valentin</span>
-    <span class="pill pill-anniv">🎂 Anniversaire</span>
-    <span class="pill pill-mariage">💍 Mariage</span>
-    <span class="pill pill-autre">＋ Autre</span>
+    <span class="pill pill-noel anim-scale-up anim-delay-1">ð NoÃ«l</span>
+    <span class="pill pill-valentin anim-scale-up anim-delay-2">â¤ï¸ Saint-Valentin</span>
+    <span class="pill pill-anniv anim-scale-up anim-delay-3">ð Anniversaire</span>
+    <span class="pill pill-mariage anim-scale-up anim-delay-4">ð Mariage</span>
+    <span class="pill pill-autre anim-scale-up anim-delay-5">ï¼ Autre</span>
   </section>
 
   <footer class="footer">
     <div class="footer-top">
-      Déjà un compte ? <a href="#" onclick="openAuth('login'); return false;">Se connecter</a>
+      DÃ©jÃ  un compte ? <a href="#" onclick="openAuth('login'); return false;">Se connecter</a>
     </div>
     <div class="footer-links">
-      <a href="mentions-legales.html">Mentions légales</a>
-      <a href="confidentialite.html">Confidentialité</a>
+      <a href="blog/index.html">Blog</a>
+      <a href="mentions-legales.html">Mentions lÃ©gales</a>
+      <a href="confidentialite.html">ConfidentialitÃ©</a>
       <a href="cgu.html">CGU</a>
     </div>
-    <p class="footer-amazon">En tant que Partenaire Amazon, je réalise un bénéfice sur les achats remplissant les conditions requises.</p>
-    <div class="footer-social" style="display:flex;gap:28px;justify-content:center;align-items:center;margin-top:12px;"><a href="https://www.instagram.com/giftfinder2.0" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#C13584" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg><span style="font-size:11px;font-weight:600;letter-spacing:.3px;">@GIFTFINDER2.0</span></a><a href="https://www.tiktok.com/@giftfinder2.0" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="#010101"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.45a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.77 1.52V6.76a4.85 4.85 0 0 1-1-.07z"/></svg><span style="font-size:11px;font-weight:600;letter-spacing:.3px;">@giftfinder2.0</span></a></div>
+    <p class="footer-amazon">En tant que Partenaire Amazon, je rÃ©alise un bÃ©nÃ©fice sur les achats remplissant les conditions requises.</p>
+    <div class="footer-social">
+      <p>ð¸ Instagram <a href="https://instagram.com/giftfinder2.0" target="_blank">@GIFTFINDER2.0</a> &nbsp;|&nbsp; ðµ TikTok <a href="https://tiktok.com/@giftfinder2.0" target="_blank">@giftfinder2.0</a></p>
+    </div>
   </footer>
 
   <div class="auth-overlay" id="authOverlay" style="display:none;">
@@ -135,12 +139,12 @@
         <input type="email" id="authEmail" placeholder="vous@exemple.com">
       </div>
       <div class="form-group" id="authPrenomGroup" style="display:none;">
-        <label for="authPrenom">Prénom</label>
-        <input type="text" id="authPrenom" placeholder="Votre prénom">
+        <label for="authPrenom">PrÃ©nom</label>
+        <input type="text" id="authPrenom" placeholder="Votre prÃ©nom">
       </div>
       <div class="form-group">
         <label for="authPassword">Mot de passe</label>
-        <input type="password" id="authPassword" placeholder="••••••••">
+        <input type="password" id="authPassword" placeholder="â¢â¢â¢â¢â¢â¢â¢â¢">
       </div>
       <button class="btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:4px;" id="authSubmitBtn" onclick="handleAuth()">Se connecter</button>
       <p class="auth-toggle" id="authToggle">
@@ -153,7 +157,7 @@
     </div>
   </div>
 
-  <!-- Toast compte supprimé -->
+  <!-- Toast compte supprimÃ© -->
   <div id="deletedToast" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
     background:#1a1935;color:#fff;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:500;
     z-index:200;box-shadow:0 4px 20px rgba(0,0,0,0.2);">
@@ -163,6 +167,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/supabase-init.js"></script>
+  <script src="js/animate.js"></script>
   <script>
     document.getElementById('brand-name').textContent = APP_NAME;
 
@@ -178,10 +183,10 @@
         document.getElementById('authToggle').innerHTML = "Pas encore de compte ? <a onclick='toggleAuthMode()'>S'inscrire</a>";
         document.getElementById('authPrenomGroup').style.display = 'none';
       } else {
-        document.getElementById('authTitle').textContent = 'Créer un compte';
+        document.getElementById('authTitle').textContent = 'CrÃ©er un compte';
         document.getElementById('authSub').textContent = 'Inscrivez-vous gratuitement pour commencer';
         document.getElementById('authSubmitBtn').textContent = "S'inscrire";
-        document.getElementById('authToggle').innerHTML = "Déjà un compte ? <a onclick='toggleAuthMode()'>Se connecter</a>";
+        document.getElementById('authToggle').innerHTML = "DÃ©jÃ  un compte ? <a onclick='toggleAuthMode()'>Se connecter</a>";
         document.getElementById('authPrenomGroup').style.display = 'block';
       }
       document.getElementById('authOverlay').style.display = 'flex';
@@ -189,6 +194,7 @@
 
     function toggleAuthMode() { openAuth(authMode === 'login' ? 'signup' : 'login'); }
 
+    // Afficher/masquer le lien "Mot de passe oubliÃ©" selon le mode
     const origOpenAuth = openAuth;
     function updateForgotLink() {
       const fl = document.getElementById('forgotPasswordLink');
@@ -196,6 +202,7 @@
       if (fl) fl.style.display = authMode === 'login' ? 'block' : 'none';
       if (as) as.style.display = 'none';
     }
+    // Patch openAuth pour mettre Ã  jour le lien Ã  chaque ouverture
     const _origOpen = openAuth;
     window.openAuth = function(mode) {
       _origOpen(mode);
@@ -224,7 +231,7 @@
         errorEl.textContent = error.message || 'Erreur lors de l\'envoi du mail.';
         errorEl.style.display = 'block';
       } else {
-        successEl.textContent = '\u2705 Un e-mail de r\u00e9initialisation a \u00e9t\u00e9 envoy\u00e9 \u00e0 ' + email;
+        successEl.textContent = '\u2705 Un e-mail de r\u00E9initialisation a \u00E9t\u00E9 envoy\u00E9 \u00E0 ' + email;
         successEl.style.display = 'block';
       }
     }
@@ -233,6 +240,7 @@
       if (e.target === this) this.style.display = 'none';
     });
 
+    // Afficher toast si compte supprimÃ©
     (function() {
       const p = new URLSearchParams(window.location.search);
       if (p.get('deleted') === '1') {
@@ -242,6 +250,7 @@
           setTimeout(function() { t.style.opacity = '0'; t.style.transition = 'opacity 0.5s'; }, 3500);
           setTimeout(function() { t.style.display = 'none'; }, 4100);
         }
+        // Nettoyer l'URL
         history.replaceState(null, '', window.location.pathname);
       }
     })();
@@ -268,7 +277,7 @@
       }
       const btn = document.getElementById('authSubmitBtn');
       btn.disabled = true;
-      btn.textContent = 'Chargement…';
+      btn.textContent = 'Chargementâ¦';
       try {
         if (authMode === 'signup') {
           const prenom = document.getElementById('authPrenom').value.trim();
@@ -300,12 +309,15 @@
       }
     })();
 
-    // ── Social proof dynamique ──
+    // ââ Social proof dynamique ââ
+    // Tente de rÃ©cupÃ©rer les stats rÃ©elles depuis Supabase.
+    // En cas d'Ã©chec (RLS, erreur rÃ©seau) : les valeurs statiques restent affichÃ©es.
     (async function loadSocialProof() {
       try {
         var now = new Date();
         var firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
+        // RequÃªtes parallÃ¨les : total + mois courant
         var results = await Promise.all([
           supabase.from('searches').select('id', { count: 'exact', head: true }).in('statut', ['done', 'completed']),
           supabase.from('searches').select('id', { count: 'exact', head: true }).in('statut', ['done', 'completed']).gte('created_at', firstOfMonth)
@@ -314,11 +326,14 @@
         var totalCount = results[0].count || 0;
         var monthCount = results[1].count || 0;
 
-        if (totalCount >= 100) {
+        // Seulement si on a des donnÃ©es rÃ©elles
+        if (totalCount > 0) {
+          // Formater le total (arrondi aux centaines pour crÃ©dibilitÃ©)
           var displayTotal = totalCount >= 1000
-            ? '+' + (Math.floor(totalCount / 100) * 100).toLocaleString('fr-FR') + ' cadeaux trouvés'
-            : '+' + totalCount + ' cadeau' + (totalCount > 1 ? 'x' : '') + ' trouvé' + (totalCount > 1 ? 's' : '');
+            ? '+' + (Math.floor(totalCount / 100) * 100).toLocaleString('fr-FR') + ' cadeaux trouvÃ©s'
+            : '+' + totalCount + ' cadeau' + (totalCount > 1 ? 'x' : '') + ' trouvÃ©' + (totalCount > 1 ? 's' : '');
 
+          // Mettre Ã  jour le badge hero
           var badgeEl = document.querySelector('.badge');
           if (badgeEl) {
             var dotEl = badgeEl.querySelector('.dot');
@@ -327,12 +342,15 @@
             badgeEl.appendChild(document.createTextNode(' ' + displayTotal));
           }
 
+          // Mettre Ã  jour le texte des avatars
           var ratingEl = document.querySelector('.rating-text');
           if (ratingEl) ratingEl.textContent = displayTotal;
         }
 
+        // Stat mensuelle : afficher si â¥ 3 pour que ce soit crÃ©dible
         if (monthCount >= 3) {
           var monthLabel = '+' + monthCount + ' cadeau' + (monthCount > 1 ? 'x' : '') + ' ce mois';
+          // InsÃ©rer une ligne discrÃ¨te sous le badge
           var heroSection = document.querySelector('.hero');
           if (heroSection && !document.getElementById('stat-mois')) {
             var statEl = document.createElement('div');
@@ -346,7 +364,7 @@
           }
         }
       } catch(e) {
-        // Fail silently
+        // Fail silently â les valeurs statiques restent affichÃ©es
       }
     })();
 
