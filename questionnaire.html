@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GiftFinder &#8212; Questionnaire</title>
   <meta name="theme-color" content="#3C3489">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ð</text></svg>">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
   <style>
     body {
       margin: 0;
@@ -116,11 +117,18 @@
     .chip:hover {
       background: rgba(60,52,137,0.07);
       border-color: rgba(60,52,137,0.5);
+      transform: translateY(-2px);
     }
     .chip.selected {
       background: #3C3489;
       color: #EEEDFE;
       border-color: #3C3489;
+      animation: chip-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes chip-pop {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.12); }
+      100% { transform: scale(1); }
     }
 
     /* Error */
@@ -188,15 +196,15 @@
 
   <!-- CONTENU -->
   <div class="q-wrap">
-    <div class="q-card">
+    <div class="q-card anim-scale-up anim-hero">
 
       <!-- Barre de progression -->
       <div class="q-prog-bar">
         <div class="q-prog-fill" id="progressFill"></div>
       </div>
 
-      <h2 class="q-title">Trouvons le cadeau parfait</h2>
-      <p class="q-subtitle">R&eacute;pondez &agrave; quelques questions &mdash; notre IA fait le reste.</p>
+      <h2 class="q-title anim-fade-up anim-hero anim-delay-1">Trouvons le cadeau parfait</h2>
+      <p class="q-subtitle anim-fade-up anim-hero anim-delay-2">R&eacute;pondez &agrave; quelques questions &mdash; notre IA fait le reste.</p>
 
       <div class="q-error" id="formError"></div>
 
@@ -264,7 +272,7 @@
         </div>
       </div>
 
-      <!-- 7 . Infos supplémentaires (optionnel) -->
+      <!-- 7 . Infos supplÃ©mentaires (optionnel) -->
       <div class="q-field">
         <label class="q-label" for="infos-sup">
           Dis-moi en plus <span style="font-size:11px;font-weight:400;color:#aaa;">(facultatif)</span>
@@ -311,6 +319,7 @@
   <script src="js/config.js"></script>
   <script src="js/supabase-init.js"></script>
   <script src="js/analytics.js"></script>
+  <script src="js/animate.js"></script>
   <script>
     document.getElementById('brand-name').textContent = APP_NAME;
     var footerBrandEl = document.getElementById('footer-brand');
@@ -347,7 +356,7 @@
       });
     });
 
-    // -- Compteur caractères textarea --
+    // -- Compteur caractÃ¨res textarea --
     document.getElementById('infos-sup').addEventListener('input', function() {
       document.getElementById('infos-sup-count').textContent = this.value.length + ' / 400';
     });
@@ -378,7 +387,7 @@
         '<a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>';
 
       // -- Afficher les recherches restantes aujourd'hui --
-      // Admin bypass : pas de limite pour les comptes propriétaires
+      // Admin bypass : pas de limite pour les comptes propriÃ©taires
       const ADMIN_EMAILS = ['gyentrepreneur@gmail.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
       if (!ADMIN_EMAILS.includes(session.user.email)) {
         try {
@@ -394,7 +403,7 @@
           if (hintEl) {
             if (restantes === 0) {
               hintEl.innerHTML = '<span style="color:#b91c1c;font-weight:600;">\u26A0\uFE0F Limite atteinte \u2014 revenez demain !</span>';
-              // Désactiver le bouton dès le chargement si quota épuisé
+              // DÃ©sactiver le bouton dÃ¨s le chargement si quota Ã©puisÃ©
               var btn = document.getElementById('submitBtn');
               if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
             } else {
@@ -402,7 +411,7 @@
             }
           }
         } catch (e) {
-          // fail silently, message par defaut reste affiché
+          // fail silently, message par defaut reste affichÃ©
         }
       }
     })();
@@ -433,7 +442,7 @@
       submitBtn.textContent = 'Analyse en cours...';
 
       // -- Limite : 10 recherches gratuites par jour --
-      // Admin bypass : pas de limite pour le compte propriétaire
+      // Admin bypass : pas de limite pour le compte propriÃ©taire
       try {
         const { data: { session: sess } } = await supabase.auth.getSession();
         const ADMIN_EMAILS_2 = ['gyentrepreneur@gmail.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
@@ -481,7 +490,7 @@
 
         if (error) throw error;
 
-        // ── Analytics : search_initiated ──
+        // ââ Analytics : search_initiated ââ
         if (typeof GFAnalytics !== 'undefined') {
           GFAnalytics.track('search_initiated', {
             search_id:    data.id,
