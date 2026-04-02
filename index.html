@@ -65,7 +65,7 @@
   </nav>
 
   <section class="hero">
-    <div class="badge" style="display:none">
+    <div class="badge">
       <span class="dot"></span>
       +1 000 cadeaux trouvés
     </div>
@@ -302,6 +302,7 @@
 
     // ── Social proof dynamique ──
     (async function loadSocialProof() {
+    return; // badge temporairement masqué
       try {
         var now = new Date();
         var firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
