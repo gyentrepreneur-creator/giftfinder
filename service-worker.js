@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────
-   GiftFinder — Service Worker v1.0
+   Kadoizi — Service Worker v1.0
    Stratégie : Cache-first pour assets statiques,
                Network-first pour API Supabase.
    ───────────────────────────────────────────── */
