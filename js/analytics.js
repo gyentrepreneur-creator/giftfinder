@@ -1,5 +1,5 @@
 /**
- * GiftFinder Analytics — Tracking léger d'événements
+ * Kadoizi Analytics — Tracking léger d'événements
  * Envoie silencieusement des événements vers la table Supabase `events`
  * Aucune erreur visible si la table n'existe pas encore (fail-silent).
  *
