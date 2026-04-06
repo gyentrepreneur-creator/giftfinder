@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GiftFinder &mdash; Mon profil</title>
+  <title>Kadoizi &mdash; Mon profil</title>
   <meta name="theme-color" content="#3C3489">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
   <link rel="stylesheet" href="css/style.css">
@@ -131,6 +131,21 @@
       transition: all .15s;
       margin-top: 4px;
     }
+    .btnger-input:focus { border-color: #c62828; }
+    .btn-delete {
+      width: 100%;
+      padding: 11px 0;
+      background: #fff;
+      color: #c62828;
+      border: 1.5px solid #c62828;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .15s;
+      margin-top: 4px;
+    }
     .btn-delete:hover { background: #c62828; color: #fff; }
     .btn-delete:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -235,7 +250,8 @@
     .h-empty-msg { text-align: center; padding: 20px 0; color: #aaa; font-size: 13px; }
 
     .footer { position: relative; z-index: 1; }
-  /* Toggle switch */
+
+    /* Toggle switch */
     .toggle-switch { position: relative; display: inline-block; width: 46px; height: 26px; }
     .toggle-switch input { opacity: 0; width: 0; height: 0; }
     .toggle-slider {
@@ -361,7 +377,7 @@
         <label>Tapez <strong>SUPPRIMER</strong> pour confirmer</label>
         <input type="text" id="delete-confirm" class="danger-input"
                placeholder="SUPPRIMER" autocomplete="off"
-               oninput="checkDeleteConfirm()">
+              oninput="checkDeleteConfirm()">
       </div>
       <button class="btn-delete" id="btn-delete" disabled onclick="deleteAccount()">
         Supprimer d&eacute;finitivement mon compte
@@ -371,365 +387,217 @@
 
   <!-- Modal : raison suppression -->
   <div class="delete-modal-overlay" id="delete-modal-overlay">
-    <div class="delete-modal">
-      <h3>&#128722; Pourquoi supprimez-vous votre compte ?</h3>
-      <p>Votre r&eacute;ponse nous aide &agrave; am&eacute;liorer GiftFinder.</p>
-      <label class="reason-opt"><input type="radio" name="del-reason" value="plus-utilise"> Je n&#39;utilise plus l&#39;application</label>
-      <label class="reason-opt"><input type="radio" name="del-reason" value="pas-trouve"> Je n&#39;ai pas trouv&eacute; ce que je cherchais</label>
-      <label class="reason-opt"><input type="radio" name="del-reason" value="quota"> Le quota de recherches est trop limit&eacute;</label>
-      <label class="reason-opt"><input type="radio" name="del-reason" value="technique"> Probl&egrave;me technique</label>
-      <label class="reason-opt"><input type="radio" name="del-reason" value="autre"> Autre raison</label>
-      <textarea id="del-reason-text" placeholder="Pr&eacute;cisez si vous le souhaitez&#8230;"></textarea>
-      <div class="delete-modal-actions">
-        <button class="btn-modal-cancel" onclick="closeDeleteModal()">Annuler</button>
-        <button class="btn-modal-confirm" id="btn-modal-confirm" disabled onclick="confirmDeleteWithReason()">Supprimer d&eacute;finitivement</button>
-      </div>
-      <div class="p-msg" id="msg-delete-modal" style="margin-top:10px;"></div>
-    </div>
-  </div>
+    <]��\��H�[]K[[�[���ω��L�
+̌���\�][�H�\�[Y^�]��\����H��\H��ς�����H��XX�]N�ۜ�H��\�ZYH	�Yܘ]�N�[I�XX�]N�[ܙ\��Y�^�K����X�[�\��H��X\�ۋ[���[�]\OH��Y[Ȉ�[YOH�[\�X\�ۈ��[YOH�\�]][\�H���H����N�][\�H\�	���N�\X�][ۏ�X�[��X�[�\��H��X\�ۋ[���[�]\OH��Y[Ȉ�[YOH�[\�X\�ۈ��[YOH�\�]��]�H���H����N�ZH\���]��XX�]N��H]YH�H�\��Z\��X�[��X�[�\��H��X\�ۋ[���[�]\OH��Y[Ȉ�[YOH�[\�X\�ۈ��[YOH�][�H��H][�HH�X�\��\�\���[Z]	�XX�]N��X�[��X�[�\��H��X\�ۋ[���[�]\OH��Y[Ȉ�[YOH�[\�X\�ۈ��[YOH�X��\]YH���؛	�Yܘ]�N�YHX��\]YO�X�[��X�[�\��H��X\�ۋ[���[�]\OH��Y[Ȉ�[YOH�[\�X\�ۈ��[YOH�]]�H��]]�H�Z\�ۏ�X�[��^\�XHYH�[\�X\�ۋ]^�X�Z�\�H���XX�]N��\�^��H��\�H��ZZ]^�����ȏ��^\�XO��]��\��H�[]K[[�[XX�[ۜȏ���]ۈ�\��H���[[�[X�[��[�ۘ�X��H����Q[]S[�[
 
-  </main>
+H��[��[\�؝]ۏ���]ۈ�\��H���[[�[X�ۙ�\�H�YH���[[�[X�ۙ�\�H�\�X�Yۘ�X��H��ۙ�\�Q[]U�]�X\�ۊ
+H���\�[Y\�	�XX�]Nٚ[�]]�[Y[�؝]ۏ���]���]��\��H�[\�ȈYH�\��Y[]K[[�[��[OH�X\��[�]��Lȏ��]����]����]�����XZ[�������\��\��H����\����]��\��H����\�]�����[�YH����\�X��[�����[��	�Y\��H�Y�H�]Y\�[ۛ�Z\�K�[����]�[H�X�\��O�O���]���]��\��H����\�[[��ȏ��H�Y�H�Y[�[ۜ�[Y�[\˚[��Y[�[ۜ�	�XX�]N��[\��O��H�Y�H��ۙ�Y[�X[]K�[���ۙ�Y[�X[]	�XX�]N��O��H�Y�H���K�[����O�O���]����\��H����\�X[X^�ۈ��[�[�]YH\�[�Z\�H[X^�ۋ�H��XX�]N�[\�H[���XX�]Nۉ�XX�]NٚX�H�\�\�X�]��[\\��[�\��ۙ][ۜ��\]Z\�\ˏ���]��\��H����\�\���X[��[OH�\�^N��^��\��ڝ\�Y�KX�۝[���[�\��[YۋZ][\Θ�[�\��X\��[�]��L�ȏ��H�Y�H�΋����˚[��Yܘ[K���K��Y��[�\����\��]H�؛[�Ȉ�[H����[�\���[OH�\�^N��^ٛ^Y\�X�[ێ���[[��[YۋZ][\Θ�[�\���\�\�^YX�ܘ][ێ��ۙN���܎��MMNȏ��ݙ�[��H������˝�˛ܙ�̌�ݙȈ�Y]Л�H�����YH���ZY�H����[H��ۙH�����OH���L�N
+�����K]�YH�K������K[[�X�\H���[������K[[�Z��[�H���[����X�H���OH����YH���ZY�H����H�H��OH�H�Ϗ]H�LM�LK���M
+HHL����
+
+HM�LK��ވ�Ϗ[�HOH�MˍH�LOH���H��H�MˍLH�L�H���H�Ϗ�ݙς��[��[OH��۝\�^�N�L\ٛ۝]�ZY����]\�\�X�[�΋��ȏ��Q��S�T�����[����O��H�Y�H�΋����˝Z��˘��K��Y�^�H�\��]H�؛[�Ȉ�[H����[�\���[OH�\�^N��^ٛ^Y\�X�[ێ���[[��[YۋZ][\Θ�[�\���\�\�^YX�ܘ][ێ��ۙN���܎��MMNȏ��ݙ�[��H������˝�˛ܙ�̌�ݙȈ�Y]Л�H�����YH���ZY�H����[H��LLH��]H�LNK�NH
+���XM��
+��KLˍ��M��U��Lˍ
+]�Lˍ
+XL��H��HKL����H��H��HKL��KL��H��H��HH��KL��Xˌ��M�
+��K�U�K�XM����
+����K��KK�
+H
+���
+���M���
+���
+���
+���
+���
+���
+���
+���
+����M������XN�N�N
+���K�L����͘M�
+H
+�
+HKLKK�
+ވ�Ϗ�ݙς��[��[OH��۝\�^�N�L\ٛ۝]�ZY����]\�\�X�[�΋��ȏ��Y�^�O��[����O���]���ٛ��\�����ܚ\ܘ�H�΋�������[]����]ۜK��\X�\�K��\X�\�KZ����\��[Y��\X�\�K�Z[���ȏ���ܚ\���ܚ\ܘ�H�����ۙ�Y˚�ȏ���ܚ\���ܚ\ܘ�H�����\X�\�KZ[�]��ȏ���ܚ\���ܚ\����[Y[���][[Y[��RY
+	؜�[�[�[YI�K�^�۝[�HTӐSQN��[Y[���][[Y[��RY
+	ٛ��\�X��[�	�K�^�۝[�HTӐSQN��ۜ����T�Sӗ�SSҒHH	ӛ�[	Ή�Q��Q�
+	�	�[��]�\��Z\�IΉ�Q��Q���	�X\�XY�IΉ�Q�Q�	��	��Z[�U�[[�[�Ή�L�͍Q�L��	�]]�IΉ�L�̎	N�ۜ��Q�U�P�SH	�[�[��̍IΉ��WL�P��	̍W�L	Ή̍WL�L�LL�P���	�L�L	Ή�LL�L�LL�P��	�L̌	Ή�LL�ĽL�P��	�\�̌	Ήψ�L�P�N���8� 8� [�]��\��H�\��[ۋ[����][\�]]\�\�ܚ\]YH8� 8� �
+\�[���[��[ۊ
+H�ۜ��]N���\��[ۈHHH]�Z]�\X�\�K�]]��]�\��[ۊ
+NY�
+\�\��[ۊH��[��˛��][ۋ��Y�H	�[�^�[	���]\���B���\�HH�\��[ۋ�\�\��\�[XZ[�[HK�[XZ[	���\��[��SY]HH
+K�\�\��Y]Y]H	��K�\�\��Y]Y]K��[��JH	�����\��^Y\�H��X�\0�\�\�H��[��H\Z\�X�X˝\�\���HX��[�HY]Y]B��\��[��Q�[�[H�[��SY]N�H�\��]N�X�HH]�Z]�\X�\�K����J	�\�\���K��[X�
+	��[��K[XZ[	�K�\J	�Y	�K�Y
+K��[��J
+NY�
+X�	��X���[��JH�[��Q�[�[HX���[��NH�]�
+JH�B�����[\\�\��[\��[Y[���][[Y[��RY
+	�[�]Y[XZ[Z[����K��[YHH[XZ[�[��[Y[���][[Y[��RY
+	�[�]\�[��I�K��[YHH�[��Q�[�[���ܙY][��\�ܙY]H�[��Q�[�[�	Лۚ��\�	�
+��[��Q�[�[
+�	�LLQ�Q����[XZ[�[��[Y[���][[Y[��RY
+	�YܙY][���K�^�۝[�HܙY]����\��\�	�\�ܚ\]YKH�[ZY�X�][ۈ]\���Y��\�[��\���Y��Y\�ܚ\]YJK�Y
+N�Y��Y��Y��K�Y
+NJJ
+N���8� 8� �\��\�\�L\��p��\��X�\��\�8� 8� �\�[���[��[ۈ�Y\�ܚ\]YJ\�\�Y
+H�\��Y\�H��[Y[���][[Y[��RY
+	�\�[�Y\��N�\�\�H��[Y[���][[Y[��RY
+	�\�[\�	�N�H�\��]K\��܈HH]�Z]�\X�\�B�����J	��X\��\��B���[X�
+	�Y\�[�]Z\�K���\�[ۋ�Y�]�]]ܙX]Y�]	�B��\J	�\�\��Y	�\�\�Y
+B��ܙ\�	�ܙX]Y�]	��\��[�[�Έ�[�HJB��[Z]
+L
+N��Y\���[K�\�^HH	ۛۙI��Y�
+\��܈Y]H]K�[��OOH
+H\��[��\�SH	�]��\��H�Y[\K[\�ȏ�]X�[�H�X�\��H�\�	���M��[��[�	���L��H�Y�H�]Y\�[ۛ�Z\�K�[��[OH���܎�����Nȏ�[��^�Y[�[�HO�O��]����]\��B��]K��ܑXX�
+�[��[ۊ�H�\�[[ښHH���T�Sӗ�SSҒV܋����\�[ۗH	�Q��Q�I��\��Y�]H�Q�U�P�S܋��Y�]H���Y�]	���\�\�ۙHH���]]OOH	�ۙI����]]OOH	���\]Y	��\�]HH�]�]J��ܙX]Y�]
+K����[Q]T��[��	ٜ�Q����^N�۝[Y\�X��[۝���ܝ	�JN��\�HH��[Y[��ܙX]Q[[Y[�
+	�I�NK��\�Ә[YHH	�Z][I�K��Y�H	ܙ\�[]˚[�YI�
+���YY�
+Z\�ۙJHK��[K��X�]HH	����K�[��\�SB�	��[��\��H�Y[[ښH���
+�[[ښH
+�	���[���
+	��[��\��H�Z[��ȏ��
+	�]��\��H�Y\�[�]Z\�H���
+�\����\�[�]Z\�H	��YX]I�H
+�	��]���
+	�]��\��H�[Y]H���
+
+�����\�[ۈ�\�������\�[ۊH�	��H
+
+�Y�]�	�L��	�
+�\���Y�]
+H�	��H
+	��]���
+	���[���
+	��[��\��H�X�Y�I�
+�
+\�ۙH�	���	�[�[���H
+�	ȏ��
+
+\�ۙH�	�L��L��LP]	��	�[���\���H
+	���[���
+	��[��\��H�Y]H���
+�]H
+�	���[���\��\[��[
+JNJNH�]�
+JH�Y\��^�۝[�H	�[\���X�HH�\��\�L�NZ\�ܚ\]YK��B�B����8� 8� ][]Z\�\�8� 8� ��[��[ۈ���\��Y^\JH�\�[H��[Y[���][[Y[��RY
+Y
+N[�^�۝[�H^[��\�Ә[YHH	�[\��	�
+�\N[��[K�\�^HH	؛����B��[��[ۈYS\��Y
+H���[Y[���][[Y[��RY
+Y
+K��[K�\�^HH	ۛۙI��B��[��[ۈ�]�Y[����Y�Y[��H���[Y[���][[Y[��RY
+��Y
+K�\�X�YH�Y[���B��[��[ۈ\���H�]\����[���K��\X�Jɋ��	ɘ[\��K��\X�J���	ɛ��K��\X�Jϋ��	ə���K��\X�Jȋ��	ɜ][���NB����8� 8� 8�h�]]�Y�\�\�[����\��ۛ�[\�
+��[��JH8� 8� �\�[���[��[ۈ�]�R[����
+HYS\��	�\��Z[�����N�\��[��HH��[Y[���][[Y[��RY
+	�[�]\�[��I�K��[YK��[J
+N�]�Y[��	؝�Z[������YJN�H��Y]�H0���\�[��]]Y]Y]B��\��\��܎�LHHH]�Z]�\X�\�K�]]�\]U\�\��]N���[��N��[��HHJN��Y]�H0���\�[��X�X˝\�\��\��]N���\��[ۈHHH]�Z]�\X�\�K�]]��]�\��[ۊ
+NY�
+�\��[ۊH]�Z]�\X�\�K����J	�\�\���K�\]J��[��N��[��HJK�\J	�Y	��\��[ۋ�\�\��Y
+NB��]�Y[��	؝�Z[������[�JNY�
+LJH���\��	�\��Z[�����LK�Y\��Y�H	�\��]\�ܜ�HHZ\�HLL��\���	�\��܉�NH[�H��[Y[���][[Y[��RY
+	�YܙY][���K�^�۝[�H�[��B��	Лۚ��\�	�
+��[��H
+�	�LLQ�Q�����[Y[���][[Y[��RY
+	�[�]Y[XZ[Z[����K��[YN���\��	�\��Z[�����	�L��
+H�LN[��HZ\�LL��\�]�X��X��LN�I�	��X��\���NB�H�]�
+\��H�]�Y[��	؝�Z[������[�JN���\��	�\��Z[�����
+\��	��\���Y\��Y�JH	�\��]\���	�\��܉�NB�B����8� 8� 8�hH�[��\�[XZ[8� 8� �\�[���[��[ۈ�[��Q[XZ[
 
-  <footer class="footer">
-    <div class="footer-top">
-      <span id="footer-brand"></span> &mdash; <a href="questionnaire.html">Nouvelle recherche</a>
-    </div>
-    <div class="footer-links">
-      <a href="mentions-legales.html">Mentions l&eacute;gales</a>
-      <a href="confidentialite.html">Confidentialit&eacute;</a>
-      <a href="cgu.html">CGU</a>
-    </div>
-    <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
-    <div class="footer-social" style="display:flex;gap:28px;justify-content:center;align-items:center;margin-top:12px;">
-      <a href="https://www.instagram.com/giftfinder2.0" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#C13584" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-        <span style="font-size:11px;font-weight:600;letter-spacing:.3px;">@GIFTFINDER2.0</span>
-      </a>
-      <a href="https://www.tiktok.com/@giftfinder2.0" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="#010101"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.45a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.77 1.52V6.76a4.85 4.85 0 0 1-1-.07z"/></svg>
-        <span style="font-size:11px;font-weight:600;letter-spacing:.3px;">@giftfinder2.0</span>
-      </a>
-    </div>
-  </footer>
+HYS\��	�\��Y[XZ[	�N�\��]�[XZ[H��[Y[���][[Y[��RY
+	ۙ]�Y[XZ[	�K��[YK��[J
+NY�
+[�]�[XZ[
+H����\��	�\��Y[XZ[	�	ՙ]Z[^��Z\�\�[���]�[K[XZ[��	�\��܉�N��]\���B�Y�
+Kזח�J�ח�J��ח�J�˝\�
+�]�[XZ[
+JH���\��	�\��Y[XZ[	�	�Y�\��HK[XZ[[��[YK��	�\��܉�N��]\��B��]�Y[��	؝�Y[XZ[	��YJN�\��\��܈HH]�Z]�\X�\�K�]]�\]U\�\��[XZ[��]�[XZ[JN�]�Y[��	؝�Y[XZ[	��[�JNY�
+\��܊H���\��	�\��Y[XZ[	�\��܋�Y\��Y�H	�\��]\�ܜ�HHZ\�HLL��\���	�\��܉�NH[�H��[Y[���][[Y[��RY
+	ۙ]�Y[XZ[	�K��[YHH	�����\��	�\��Y[XZ[	�	�L��
+H[�K[XZ[H�ۙ�\�X][ۈHLN]LNH[���WLNHLL	�
+��]�[XZ[
+�	ˈ�\]Y^��\�HY[��\��[Y\���	�[����NB�B����8� 8� 8�hH�[��\�[�H\��H8� 8� �\�[���[��[ۈ�[��T\���ܙ
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="js/config.js"></script>
-  <script src="js/supabase-init.js"></script>
-  <script>
-    document.getElementById('brand-name').textContent   = APP_NAME;
-    document.getElementById('footer-brand').textContent = APP_NAME;
+HYS\��	�\��\\���ܙ	�N�\��HH��[Y[���][[Y[��RY
+	ۙ]�\\���ܙ	�K��[YN�\���H��[Y[���][[Y[��RY
+	��ۙ�\�K\\���ܙ	�K��[YNY�
+\�JH����\��	�\��\\���ܙ	�	ՙ]Z[^��Z\�\�[���]�X]H[�H\��K��	�\��܉�N��]\���B�Y�
+�K�[��
+�H����\��	�\��\\���ܙ	�	�H[�H\��H�]�۝[�\�]H[�[��
+��\�X�LN�\ˉ�	�\��܉�N��]\���B�Y�
+�HOOH��H����\��	�\��\\���ܙ	�	�\�[��H\��H�H�ܜ�\�ۙ[�\ˉ�	�\��܉�N��]\���B��]�Y[��	؝�\\���ܙ	��YJN�\��\��܈HH]�Z]�\X�\�K�]]�\]U\�\��\���ܙ��HJN�]�Y[��	؝�\\���ܙ	��[�JNY�
+\��܊H���\��	�\��\\���ܙ	�\��܋�Y\��Y�H	�\��]\�ܜ�HHZ\�HLL��\���	�\��܉�NH[�H��[Y[���][[Y[��RY
+	ۙ]�\\���ܙ	�K��[YHH	����[Y[���][[Y[��RY
+	��ۙ�\�K\\���ܙ	�K��[YHH	�����\��	�\��\\���ܙ	�	�L��
+H[�H\��HZ\�LL��\�]�X��X��LN�I�	��X��\���NB�B����8� 8� 8�h��[Y][ۈ�[\�\�\��[ۈ8� 8� ��[��[ۈ�X��[]P�ۙ�\�J
+H�\��[H��[Y[���][[Y[��RY
+	�[]KX�ۙ�\�I�K��[YN��[Y[���][[Y[��RY
+	؝�Y[]I�K�\�X�YH
+�[OOH	��T�SQT��NB����8� 8� 8�h��\�[Y\�H��\H��]��HH[�[�Z\�ۈ8� 8� ��[��[ۈ[]PX���[�
 
-    const OCCASION_EMOJI = {
-      'Noel':'\uD83C\uDF84','Anniversaire':'\uD83C\uDF82','Mariage':'\uD83D\uDC8D',
-      'Saint-Valentin':'\u2764\uFE0F','Autre':'\u2728'
-    };
-    const BUDGET_LABEL = {
-      'moins_25':'< 25\u20AC','25_50':'25\u201350\u20AC',
-      '50_100':'50\u2013100\u20AC','100_200':'100\u2013200\u20AC','plus_200':'> 200\u20AC'
-    };
+HY�
+��[Y[���][[Y[��RY
+	�[]KX�ۙ�\�I�K��[YHOOH	��T�SQT��H�]\������Z[�]X[\�\�H[�[���[Y[��]Y\�T�[X�ܐ[
+	�[�]ۘ[YOH�[\�X\�ۈ�I�K��ܑXX�
+�O����X��YH�[�JN��[Y[���][[Y[��RY
+	�[\�X\�ۋ]^	�K��[YHH	����[Y[���][[Y[��RY
+	�[\�X\�ۋ]^	�K��\��\���[[ݙJ	ݚ\�X�I�N��[Y[���][[Y[��RY
+	؝�[[�[X�ۙ�\�I�K�\�X�YH�YNYS\��	�\��Y[]K[[�[	�N��[Y[���][[Y[��RY
+	�[]K[[�[[ݙ\�^I�K��\��\��Y
+	��[��NB���[��[ۈ���Q[]S[�[
 
-    // ── Init : charge session, infos utilisateur, historique ──
-    (async function() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { window.location.href = 'index.html'; return; }
+H��[Y[���][[Y[��RY
+	�[]K[[�[[ݙ\�^I�K��\��\���[[ݙJ	��[��NB����X�]�\�H��]ۈ�ۙ�\�Y\�0��]I�[�H�Z\�ۈ\���\�YB���[Y[��Y]�[�\�[�\�	��[��I��[��[ۊJHY�
+K�\��]��[YHOOH	�[\�X\�ۉ�H��[Y[���][[Y[��RY
+	؝�[[�[X�ۙ�\�I�K�\�X�YH�[�N�\�^\�XHH��[Y[���][[Y[��RY
+	�[\�X\�ۋ]^	�NY�
+K�\��]��[YHOOH	�]]�I�H^\�XK��\��\��Y
+	ݚ\�X�I�N^\�XK����\�
+NH[�H^\�XK��\��\���[[ݙJ	ݚ\�X�I�NB�B�JN���8� 8� �\�\��[ۈ0�Y�[�]]�H
+\����Z\�ۊH8� 8� �\�[���[��[ۈ�ۙ�\�Q[]U�]�X\�ۊ
+H�\��X\�ۈH��[Y[��]Y\�T�[X�܊	�[�]ۘ[YOH�[\�X\�ۈ�N��X��Y	�NY�
+\�X\�ۊH�]\���\��X\�ە^H�X\�ۋ��[YHOOH	�]]�I�
+��[Y[���][[Y[��RY
+	�[\�X\�ۋ]^	�K��[YK��[J
+H	�]]�I�B���X\�ۋ�\�[�[[Y[��^�۝[���[J
+N��\���H��[Y[���][[Y[��RY
+	؝�[[�[X�ۙ�\�I�N���\�X�YH�YN���^�۝[�H	��\�\��[ۗL����YS\��	�\��Y[]K[[�[	�N��H�\��]N���\��[ۈHHH]�Z]�\X�\�K�]]��]�\��[ۊ
+NY�
+\�\��[ۊH��[��˛��][ۋ��Y�H	�[�^�[	���]\���B����\[Y�H�[��[ۈ��\�\��[ۈ��\0�H
+X�\�
+�]]�\�\��B��\��\�H]�Z]�]�
+	�΋���\���^XY����^�K��\X�\�K���ٝ[��[ۜ�݌K�[]K]\�\��Y]��	���	��XY\�Έ	�]]ܚ^�][ۉΈ	ЙX\�\�	�
+��\��[ۋ�X��\�����[��	��۝[�U\IΈ	�\X�][ۋڜ�ۉK���N���Ӌ���[��Y�J��X\�ێ��X\�ە^JB�JN��\��\�[H]�Z]�\����ۊ
+NY�
+\�\����H����]�\��܊�\�[�\��܈	�\��]\��\��]\��N��[��˛��][ۋ��Y�H	�[�^�[�[]YLI��H�]�
+\��H���\�X�YH�[�N���^�۝[�H	��\�[Y\�LNY�[�]]�[Y[�	����\��	�\��Y[]K[[�[	�
+\��	��\���Y\��Y�JH	�\��]\�ܜ�HH�\�\��[ۋ��	�\��܉�NB�B����8� 8� 0�X�ۛ�^[ۈ8� 8� �\�[���[��[ۈ[�S���]
 
-      var u = session.user;
-      var emailVal  = u.email || '';
-      var prenomMeta = (u.user_metadata && u.user_metadata.prenom) || '';
+H]�Z]�\X�\�K�]]��Yۓ�]
 
-      // Essayer de récupérer le prénom depuis public.users si absent du metadata
-      var prenomFinal = prenomMeta;
-      try {
-        var { data: pub } = await supabase.from('users').select('prenom,email').eq('id', u.id).single();
-        if (pub && pub.prenom) prenomFinal = pub.prenom;
-      } catch(e) {}
+N�[��˛��][ۋ��Y�H	�[�^�[	�B����8� 8� ��Y�X�][ۜ���\��\�H��Y��\�[��H\Z\�X�X˝\�\��8� 8� �\�[���[��[ۈ�Y��Y��Y��\�\�Y
+H�H�\��]K\��܈HH]�Z]�\X�\�B�����J	�\�\���B���[X�
+	�[XZ[�Z[W���[��B��\J	�Y	�\�\�Y
+B���[��J
+NY�
+Y\��܈	��]JH��[Y[���][[Y[��RY
+	����KYZ[KY[XZ[	�K��X��YHHY]K�[XZ[�Z[W���[�B�H�]�
+JH�ʈ�Z[�[[�H
+��B�B����8� 8� ��Y�X�][ۜ���]]�Y�\�\�H��Y��\�[��H�Z[�[XZ[][�YY[�8� 8� �\�[���[��[ۈ�]�QZ[Q[XZ[�
 
-      // Remplir les champs
-      document.getElementById('input-email-info').value = emailVal;
-      document.getElementById('input-prenom').value     = prenomFinal;
-
-      // Greeting
-      var greet = prenomFinal ? 'Bonjour, ' + prenomFinal + '\u00A0\uD83D\uDC4B' : emailVal;
-      document.getElementById('p-greeting').textContent = greet;
-
-      // Charger l'historique, la gamification et les préférences notifs
-      loadHistorique(u.id);
-      loadNotifPrefs(u.id);
-    })();
-
-    // ── Charger les 10 dernières recherches ──
-    async function loadHistorique(userId) {
-      var loader = document.getElementById('hist-loader');
-      var list   = document.getElementById('hist-list');
-      try {
-        var { data, error } = await supabase
-          .from('searches')
-          .select('id, destinataire, occasion, budget, statut, created_at')
-          .eq('user_id', userId)
-          .order('created_at', { ascending: false })
-          .limit(10);
-
-        loader.style.display = 'none';
-
-        if (error || !data || data.length === 0) {
-          list.innerHTML = '<div class="h-empty-msg">Aucune recherche pour l&#8217;instant &#8212; <a href="questionnaire.html" style="color:#3C3489;">lancez-en une !</a></div>';
-          return;
-        }
-
-        data.forEach(function(r) {
-          var emoji  = OCCASION_EMOJI[r.occasion] || '\uD83C\uDF81';
-          var budget = BUDGET_LABEL[r.budget] || r.budget || '';
-          var isDone = r.statut === 'done' || r.statut === 'completed';
-          var date   = new Date(r.created_at).toLocaleDateString('fr-FR', { day:'numeric', month:'short' });
-
-          var a = document.createElement('a');
-          a.className = 'h-item';
-          a.href = 'resultats.html?id=' + r.id;
-          if (!isDone) a.style.opacity = '0.7';
-          a.innerHTML =
-            '<span class="h-emoji">' + emoji + '</span>' +
-            '<span class="h-info">' +
-              '<div class="h-destinataire">' + esc(r.destinataire || 'Cadeau') + '</div>' +
-              '<div class="h-meta">' +
-                (r.occasion ? esc(r.occasion) : '') +
-                (budget ? ' \u00B7 ' + esc(budget) : '') +
-              '</div>' +
-            '</span>' +
-            '<span class="h-badge' + (isDone ? '' : ' pending') + '">' +
-              (isDone ? '\u2713 Pr\u00EAt' : 'En cours') +
-            '</span>' +
-            '<span class="h-date">' + date + '</span>';
-          list.appendChild(a);
-        });
-      } catch(e) {
-        loader.textContent = 'Impossible de charger l\u2019historique.';
-      }
-    }
-
-    // ── Utilitaires ──
-    function showMsg(id, text, type) {
-      var el = document.getElementById(id);
-      el.textContent  = text;
-      el.className    = 'p-msg ' + type;
-      el.style.display = 'block';
-    }
-    function hideMsg(id) { document.getElementById(id).style.display = 'none'; }
-    function setLoading(btnId, loading) { document.getElementById(btnId).disabled = loading; }
-    function esc(s) {
-      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-
-    // ── ① Sauvegarder infos personnelles (prénom) ──
-    async function saveInfos() {
-      hideMsg('msg-infos');
-      var prenom = document.getElementById('input-prenom').value.trim();
-      setLoading('btn-infos', true);
-      try {
-        // Mettre à jour dans auth metadata
-        var { error: e1 } = await supabase.auth.updateUser({ data: { prenom: prenom } });
-        // Mettre à jour dans public.users
-        var { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          await supabase.from('users').update({ prenom: prenom }).eq('id', session.user.id);
-        }
-        setLoading('btn-infos', false);
-        if (e1) {
-          showMsg('msg-infos', e1.message || 'Erreur lors de la mise \u00E0 jour.', 'error');
-        } else {
-          document.getElementById('p-greeting').textContent = prenom
-            ? 'Bonjour, ' + prenom + '\u00A0\uD83D\uDC4B'
-            : document.getElementById('input-email-info').value;
-          showMsg('msg-infos', '\u2705 Pr\u00E9nom mis \u00E0 jour avec succ\u00E8s !', 'success');
-        }
-      } catch(err) {
-        setLoading('btn-infos', false);
-        showMsg('msg-infos', (err && err.message) || 'Erreur.', 'error');
-      }
-    }
-
-    // ── ② Changer email ──
-    async function changeEmail() {
-      hideMsg('msg-email');
-      var newEmail = document.getElementById('new-email').value.trim();
-      if (!newEmail) { showMsg('msg-email', 'Veuillez saisir un nouvel e-mail.', 'error'); return; }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
-        showMsg('msg-email', 'Adresse e-mail invalide.', 'error'); return;
-      }
-      setLoading('btn-email', true);
-      var { error } = await supabase.auth.updateUser({ email: newEmail });
-      setLoading('btn-email', false);
-      if (error) {
-        showMsg('msg-email', error.message || 'Erreur lors de la mise \u00E0 jour.', 'error');
-      } else {
-        document.getElementById('new-email').value = '';
-        showMsg('msg-email', '\u2705 Un e-mail de confirmation a \u00E9t\u00E9 envoy\u00E9 \u00E0 ' + newEmail + '. Cliquez sur le lien pour valider.', 'info');
-      }
-    }
-
-    // ── ② Changer mot de passe ──
-    async function changePassword() {
-      hideMsg('msg-password');
-      var pwd1 = document.getElementById('new-password').value;
-      var pwd2 = document.getElementById('confirm-password').value;
-      if (!pwd1) { showMsg('msg-password', 'Veuillez saisir un nouveau mot de passe.', 'error'); return; }
-      if (pwd1.length < 6) { showMsg('msg-password', 'Le mot de passe doit contenir au moins 6 caract\u00E8res.', 'error'); return; }
-      if (pwd1 !== pwd2) { showMsg('msg-password', 'Les mots de passe ne correspondent pas.', 'error'); return; }
-      setLoading('btn-password', true);
-      var { error } = await supabase.auth.updateUser({ password: pwd1 });
-      setLoading('btn-password', false);
-      if (error) {
-        showMsg('msg-password', error.message || 'Erreur lors de la mise \u00E0 jour.', 'error');
-      } else {
-        document.getElementById('new-password').value   = '';
-        document.getElementById('confirm-password').value = '';
-        showMsg('msg-password', '\u2705 Mot de passe mis \u00E0 jour avec succ\u00E8s !', 'success');
-      }
-    }
-
-    // ── ④ Validation champ suppression ──
-    function checkDeleteConfirm() {
-      var val = document.getElementById('delete-confirm').value;
-      document.getElementById('btn-delete').disabled = (val !== 'SUPPRIMER');
-    }
-
-    // ── ④ Supprimer le compte : ouvre le modal raison ──
-    function deleteAccount() {
-      if (document.getElementById('delete-confirm').value !== 'SUPPRIMER') return;
-      // Réinitialiser le modal
-      document.querySelectorAll('input[name="del-reason"]').forEach(r => r.checked = false);
-      document.getElementById('del-reason-text').value = '';
-      document.getElementById('del-reason-text').classList.remove('visible');
-      document.getElementById('btn-modal-confirm').disabled = true;
-      hideMsg('msg-delete-modal');
-      document.getElementById('delete-modal-overlay').classList.add('open');
-    }
-
-    function closeDeleteModal() {
-      document.getElementById('delete-modal-overlay').classList.remove('open');
-    }
-
-    // Activer le bouton confirmer dès qu'une raison est choisie
-    document.addEventListener('change', function(e) {
-      if (e.target.name === 'del-reason') {
-        document.getElementById('btn-modal-confirm').disabled = false;
-        var textarea = document.getElementById('del-reason-text');
-        if (e.target.value === 'autre') {
-          textarea.classList.add('visible');
-          textarea.focus();
-        } else {
-          textarea.classList.remove('visible');
-        }
-      }
-    });
-
-    // ── Suppression définitive (après raison) ──
-    async function confirmDeleteWithReason() {
-      var reason = document.querySelector('input[name="del-reason"]:checked');
-      if (!reason) return;
-      var reasonText = reason.value === 'autre'
-        ? (document.getElementById('del-reason-text').value.trim() || 'Autre')
-        : reason.parentElement.textContent.trim();
-
-      var btn = document.getElementById('btn-modal-confirm');
-      btn.disabled = true;
-      btn.textContent = 'Suppression\u2026';
-      hideMsg('msg-delete-modal');
-
-      try {
-        var { data: { session } } = await supabase.auth.getSession();
-        if (!session) { window.location.href = 'index.html'; return; }
-
-        // Appel Edge Function : suppression complète (tables + auth.users)
-        var resp = await fetch('https://dzlyrswuyafxjswuxdcu.supabase.co/functions/v1/delete-user', {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + session.access_token,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ reason: reasonText })
-        });
-
-        var result = await resp.json();
-        if (!resp.ok) throw new Error(result.error || 'Erreur serveur');
-
-        window.location.href = 'index.html?deleted=1';
-
-      } catch(err) {
-        btn.disabled = false;
-        btn.textContent = 'Supprimer d\u00e9finitivement';
-        showMsg('msg-delete-modal', (err && err.message) || 'Erreur lors de la suppression.', 'error');
-      }
-    }
-
-    // ── Déconnexion ──
-    async function handleLogout() {
-      await supabase.auth.signOut();
-      window.location.href = 'index.html';
-    }
-
-    // ── Notifications : charger la préférence depuis public.users ──
-    async function loadNotifPrefs(userId) {
-      try {
-        var { data, error } = await supabase
-          .from('users')
-          .select('email_daily_opt_in')
-          .eq('id', userId)
-          .single();
-        if (!error && data) {
-          document.getElementById('toggle-daily-email').checked = !!data.email_daily_opt_in;
-        }
-      } catch (e) { /* fail silently */ }
-    }
-
-    // ── Notifications : sauvegarder la préférence opt-in email quotidien ──
-    async function saveDailyEmailOpt() {
-      var el      = document.getElementById('toggle-daily-email');
-      var msgEl   = document.getElementById('msg-daily-email');
-      var checked = el.checked;
-
-      msgEl.textContent  = 'Enregistrement\u2026';
-      msgEl.className    = 'p-msg';
-      msgEl.style.display = 'block';
-
-      try {
-        var { data: { session } } = await supabase.auth.getSession();
-        if (!session) { window.location.href = 'index.html'; return; }
-
-        var { error } = await supabase
-          .from('users')
-          .update({ email_daily_opt_in: checked })
-          .eq('id', session.user.id);
-
-        if (error) throw error;
-
-        msgEl.textContent = checked
-          ? '\u2705 Activ\u00E9 ! Vous recevrez une id\u00E9e cadeau chaque matin.'
-          : '\u2705 D\u00E9sactiv\u00E9. Vous ne recevrez plus d\u2019emails quotidiens.';
-        msgEl.className = 'p-msg success';
-      } catch (err) {
-        el.checked = !checked; // Revenir à l'état précédent
-        msgEl.textContent = 'Erreur : ' + (err.message || 'Impossible de sauvegarder.');
-        msgEl.className = 'p-msg error';
-      }
-
-      setTimeout(function() { msgEl.style.display = 'none'; }, 3500);
-    }
-  </script>
-
-  <!-- MOBILE BOTTOM NAV -->
-  <nav class="mobile-bottom-nav">
-    <a href="historique.html">
-      <span class="nav-icon">&#128203;</span>
-      <span>Historique</span>
-    </a>
-    <a href="questionnaire.html" class="nav-center">
-      <span class="nav-icon">&#127873;</span>
-      <span>Recherche</span>
-    </a>
-    <a href="profil.html" class="active">
-      <span class="nav-icon">&#128100;</span>
-      <span>Profil</span>
-    </a>
-  </nav>
-</body>
-</html>
+H�\�[H��[Y[���][[Y[��RY
+	����KYZ[KY[XZ[	�N�\�\��[H��[Y[���][[Y[��RY
+	�\��YZ[KY[XZ[	�N�\��X��YH[��X��Y�\��[�^�۝[�H	�[��Y�\��[Y[�L����\��[��\�Ә[YHH	�[\���\��[��[K�\�^HH	؛������H�\��]N���\��[ۈHHH]�Z]�\X�\�K�]]��]�\��[ۊ
+NY�
+\�\��[ۊH��[��˛��][ۋ��Y�H	�[�^�[	���]\���B���\��\��܈HH]�Z]�\X�\�B�����J	�\�\���B��\]J�[XZ[�Z[W���[���X��YJB��\J	�Y	��\��[ۋ�\�\��Y
+N�Y�
+\��܊H���\��܎�\��[�^�۝[�H�X��Y��	�L��
+HX�]�LNHH��\��X�]��^�[�HYLNYH�YX]H�\]YHX][���	�L��
+HLN\�X�]�LNK���\��H�X�]��^�\�L�NY[XZ[�][�YY[�ˉ�\��[��\�Ә[YHH	�[\���X��\���H�]�
+\��H[��X��YHX�X��Y����]�[�\�0�	��]]��X��Y[��\��[�^�۝[�H	�\��]\��	�
+�
+\���Y\��Y�H	�[\���X�HH�]]�Y�\�\���N\��[��\�Ә[YHH	�[\��\��܉�B���][Y[�]
+�[��[ۊ
+H�\��[��[K�\�^HH	ۛۙI��K�L
+NB���ܚ\���KKHSВSH���H�U�KO���]��\��H�[ؚ[KX���K[�]����H�Y�H�\�ܚ\]YK�[����[��\��H��]�ZX�ۈ����L������[����[��\�ܚ\]YO��[����O��H�Y�H�]Y\�[ۛ�Z\�K�[��\��H��]�X�[�\�����[��\��H��]�ZX�ۈ����L��
+�����[����[���X�\��O
