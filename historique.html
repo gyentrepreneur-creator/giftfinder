@@ -494,8 +494,8 @@
       _userId = session.user.id;
 
       document.getElementById('nav-right').innerHTML =
-        '<a href="questionnaire.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#127873; Recherche</a>' +
-        '<a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>';
+        '<a href="questionnaire.html" class="btn-outline">&#127873; Recherche</a>' +
+        '<a href="profil.html" class="btn-outline">&#128100; Mon profil</a>';
 
       // Compte total pour le sous-titre
       var countRes = await supabase
