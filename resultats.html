@@ -417,7 +417,7 @@
 
             var imgHtml;
             if (p.image || p.img) {   
-              imgHtml = '<div class="r-card-img"><img src="' + esc(p.image || p.img) +                      '' alt="' + esc(p.nom || p.name || '') + '" onerror="this.parentElement.innerHTML=\'&#127873;\'"></div>';
+              imgHtml = '<div class="r-card-img"><img src="' + esc(p.image || p.img) +                      '" alt="' + esc(p.nom || p.name || '') + '" onerror="this.parentElement.innerHTML=\'&#127873;\'"></div>';
             } else {
               imgHtml = '<div class="r-card-img">&#127873;</div>';
             }
@@ -435,7 +435,7 @@
             }
 
             var buyBtn = lien
-              ? '<a class="r-card-btn" href="' + esc(lien) + '" target="_blank" rel="noopener" onclick="if(window.GFAnalytics)GFAnalytics.track(\'product_clicked\',{search_id:\'' + searchId + '\'titre:\'' + esc(titre).replace(/'/g,"\\'") + '\',lien:\'' + esc(lien) + '\'})">Voir le produit &rarr;</a>'
+              ? '<a class="r-card-btn" href="' + esc(lien) + '" target="_blank" rel="noopener" onclick="if(window.GFAnalytics)GFAnalytics.track(\'product_clicked\',{search_id:\'' + searchId + '\',titre:\'' + esc(titre).replace(/'/g,"\\'") + '\',lien:\'' + esc(lien) + '\'})">Voir le produit &rarr;</a>'
               : '<a class="r-card-btn" href="https://www.amazon.fr/s?k=' + encodeURIComponent(titre) + '&tag=giftfinder0d6-21" target="_blank" rel="noopener" onclick="if(window.GFAnalytics)GFAnalytics.track(\'product_clicked\',{search_id:\'' + searchId + '\',titre:\'' + esc(titre).replace(/'/g,"\\'") + '\'})">Rechercher sur Amazon &rarr;</a>';
 
             card.innerHTML =
