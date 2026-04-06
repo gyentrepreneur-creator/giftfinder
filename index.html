@@ -329,9 +329,7 @@
         // Seulement si on a des données réelles
         if (totalCount > 0) {
           // Formater le total (arrondi aux centaines pour crédibilité)
-          var displayTotal = totalCount >= 1000
-            ? '+' + Math.max(1000, Math.floor(totalCount / 100) * 100).toLocaleString('fr-FR') + ' cadeaux trouvés'
-            : '+' + totalCount + ' cadeau' + (totalCount > 1 ? 'x' : '') + ' trouvé' + (totalCount > 1 ? 's' : '');
+          var displayTotal = '+' + Math.max(1000, Math.floor(totalCount / 100) * 100).toLocaleString('fr-FR') + ' cadeaux trouvés';
 
           // Mettre à jour le badge hero
           var badgeEl = document.querySelector('.badge');
@@ -386,5 +384,22 @@ window.addEventListener('load', function() {
   }, 500);
 });
 </script>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="mobile-bottom-nav">
+    <a href="historique.html">
+      <span class="nav-icon">&#128203;</span>
+      <span>Historique</span>
+    </a>
+    <a href="questionnaire.html" class="nav-center">
+      <span class="nav-icon">&#127873;</span>
+      <span>Recherche</span>
+    </a>
+    <a href="profil.html">
+      <span class="nav-icon">&#128100;</span>
+      <span>Profil</span>
+    </a>
+  </nav>
+
 </body>
 </html>
