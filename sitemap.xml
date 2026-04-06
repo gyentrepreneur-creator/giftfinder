@@ -1,27 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://giftfinder-cyan.vercel.app/</loc>
+    <loc>https://kadoizi.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://giftfinder-cyan.vercel.app/questionnaire.html</loc>
+    <loc>https://kadoizi.com/questionnaire.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://giftfinder-cyan.vercel.app/cgu.html</loc>
+    <loc>https://kadoizi.com/blog/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://kadoizi.com/blog/fete-des-meres-2026.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://kadoizi.com/blog/idee-cadeau-anniversaire.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://kadoizi.com/blog/idee-cadeau-fete-des-peres-2026.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://kadoizi.com/blog/idee-cadeau-mariage.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://kadoizi.com/cgu.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://giftfinder-cyan.vercel.app/confidentialite.html</loc>
+    <loc>https://kadoizi.com/confidentialite.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://giftfinder-cyan.vercel.app/mentions-legales.html</loc>
+    <loc>https://kadoizi.com/mentions-legales.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
