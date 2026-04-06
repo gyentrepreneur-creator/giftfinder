@@ -550,7 +550,7 @@
         var { error } = await supabase.from('shared_results').insert([payload]);
         if (error) throw error;
 
-        var shareUrl = 'https://giftfinder-cyan.vercel.app/shared.html?token=' + token;
+        var shareUrl = 'https://kadoizi.com/shared.html?token=' + token;
         var text = 'D\u00E9couvrez ces id\u00E9es cadeaux trouv\u00E9es par ' + APP_NAME + ' \u2728 ';
 
         if (navigator.share) {
