@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Kadoizi — Idées Cadeaux & Conseils</title>
+  <meta name="description" content="Le blog Kadoizi : idées cadeaux pour toutes les occasions, conseils pour trouver le cadeau parfait, guides par budget et profil.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://giftfinder-cyan.vercel.app/blog/">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Blog Kadoizi — Idées Cadeaux & Conseils">
+  <meta property="og:description" content="Idées cadeaux pour toutes les occasions. Conseils personnalisés et guides par budget.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://giftfinder-cyan.vercel.app/blog/">
+  <meta property="og:image" content="https://giftfinder-cyan.vercel.app/og-image.png">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #26215C;
+      background: #fff;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Navbar ── */
+    .navbar {
+      display: flex; justify-content: space-between; align-items: center;
+      height: 56px; padding: 0 32px;
+      background: #fff; border-bottom: 1px solid #eee;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .navbar-left { display: flex; align-items: center; gap: 8px; }
+    .navbar-left .brand { color: #26215C; font-weight: 700; font-size: 18px; }
+    .btn-cta-sm {
+      background: #3C3489; color: #EEEDFE; border: none;
+      padding: 8px 20px; border-radius: 8px; font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: background .15s;
+    }
+    .btn-cta-sm:hover { background: #2d2768; }
+
+    /* ── Hero blog ── */
+    .blog-hero {
+      background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 60%, #fce7f3 100%);
+      padding: 52px 20px 40px; text-align: center;
+    }
+    .blog-hero h1 { font-size: clamp(24px, 4vw, 36px); font-weight: 700; margin-bottom: 10px; }
+    .blog-hero h1 .highlight { color: #993556; }
+    .blog-hero p { color: #534AB7; font-size: 15px; max-width: 480px; margin: 0 auto 24px; line-height: 1.6; }
+
+    /* ── Filtres ── */
+    .filters {
+      display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
+      padding: 24px 20px; background: #fafafa; border-bottom: 1px solid #eee;
+    }
+    .filter-pill {
+      padding: 7px 18px; border-radius: 999px; font-size: 13px;
+      border: 1px solid #ddd; background: #fff; color: #444;
+      cursor: pointer; transition: all .15s;
+    }
+    .filter-pill:hover, .filter-pill.active {
+      background: #3C3489; color: #fff; border-color: #3C3489;
+    }
+
+    /* ── Grid articles ── */
+    .blog-wrap {
+      max-width: 1000px; margin: 0 auto;
+      padding: 40px 24px 64px;
+    }
+    .section-title {
+      font-size: 14px; text-transform: uppercase; letter-spacing: .5px;
+      color: #999; margin-bottom: 20px;
+    }
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    /* ── Article card ── */
+    .article-card {
+      border: 1px solid #eee; border-radius: 14px; overflow: hidden;
+      transition: box-shadow .2s, transform .15s;
+    }
+    .article-card:hover { box-shadow: 0 8px 32px rgba(60,52,137,.12); transform: translateY(-3px); }
+    .card-cover {
+      height: 140px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 56px;
+    }
+    .card-cover.pink { background: linear-gradient(135deg, #fce7f3 0%, #ede9fe 100%); }
+    .card-cover.purple { background: linear-gradient(135deg, #ede9fe 0%, #e0e7ff 100%); }
+    .card-cover.green { background: linear-gradient(135deg, #d1fae5 0%, #ede9fe 100%); }
+    .card-cover.amber { background: linear-gradient(135deg, #fef3c7 0%, #fce7f3 100%); }
+    .card-body { padding: 18px 18px 20px; }
+    .card-tag {
+      display: inline-block; font-size: 11px; font-weight: 600;
+      color: #534AB7; background: #EEEDFE; border-radius: 999px;
+      padding: 3px 10px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: .3px;
+    }
+    .card-title {
+      font-size: 15px; font-weight: 700; line-height: 1.35;
+      margin-bottom: 8px; color: #26215C;
+    }
+    .card-desc {
+      font-size: 13px; color: #666; line-height: 1.6; margin-bottom: 14px;
+    }
+    .card-meta {
+      font-size: 12px; color: #aaa;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .card-read-more {
+      font-size: 13px; color: #3C3489; font-weight: 600;
+    }
+    .card-read-more:hover { text-decoration: underline; }
+
+    /* ── Badge "À venir" ── */
+    .card-soon {
+      position: relative; overflow: hidden;
+    }
+    .card-soon::after {
+      content: "Bientôt"; position: absolute; top: 12px; right: -20px;
+      background: #f59e0b; color: #fff; font-size: 10px; font-weight: 700;
+      padding: 3px 24px; transform: rotate(40deg); letter-spacing: .5px;
+    }
+    .card-soon .article-card { opacity: .7; pointer-events: none; }
+
+    /* ── CTA bloc ── */
+    .cta-block {
+      background: linear-gradient(135deg, #3C3489 0%, #6d28d9 100%);
+      border-radius: 16px; padding: 36px 28px; text-align: center;
+      margin: 48px 0;
+    }
+    .cta-block h2 { color: #fff; font-size: 20px; margin-bottom: 8px; }
+    .cta-block p { color: rgba(255,255,255,.85); font-size: 14px; margin-bottom: 20px; }
+    .btn-cta-white {
+      background: #fff; color: #3C3489; border: none;
+      padding: 14px 32px; border-radius: 8px;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      transition: opacity .15s;
+    }
+    .btn-cta-white:hover { opacity: .9; }
+    .cta-sub { color: rgba(255,255,255,.65); font-size: 11px; margin-top: 8px; display: block; }
+
+    /* ── Footer ── */
+    footer {
+      background: #26215C; color: rgba(255,255,255,.7);
+      padding: 32px 20px; text-align: center; font-size: 13px;
+    }
+    footer a { color: rgba(255,255,255,.7); margin: 0 10px; }
+    footer a:hover { color: #fff; }
+    .footer-brand { color: #fff; font-weight: 700; margin-bottom: 12px; font-size: 16px; }
+
+    @media (max-width: 600px) {
+      .navbar { padding: 0 16px; }
+      .blog-wrap { padding: 28px 16px 48px; }
+      .articles-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <a href="../index.html" class="navbar-left">
+    <span style="font-size:22px">🎁</span>
+    <span class="brand">Kadoizi</span>
+  </a>
+  <a href="../questionnaire.html">
+    <button class="btn-cta-sm">Trouver un cadeau →</button>
+  </a>
+</nav>
+
+<!-- Hero -->
+<header class="blog-hero">
+  <h1>Blog Kadoizi — <span class="highlight">Idées Cadeaux</span></h1>
+  <p>Guides, sélections et conseils pour trouver le cadeau parfait à chaque occasion et pour chaque profil.</p>
+</header>
+
+<!-- Filtres -->
+<div class="filters">
+  <button class="filter-pill active">Tous les articles</button>
+  <button class="filter-pill">🌸 Fête des Mères</button>
+  <button class="filter-pill">🎂 Anniversaire</button>
+  <button class="filter-pill">🎄 Noël</button>
+  <button class="filter-pill">💝 Saint-Valentin</button>
+  <button class="filter-pill">👨 Fête des Pères</button>
+  <button class="filter-pill">💍 Mariage</button>
+  <button class="filter-pill">💸 Petit budget</button>
+</div>
+
+<!-- Grid -->
+<main class="blog-wrap">
+
+  <p class="section-title">Articles disponibles</p>
+
+  <div class="articles-grid">
+
+    <!-- Article 1 — Fête des Mères (LIVE) -->
+    <a href="fete-des-meres-2026.html">
+      <div class="article-card">
+        <div class="card-cover pink">🌸</div>
+        <div class="card-body">
+          <span class="card-tag">Fête des Mères</span>
+          <div class="card-title">Idée Cadeau Fête des Mères 2026 : Top 25 Idées pour Gâter Votre Maman</div>
+          <div class="card-desc">Tous budgets (moins de 50€, 50-100€, premium). 25 idées avec liens Amazon directs + notre IA personnalisée.</div>
+          <div class="card-meta">
+            <span>Avril 2026 · 5 min</span>
+            <span class="card-read-more">Lire →</span>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Article 2 — Anniversaire (LIVE) -->
+    <a href="idee-cadeau-anniversaire.html">
+      <div class="article-card">
+        <div class="card-cover purple">🎂</div>
+        <div class="card-body">
+          <span class="card-tag">Anniversaire</span>
+          <div class="card-title">Idée Cadeau Anniversaire : 30 Suggestions Originales selon l'Âge et le Budget</div>
+          <div class="card-desc">Cadeaux d'anniversaire originaux par tranches d'âge (20-30 ans, 30-40 ans, 50+) et par budget. Liens Amazon directs.</div>
+          <div class="card-meta">
+            <span>Avril 2026 · 6 min</span>
+            <span class="card-read-more">Lire →</span>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Article 3 — Fête des Pères 2026 (LIVE) -->
+    <a href="idee-cadeau-fete-des-peres-2026.html">
+      <div class="article-card">
+        <div class="card-cover" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);">👨</div>
+        <div class="card-body">
+          <span class="card-tag">Fête des Pères</span>
+          <div class="card-title">Idée Cadeau Fête des Pères 2026 : 25 Idées Originales pour Gâter Papa</div>
+          <div class="card-desc">Tous budgets (moins de 50€, 50-100€, premium). 25 idées avec liens Amazon directs pour la Fête des Pères du 21 juin.</div>
+          <div class="card-meta">
+            <span>Avril 2026 · 5 min</span>
+            <span class="card-read-more">Lire →</span>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Article 4 — Mariage (LIVE) -->
+    <a href="idee-cadeau-mariage.html">
+      <div class="article-card">
+        <div class="card-cover" style="background: linear-gradient(135deg, #fff7ed 0%, #fce7f3 100%);">💍</div>
+        <div class="card-body">
+          <span class="card-tag">Mariage</span>
+          <div class="card-title">Idée Cadeau Mariage 2026 : 30 Idées Originales pour les Mariés</div>
+          <div class="card-desc">30 idées cadeaux mariage originaux et utiles pour tous les budgets. Avec liens Amazon directs et conseils pour bien choisir.</div>
+          <div class="card-meta">
+            <span>Avril 2026 · 6 min</span>
+            <span class="card-read-more">Lire →</span>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Article 5 — Noël 2026 (À venir) -->
+    <div class="card-soon">
+      <div class="article-card">
+        <div class="card-cover amber">🎄</div>
+        <div class="card-body">
+          <span class="card-tag">Noël</span>
+          <div class="card-title">50 Idées Cadeaux de Noël 2026 pour Tous les Budgets (générées par IA)</div>
+          <div class="card-desc">La sélection ultime pour Noël 2026 : cadeaux pour lui, elle, les enfants, les grands-parents. Tous les budgets.</div>
+          <div class="card-meta">
+            <span>Septembre 2026 · 8 min</span>
+            <span class="card-read-more">Lire →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Article 6 — Saint-Valentin (À venir) -->
+    <div class="card-soon">
+      <div class="article-card">
+        <div class="card-cover pink">💝</div>
+        <div class="card-body">
+          <span class="card-tag">Saint-Valentin</span>
+          <div class="card-title">Idée Cadeau Saint-Valentin Original : 20 Idées pour Votre Couple</div>
+          <div class="card-desc">Des idées romantiques et originales pour la Saint-Valentin, pour lui et pour elle, de tous les budgets.</div>
+          <div class="card-meta">
+            <span>Janvier 2027 · 4 min</span>
+            <span class="card-read-more">Lire →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-block">
+    <h2>🤖 Pas de temps à lire ? L'IA trouve directement pour vous</h2>
+    <p>Répondez à 6 questions et recevez 9 idées cadeaux personnalisées en 30 secondes.</p>
+    <a href="../questionnaire.html">
+      <button class="btn-cta-white">Essayer Kadoizi →</button>
+    </a>
+    <span class="cta-sub">Gratuit · Sans inscription · Résultats immédiats</span>
+  </div>
+
+</main>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-brand">🎁 Kadoizi</div>
+  <p style="margin-bottom:16px">L'IA qui trouve le cadeau parfait en 30 secondes.</p>
+  <div>
+    <a href="../index.html">Accueil</a>
+    <a href="../questionnaire.html">Trouver un cadeau</a>
+    <a href="index.html">Blog</a>
+    <a href="../cgu.html">CGU</a>
+    <a href="../confidentialite.html">Confidentialité</a>
+    <a href="../mentions-legales.html">Mentions légales</a>
+  </div>
+  <p style="margin-top:16px;font-size:11px;opacity:.5">© 2026 Kadoizi · Tous droits réservés</p>
+</footer>
+
+</body>
+</html>
