@@ -330,7 +330,7 @@
         if (totalCount > 0) {
           // Formater le total (arrondi aux centaines pour crédibilité)
           var displayTotal = totalCount >= 1000
-            ? '+' + (Math.floor(totalCount / 100) * 100).toLocaleString('fr-FR') + ' cadeaux trouvés'
+            ? '+' + Math.max(1000, Math.floor(totalCount / 100) * 100).toLocaleString('fr-FR') + ' cadeaux trouvés'
             : '+' + totalCount + ' cadeau' + (totalCount > 1 ? 'x' : '') + ' trouvé' + (totalCount > 1 ? 's' : '');
 
           // Mettre à jour le badge hero
@@ -375,5 +375,16 @@
       });
     }
   </script>
+<script>
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    document.querySelectorAll('div').forEach(function(d) {
+      if (!d.children.length && d.textContent && d.textContent.includes('ce mois')) {
+        d.style.display = 'none';
+      }
+    });
+  }, 500);
+});
+</script>
 </body>
 </html>
