@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 Disallow: /resultats.html
-
-Sitemap: https://giftfinder-cyan.vercel.app/sitemap.xml
+Sitemap: https://kadoizi.com/sitemap.xml
