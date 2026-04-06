@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr" translate="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kadoizi &mdash; Page introuvable</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #EEEDFE 0%, #FBEAF0 50%, #E1F5EE 100%);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+    .deco {
+      position: fixed;
+      border-radius: 50%;
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .deco-violet { background: #7F77DD; width: 180px; height: 180px; top: -45px; left: -45px; }
+    .deco-rose   { background: #D4537E; width: 110px; height: 110px; top: 20px; right: -25px; }
+    .deco-vert   { background: #1D9E75; width:  80px; height:  80px; bottom: 80px; right: 40px; }
+    .deco-ambre  { background: #EF9F27; width:  60px; height:  60px; bottom: 60px; left: 40px; }
+
+    .navbar { position: relative; z-index: 10; }
+
+    .not-found-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .not-found-card {
+      background: rgba(255, 255, 255, 0.88);
+      border-radius: 24px;
+      box-shadow: 0 8px 48px rgba(60, 52, 137, 0.13), 0 2px 12px rgba(0,0,0,0.05);
+      padding: 48px 40px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      backdrop-filter: blur(12px);
+    }
+
+    .not-found-emoji {
+      font-size: 72px;
+      margin-bottom: 16px;
+      display: block;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-12px); }
+    }
+
+    .not-found-code {
+      font-size: 80px;
+      font-weight: 800;
+      color: #3C3489;
+      line-height: 1;
+      margin-bottom: 8px;
+      letter-spacing: -2px;
+    }
+
+    .not-found-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #26215C;
+      margin-bottom: 12px;
+    }
+
+    .not-found-desc {
+      font-size: 15px;
+      color: #888;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .not-found-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-home {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #3C3489;
+      color: #EEEDFE;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      transition: background .15s, transform .1s;
+    }
+    .btn-home:hover { background: #2d2768; transform: translateY(-1px); }
+
+    .btn-search {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: transparent;
+      color: #3C3489;
+      border: 1.5px solid rgba(60, 52, 137, 0.3);
+      padding: 13px 28px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      transition: border-color .15s, background .15s;
+    }
+    .btn-search:hover { background: rgba(60, 52, 137, 0.05); border-color: #3C3489; }
+
+    .countdown {
+      font-size: 12px;
+      color: #bbb;
+      margin-top: 20px;
+    }
+
+    @media (max-width: ize: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      transition: border-color .15s, background .15s;
+    }
+    .btn-search:hover { background: rgba(60, 52, 137, 0.05); border-color: #3C3489; }
+
+    .countdown {
+      font-size: 12px;
+      color: #bbb;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 480px) {
+      .not-found-card { padding: 36px 24px; }
+      .not-found-code { font-size: 64px; }
+      .not-found-emoji { font-size: 56px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Décorations -->
+  <div class="deco deco-violet"></div>
+  <div class="deco deco-rose"></div>
+  <div class="deco deco-vert"></div>
+  <div class="deco deco-ambre"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <span class="gift-icon">&#127873;</span>
+      <a href="index.html" class="brand" id="brand-name">Kadoizi</a>
+    </div>
+    <div class="navbar-right" id="nav-right">
+      <a href="index.html" class="btn-outline">Accueil</a>
+    </div>
+  </nav>
+
+  <!-- Contenu principal -->
+  <div class="not-found-wrap">
+    <div class="not-found-card">
+      <span class="not-found-emoji">&#127873;</span>
+      <div class="not-found-code">404</div>
+      <h1 class="not-found-title">Cette page s&rsquo;est perdue&nbsp;!</h1>
+      <p class="not-found-desc">
+        On a cherch&eacute; partout, mais cette page n&rsquo;existe pas (ou plus).<br>
+        Heureusement, on est tr&egrave;s forts pour trouver des cadeaux &mdash; pas des pages perdues.
+      </p>
+      <div class="not-found-actions">
+        <a href="index.html" class="btn-home">&#127968; Retour &agrave; l&rsquo;accueil</a>
+        <a href="questionnaire.html" class="btn-search">&#10024; Chercher un cadeau</a>
+      </div>
+      <p class="countdown" id="countdown-msg"></p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-top">
+      <span id="footer-brand">Kadoizi</span> &mdash; <a href="index.html">Retour &agrave; l&rsquo;accueil</a>
+    </div>
+    <div class="footer-links">
+      <a href="mentions-legales.html">Mentions l&eacute;gales</a>
+      <a href="confidentialite.html">Confidentialit&eacute;</a>
+      <a href="cgu.html">CGU</a>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script>
+    // Afficher le nom de l'app si config.js est chargé
+    try {
+      if (typeof APP_NAME !== 'undefined') {
+        var brandEl = document.getElementById('brand-name');
+        var footerEl = document.getElementById('footer-brand');
+        if (brandEl) brandEl.textContent = APP_NAME;
+        if (footerEl) footerEl.textContent = APP_NAME;
+      }
+    } catch(e) {}
+
+    // Compte à rebours auto-redirect vers l'accueil (10 secondes)
+    var seconds = 10;
+    var countdownEl = document.getElementById('countdown-msg');
+
+    function updateCountdown() {
+      if (!countdownEl) return;
+      if (seconds > 0) {
+        countdownEl.textContent = 'Redirection automatique dans ' + 
