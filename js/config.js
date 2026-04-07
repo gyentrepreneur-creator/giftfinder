@@ -1,5 +1,5 @@
 const APP_NAME = 'Kadoizi';
-const SUPABASE_URL = 'https://cpcaopunmkurkreydvgs.supabase.co';
+const SUPABASE_URL = 'https://dzlyrswuyafxjswuxdcu.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwY2FvcHVubWt1cmtyZXlkdmdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5MDY0OTAsImV4cCI6MjA1ODQ4MjQ5MH0.I-sJExbQpnUMeFYQAFiVOb6qXH7W17HGsIU5WT2TSQY';
 const POLLING_INTERVAL = 3000;
 
