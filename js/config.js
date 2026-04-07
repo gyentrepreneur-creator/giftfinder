@@ -37,4 +37,9 @@ window.addEventListener('DOMContentLoaded', function() {
         '<span style="font-size:10px;color:#aaa;font-style:italic;">Le cadeau parfait</span>' +
       '</span></span>';
   }
-});
+
+
+      // 4. Logo titre résultats
+      var rl = document.getElementById('r-title-logo');
+      if (rl) rl.src = LOGO_NAV;
+    });
