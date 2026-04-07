@@ -111,10 +111,6 @@
         cards.forEach(function (card) {
           card.classList.add('anim-visible');
         });
-        // Confetti après les cartes
-        setTimeout(function () {
-          window.triggerConfetti();
-        }, 400);
       }, 100);
     });
   };
