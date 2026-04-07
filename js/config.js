@@ -15,8 +15,22 @@ const LOGO_FOOTER = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAA
 
 // Auto-inject logos after all inline scripts run
 window.addEventListener('DOMContentLoaded', function() {
+  // ── Navbar: replace emoji + text with logo + brand name ──
   var gi = document.querySelector('.gift-icon');
-  if (gi) gi.outerHTML = '<a href="index.html" style="display:inline-block;"><img src="' + LOGO_NAV + '" alt="' + APP_NAME + '" height="36" style="border-radius:8px;"></a>';
+  if (gi) {
+    gi.outerHTML = '<a href="index.html" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;">' +
+      '<img src="' + LOGO_NAV + '" alt="' + APP_NAME + '" height="38" style="border-radius:10px;">' +
+      '<span style="font-weight:700;font-size:18px;color:#1a1935;">' + APP_NAME + '</span></a>';
+  }
+  // Hide the original brand-name span (now redundant)
+  var bn = document.getElementById('brand-name');
+  if (bn) bn.style.display = 'none';
+
+  // ── Footer: replace text with logo + name ──
   var fb = document.getElementById('footer-brand');
-  if (fb) fb.innerHTML = '<img src="' + LOGO_FOOTER + '" alt="' + APP_NAME + '" height="44" style="border-radius:6px;vertical-align:middle;">';
+  if (fb) {
+    fb.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">' +
+      '<img src="' + LOGO_FOOTER + '" alt="' + APP_NAME + '" height="40" style="border-radius:8px;">' +
+      '<span style="font-weight:600;font-size:15px;color:#555;">' + APP_NAME + '</span></span>';
+  }
 });
