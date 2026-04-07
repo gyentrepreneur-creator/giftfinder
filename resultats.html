@@ -216,7 +216,7 @@
     </div>
 
     <!-- Etat : erreur -->
-    <div id="errorState" class="r-error">
+    <div id="errorState" class="r-error" style="display:none;">
       <div style="font-size:48px;margin-bottom:16px;">&#128533;</div>
       <h2 style="font-size:20px;font-weight:700;color:#26215C;margin-bottom:8px;">Une erreur est survenue</h2>
       <p style="font-size:14px;color:#666;" id="errorMessage">Impossible de charger les r&eacute;sultats.</p>
@@ -361,6 +361,7 @@
     function displayResults(data) {
       _currentData = data; // sauvegarde pour handleShare
       document.getElementById('loader').style.display = 'none';
+      document.getElementById('errorState').style.display = 'none';
       document.getElementById('resultsSection').style.display = 'block'; // affiché tôt pour éviter page blanche
 
       try {
