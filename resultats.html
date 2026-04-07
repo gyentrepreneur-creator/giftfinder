@@ -13,6 +13,8 @@
     body {
       margin: 0;
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
       background: linear-gradient(135deg, #EEEDFE 0%, #FBEAF0 50%, #E1F5EE 100%);
       position: relative;
       overflow-x: hidden;
@@ -32,6 +34,7 @@
     .navbar { position: relative; z-index: 10; }
 
     .r-main {
+      flex: 1;
       padding: 40px 20px 60px;
       position: relative;
       z-index: 1;
