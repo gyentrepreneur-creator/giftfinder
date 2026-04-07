@@ -7,6 +7,17 @@ const LOGO_NAV = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1B
 const LOGO_FOOTER = 'data:image/jpeg;base64,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';
 
 window.addEventListener('DOMContentLoaded', function() {
+  // 1. Favicon → logo K ribbon
+  var iconLink = document.querySelector("link[rel~='icon']");
+  if (!iconLink) {
+    iconLink = document.createElement('link');
+    iconLink.rel = 'icon';
+    document.head.appendChild(iconLink);
+  }
+  iconLink.type = 'image/jpeg';
+  iconLink.href = LOGO_NAV;
+
+  // 2. Navbar : remplacement de l'icône cadeau par le logo
   var gi = document.querySelector('.gift-icon');
   if (gi) {
     gi.outerHTML = '<a href="index.html" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;">' +
@@ -15,10 +26,15 @@ window.addEventListener('DOMContentLoaded', function() {
   }
   var bn = document.getElementById('brand-name');
   if (bn) bn.style.display = 'none';
+
+  // 3. Footer brand : logo K + KADOIZI + Le cadeau parfait
   var fb = document.getElementById('footer-brand');
   if (fb) {
-    fb.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">' +
-      '<img src="' + LOGO_FOOTER + '" alt="' + APP_NAME + '" height="40" style="border-radius:8px;">' +
-      '<span style="font-weight:600;font-size:15px;color:#555;">' + APP_NAME + '</span></span>';
+    fb.innerHTML = '<span style="display:inline-flex;align-items:center;gap:7px;">' +
+      '<img src="' + LOGO_NAV + '" alt="' + APP_NAME + '" height="36" style="border-radius:8px;">' +
+      '<span style="display:flex;flex-direction:column;line-height:1.25;">' +
+        '<span style="font-weight:800;font-size:12px;color:#26215C;letter-spacing:.8px;">' + APP_NAME.toUpperCase() + '</span>' +
+        '<span style="font-size:10px;color:#aaa;font-style:italic;">Le cadeau parfait</span>' +
+      '</span></span>';
   }
 });
