@@ -42,4 +42,6 @@ window.addEventListener('DOMContentLoaded', function() {
       // 4. Logo titre résultats
       var rl = document.getElementById('r-title-logo');
       if (rl) rl.src = LOGO_NAV;
+      var rl2 = document.getElementById('r-title-main-logo');
+      if (rl2) rl2.src = LOGO_NAV;
     });
