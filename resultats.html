@@ -32,7 +32,6 @@
     .navbar { position: relative; z-index: 10; }
 
     .r-main {
-      min-height: calc(100vh - 300px);
       padding: 40px 20px 60px;
       position: relative;
       z-index: 1;
@@ -42,8 +41,6 @@
 
     /* -- Loader -- */
     .r-loader {
-      display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 420px;
@@ -59,6 +56,7 @@
       30%     { transform: translateY(-10px) rotate(-6deg); }
       70%     { transform: translateY(-5px) rotate(6deg); }
     }
+    #loader { min-height: calc(100vh - 270px); }
     .r-spinner {
       width: 44px; height: 44px;
       border: 3px solid rgba(60,52,137,0.15);
@@ -70,10 +68,7 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* -- Error -- */
-    .r-error {
-      display: none;
-      flex-direction: column;
-      align-items: center;
+    .r-error {      align-items: center;
       justify-content: center;
       min-height: 380px;
       text-align: center;
