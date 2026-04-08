@@ -331,15 +331,15 @@
     // ── Social proof dynamique ──
     // Tente de récupérer les stats réelles depuis Supabase.
     // En cas d'échec (RLS, erreur réseau) : les valeurs statiques restent affichées.
-    (async function loadSocialProof() {
+    setTimeout(async function loadSocialProof() {
       try {
         var now = new Date();
         var firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
-        // Requêtes parallèles : total + mois courant
+        // Requêtes parallèles : total + mois courant (head:false pour éviter 503 WAF Vercel)
         var results = await Promise.all([
-          supabase.from('searches').select('id', { count: 'exact', head: true }).in('statut', ['done', 'completed']),
-          supabase.from('searches').select('id', { count: 'exact', head: true }).in('statut', ['done', 'completed']).gte('created_at', firstOfMonth)
+          supabase.from('searches').select('id', { count: 'exact', head: false }).in('statut', ['done', 'completed']),
+          supabase.from('searches').select('id', { count: 'exact', head: false }).in('statut', ['done', 'completed']).gte('created_at', firstOfMonth)
         ]);
 
         var totalCount = results[0].count || 0;
@@ -383,7 +383,7 @@
       } catch(e) {
         // Fail silently — les valeurs statiques restent affichées
       }
-    })();
+    }, 1500);
 
     // Enregistrement du Service Worker (PWA)
     if ('serviceWorker' in navigator) {
