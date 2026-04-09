@@ -320,14 +320,16 @@
     document.getElementById('footer-brand').textContent = APP_NAME;
 
     const params   = new URLSearchParams(window.location.search);
-    const searchId = params.get('id');
+    const rawId    = params.get('id') || '';
+    // Sanitize : n'accepter que les UUID valides (lettres, chiffres, tirets)
+    const searchId = /^[a-f0-9\-]{36}$/i.test(rawId) ? rawId : null;
 
     if (!searchId) showError('Aucun identifiant de recherche fourni. Veuillez relancer une recherche.');
 
-    let pollInterval  = null;
-    let pollCount     = 0;
-    const MAX_POLLS   = 60;
-    let _currentData  = null; // stocke les données pour handleShare
+    let pollInterval   = null;
+    let pollCount      = 0;
+    let pollStartTime  = 0;
+    let _currentData   = null; // stocke les données pour handleShare
 
     (async function() {
       const { data: { session } } = await supabase.auth.getSession();
@@ -335,17 +337,38 @@
       if (searchId) startPolling();
     })();
 
+    let pollElapsed = 0; // temps total écoulé en secondes
+
     function startPolling() {
-      pollInterval = setInterval(checkStatus, POLLING_INTERVAL);
+      pollStartTime = Date.now();
+      pollElapsed = 0;
+      pollCount = 0;
+      scheduleNextPoll();
       checkStatus();
+    }
+
+    function getPollingDelay() {
+      // Rapide au début (2s), ralentit après 20s (4s), puis après 60s (6s)
+      if (pollElapsed < 20) return 2000;
+      if (pollElapsed < 60) return 4000;
+      return 6000;
+    }
+
+    function scheduleNextPoll() {
+      var delay = getPollingDelay();
+      pollInterval = setTimeout(function() {
+        checkStatus();
+        if (pollInterval) scheduleNextPoll();
+      }, delay);
     }
 
     async function checkStatus() {
       pollCount++;
+      pollElapsed = Math.round((Date.now() - pollStartTime) / 1000);
       document.getElementById('pollingStatus').textContent =
-        'V\u00E9rification #' + pollCount + '... (' + (pollCount * POLLING_INTERVAL / 1000) + 's)';
+        'V\u00E9rification #' + pollCount + '... (' + pollElapsed + 's)';
 
-      if (pollCount > MAX_POLLS) {
+      if (pollElapsed > 180) { // timeout à 3 minutes
         stopPolling();
         showError('D\u00E9lai d\'attente d\u00E9pass\u00E9. Veuillez rafra\u00EEchir ou relancer une recherche.');
         return;
@@ -367,13 +390,11 @@
           stopPolling();
           showError('Erreur lors de la g\u00E9n\u00E9ration. Veuillez r\u00E9essayer.');
         }
-      } catch (err) {
-        console.error('Erreur polling :', err.message);
-      }
+      } catch (_) { /* silencieux en prod */ }
     }
 
     function stopPolling() {
-      if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+      if (pollInterval) { clearTimeout(pollInterval); pollInterval = null; }
     }
 
     function displayResults(data) {
@@ -461,7 +482,7 @@
 
             grid.appendChild(card);
           } catch (cardErr) {
-            console.error('Erreur carte produit :', cardErr);
+            /* erreur carte silencieuse en prod */
           }
         });
 
@@ -472,7 +493,7 @@
 
         updateNewSearchCTA();
       } catch (e) {
-        console.error('displayResults erreur :', e);
+        /* erreur affichage silencieuse en prod */
         showError('Erreur lors de l\'affichage. Veuillez rafra\u00EEchir la page.');
       }
     }
@@ -577,7 +598,7 @@
           }, 3000);
         }
       } catch (err) {
-        console.error('Erreur partage :', err);
+        /* erreur partage silencieuse en prod */
         // Fallback : partager l'URL courante
         var fallbackUrl = window.location.href;
         navigator.clipboard.writeText(fallbackUrl).then(function() {
@@ -592,7 +613,8 @@
     function esc(s) {
       return String(s)
         .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
     }
 
     // Enregistrement du Service Worker (PWA)

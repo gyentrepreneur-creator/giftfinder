@@ -467,7 +467,7 @@
           }
         }
       } catch (limitErr) {
-        console.warn('Impossible de verifier la limite quotidienne :', limitErr.message);
+        /* limite quotidienne : erreur silencieuse en prod */
         // On laisse passer si la verification echoue (fail-open)
       }
 
