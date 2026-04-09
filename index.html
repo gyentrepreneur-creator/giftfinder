@@ -243,15 +243,20 @@
         errorEl.style.display = 'block';
         return;
       }
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/profil.html'
-      });
-      if (error) {
-        errorEl.textContent = error.message || 'Erreur lors de l\'envoi du mail.';
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + '/profil.html'
+        });
+        if (error) {
+          errorEl.textContent = error.message || 'Erreur lors de l\'envoi du mail.';
+          errorEl.style.display = 'block';
+        } else {
+          successEl.textContent = '\u2705 Un e-mail de r\u00E9initialisation a \u00E9t\u00E9 envoy\u00E9 \u00E0 ' + email;
+          successEl.style.display = 'block';
+        }
+      } catch(err) {
+        errorEl.textContent = (err && err.message) || 'Erreur r\u00E9seau.';
         errorEl.style.display = 'block';
-      } else {
-        successEl.textContent = '\u2705 Un e-mail de r\u00E9initialisation a \u00E9t\u00E9 envoy\u00E9 \u00E0 ' + email;
-        successEl.style.display = 'block';
       }
     }
 
@@ -392,18 +397,6 @@
       });
     }
   </script>
-<script>
-window.addEventListener('load', function() {
-  setTimeout(function() {
-    document.querySelectorAll('div').forEach(function(d) {
-      if (!d.children.length && d.textContent && d.textContent.includes('ce mois')) {
-        d.style.display = 'none';
-      }
-    });
-  }, 500);
-});
-</script>
-
   <!-- MOBILE BOTTOM NAV -->
   <nav class="mobile-bottom-nav">
     <a href="historique.html">
