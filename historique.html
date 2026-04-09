@@ -178,37 +178,49 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* -- Scroll loader (bas de liste) -- */
-    .h-scroll-loader {
+    /* -- Pagination -- */
+    .h-pagination {
       display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 32px;
+      padding: 20px 0;
+    }
+    .h-page-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(60,52,137,0.22);
+      background: rgba(255,255,255,0.85);
+      color: #3C3489;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+      font-family: inherit;
+    }
+    .h-page-btn:hover:not(:disabled) {
+      background: #3C3489;
+      color: #EEEDFE;
+      border-color: #3C3489;
+    }
+    .h-page-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .h-page-indicator {
+      font-size: 14px;
+      font-weight: 600;
+      color: #3C3489;
+      min-width: 100px;
       text-align: center;
-      padding: 24px 0 8px;
-      color: #aaa;
-      font-size: 13px;
     }
-    .h-scroll-loader .h-mini-spinner {
-      width: 22px; height: 22px;
-      border: 2px solid rgba(60,52,137,0.15);
-      border-top-color: #3C3489;
-      border-radius: 50%;
-      animation: spin .8s linear infinite;
-      margin: 0 auto 8px;
-    }
-
-    /* -- Fin de l'historique -- */
-    .h-fin {
-      display: none;
-      text-align: center;
-      padding: 28px 20px 8px;
-      font-size: 13px;
-      color: #bbb;
-    }
-    .h-fin span {
-      display: inline-block;
-      border-top: 1px solid #e0e0e0;
-      padding-top: 16px;
-      width: 100%;
-      max-width: 240px;
+    .h-page-indicator span {
+      font-weight: 400;
+      color: #888;
     }
 
     /* -- Filtres occasion -- */
@@ -284,15 +296,11 @@
     <!-- Liste des cards -->
     <div id="liste"></div>
 
-    <!-- Loader scroll (entre chaque tranche) -->
-    <div id="scroll-loader" class="h-scroll-loader">
-      <div class="h-mini-spinner"></div>
-      Chargement...
-    </div>
-
-    <!-- Fin de l'historique -->
-    <div id="fin-message" class="h-fin">
-      <span>&#10003; Fin de l&rsquo;historique</span>
+    <!-- Pagination -->
+    <div id="pagination" class="h-pagination">
+      <button type="button" class="h-page-btn" id="btn-prev" onclick="goPage(-1)" title="Page pr&eacute;c&eacute;dente">&#9664;</button>
+      <div class="h-page-indicator" id="page-indicator">Page 1 <span>/ 1</span></div>
+      <button type="button" class="h-page-btn" id="btn-next" onclick="goPage(1)" title="Page suivante">&#9654;</button>
     </div>
 
     <!-- Empty state -->
@@ -346,27 +354,36 @@
       '50_100': '50-100 \u20AC', '100_200': '100-200 \u20AC', 'plus_200': '> 200 \u20AC'
     };
 
-    var PAGE_SIZE    = 50;
-    var MAX_TOTAL    = 150;
-    var _offset      = 0;
-    var _loading     = false;
-    var _done        = false;
-    var _userId      = null;
-    var _totalDB     = 0;
+    var PAGE_SIZE     = 20;
+    var _currentPage  = 1;
+    var _totalPages   = 1;
+    var _loading      = false;
+    var _userId       = null;
+    var _totalDB      = 0;
     var _activeFilter = ''; // '' = toutes les occasions
 
     function updateSubtitle() {
       var el = document.getElementById('h-sub');
       if (_totalDB === 0) { el.textContent = 'Aucune recherche encore.'; return; }
-      var shown = Math.min(_offset, MAX_TOTAL);
-      var total = Math.min(_totalDB, MAX_TOTAL);
-      if (_done || shown >= total) {
-        el.innerHTML = total === 1
-          ? '1 recherche effectu\u00e9e'
-          : total + ' recherches effectu\u00e9es';
-      } else {
-        el.innerHTML = shown + ' sur ' + total + ' recherches';
-      }
+      el.innerHTML = _totalDB + ' recherche' + (_totalDB > 1 ? 's' : '') + ' effectu\u00e9e' + (_totalDB > 1 ? 's' : '');
+    }
+
+    function updatePagination() {
+      _totalPages = Math.max(1, Math.ceil(_totalDB / PAGE_SIZE));
+      var pag = document.getElementById('pagination');
+      if (_totalPages <= 1) { pag.style.display = 'none'; return; }
+      pag.style.display = 'flex';
+      document.getElementById('page-indicator').innerHTML =
+        'Page ' + _currentPage + ' <span>/ ' + _totalPages + '</span>';
+      document.getElementById('btn-prev').disabled = (_currentPage <= 1);
+      document.getElementById('btn-next').disabled = (_currentPage >= _totalPages);
+    }
+
+    function goPage(delta) {
+      var newPage = _currentPage + delta;
+      if (newPage < 1 || newPage > _totalPages || _loading) return;
+      _currentPage = newPage;
+      loadPage();
     }
 
     function renderCard(liste, r) {
@@ -400,13 +417,17 @@
       liste.appendChild(a);
     }
 
-    async function loadMore() {
-      if (_loading || _done) return;
+    async function loadPage() {
+      if (_loading) return;
       _loading = true;
-      document.getElementById('scroll-loader').style.display = 'block';
 
-      var from = _offset;
-      var to   = Math.min(_offset + PAGE_SIZE - 1, MAX_TOTAL - 1);
+      var liste = document.getElementById('liste');
+      liste.innerHTML = '';
+      document.getElementById('loader').style.display = 'block';
+      document.getElementById('empty').style.display = 'none';
+
+      var from = (_currentPage - 1) * PAGE_SIZE;
+      var to   = from + PAGE_SIZE - 1;
 
       var query = supabase
         .from('searches')
@@ -417,7 +438,6 @@
       if (_activeFilter) query = query.eq('occasion', _activeFilter);
       var res = await query;
 
-      document.getElementById('scroll-loader').style.display = 'none';
       document.getElementById('loader').style.display = 'none';
 
       if (res.error || !res.data) {
@@ -427,52 +447,28 @@
 
       var data = res.data;
 
-      if (data.length === 0 && _offset === 0) {
+      if (data.length === 0 && _currentPage === 1) {
         document.getElementById('empty').style.display = 'block';
-        _done = true;
         _loading = false;
         updateSubtitle();
+        updatePagination();
         return;
       }
 
-      var liste = document.getElementById('liste');
       data.forEach(function(r) { renderCard(liste, r); });
-      _offset += data.length;
 
-      var maxReached = _offset >= MAX_TOTAL;
-      var noMore     = data.length < PAGE_SIZE;
-
-      if (maxReached || noMore) {
-        _done = true;
-        document.getElementById('fin-message').style.display = 'block';
-      }
+      // Scroll en haut de la liste après changement de page
+      window.scrollTo({ top: 0, behavior: 'smooth' });
 
       updateSubtitle();
+      updatePagination();
       _loading = false;
-    }
-
-    function onScroll() {
-      if (_done || _loading) return;
-      var scrollBottom = document.documentElement.scrollHeight - window.scrollY - window.innerHeight;
-      if (scrollBottom < 300) { loadMore(); }
     }
 
     // ── Filtres : reset + rechargement ──
-    function resetList() {
-      _offset = 0;
-      _loading = false;
-      _done = false;
-      _totalDB = 0;
-      document.getElementById('liste').innerHTML = '';
-      document.getElementById('empty').style.display = 'none';
-      document.getElementById('fin-message').style.display = 'none';
-      document.getElementById('loader').style.display = 'block';
-    }
-
     document.getElementById('h-filters').addEventListener('click', async function(e) {
       var chip = e.target.closest('.h-filter-chip');
       if (!chip || !_userId) return;
-      // Mettre à jour le chip actif
       document.querySelectorAll('.h-filter-chip').forEach(function(c) { c.classList.remove('active'); });
       chip.classList.add('active');
       _activeFilter = chip.dataset.filter;
@@ -481,9 +477,30 @@
       if (_activeFilter) countQuery = countQuery.eq('occasion', _activeFilter);
       var countRes = await countQuery;
       _totalDB = countRes.count || 0;
-      resetList();
+      _currentPage = 1;
       updateSubtitle();
-      await loadMore();
+      await loadPage();
+    });
+
+    // ── Swipe gauche/droite sur mobile ──
+    (function() {
+      var touchStartX = 0;
+      var touchEndX = 0;
+      document.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+      document.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        var diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 80) { // seuil de 80px
+          if (diff > 0) goPage(1);  // swipe gauche → page suivante
+          else goPage(-1);           // swipe droite → page précédente
+        }
+      }, { passive: true });
+    })();
+
+    // ── Clavier : flèches gauche/droite ──
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowRight') goPage(1);
+      if (e.key === 'ArrowLeft') goPage(-1);
     });
 
     (async function init() {
@@ -497,7 +514,7 @@
         '<a href="questionnaire.html" class="btn-outline">&#127873; Recherche</a>' +
         '<a href="profil.html" class="btn-outline">&#128100; Mon profil</a>';
 
-      // Compte total pour le sous-titre
+      // Compte total
       var countRes = await supabase
         .from('searches')
         .select('id', { count: 'exact', head: true })
@@ -505,12 +522,7 @@
       _totalDB = countRes.count || 0;
 
       updateSubtitle();
-
-      // Première tranche
-      await loadMore();
-
-      // Scroll listener
-      window.addEventListener('scroll', onScroll, { passive: true });
+      await loadPage();
     })();
 
     async function handleLogout() {
