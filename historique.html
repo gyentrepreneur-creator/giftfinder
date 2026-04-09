@@ -346,7 +346,7 @@
       '50_100': '50-100 \u20AC', '100_200': '100-200 \u20AC', 'plus_200': '> 200 \u20AC'
     };
 
-    var PAGE_SIZE    = 20;
+    var PAGE_SIZE    = 50;
     var MAX_TOTAL    = 150;
     var _offset      = 0;
     var _loading     = false;
@@ -521,7 +521,8 @@
     function esc(s) {
       return String(s)
         .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
     }
   </script>
 
