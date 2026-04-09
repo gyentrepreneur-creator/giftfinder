@@ -517,7 +517,7 @@
     function hideMsg(id) { document.getElementById(id).style.display = 'none'; }
     function setLoading(btnId, loading) { document.getElementById(btnId).disabled = loading; }
     function esc(s) {
-      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
     }
 
     // ── ① Sauvegarder infos personnelles (prénom) ──
@@ -557,13 +557,18 @@
         showMsg('msg-email', 'Adresse e-mail invalide.', 'error'); return;
       }
       setLoading('btn-email', true);
-      var { error } = await supabase.auth.updateUser({ email: newEmail });
-      setLoading('btn-email', false);
-      if (error) {
-        showMsg('msg-email', error.message || 'Erreur lors de la mise \u00E0 jour.', 'error');
-      } else {
-        document.getElementById('new-email').value = '';
-        showMsg('msg-email', '\u2705 Un e-mail de confirmation a \u00E9t\u00E9 envoy\u00E9 \u00E0 ' + newEmail + '. Cliquez sur le lien pour valider.', 'info');
+      try {
+        var { error } = await supabase.auth.updateUser({ email: newEmail });
+        setLoading('btn-email', false);
+        if (error) {
+          showMsg('msg-email', error.message || 'Erreur lors de la mise \u00E0 jour.', 'error');
+        } else {
+          document.getElementById('new-email').value = '';
+          showMsg('msg-email', '\u2705 Un e-mail de confirmation a \u00E9t\u00E9 envoy\u00E9 \u00E0 ' + newEmail + '. Cliquez sur le lien pour valider.', 'info');
+        }
+      } catch(err) {
+        setLoading('btn-email', false);
+        showMsg('msg-email', (err && err.message) || 'Erreur r\u00E9seau.', 'error');
       }
     }
 
@@ -576,14 +581,19 @@
       if (pwd1.length < 6) { showMsg('msg-password', 'Le mot de passe doit contenir au moins 6 caract\u00E8res.', 'error'); return; }
       if (pwd1 !== pwd2) { showMsg('msg-password', 'Les mots de passe ne correspondent pas.', 'error'); return; }
       setLoading('btn-password', true);
-      var { error } = await supabase.auth.updateUser({ password: pwd1 });
-      setLoading('btn-password', false);
-      if (error) {
-        showMsg('msg-password', error.message || 'Erreur lors de la mise \u00E0 jour.', 'error');
-      } else {
-        document.getElementById('new-password').value   = '';
-        document.getElementById('confirm-password').value = '';
-        showMsg('msg-password', '\u2705 Mot de passe mis \u00E0 jour avec succ\u00E8s !', 'success');
+      try {
+        var { error } = await supabase.auth.updateUser({ password: pwd1 });
+        setLoading('btn-password', false);
+        if (error) {
+          showMsg('msg-password', error.message || 'Erreur lors de la mise \u00E0 jour.', 'error');
+        } else {
+          document.getElementById('new-password').value   = '';
+          document.getElementById('confirm-password').value = '';
+          showMsg('msg-password', '\u2705 Mot de passe mis \u00E0 jour avec succ\u00E8s !', 'success');
+        }
+      } catch(err) {
+        setLoading('btn-password', false);
+        showMsg('msg-password', (err && err.message) || 'Erreur r\u00E9seau.', 'error');
       }
     }
 
