@@ -280,13 +280,7 @@
     })();
 
     function handleHeroCta() {
-      supabase.auth.getSession().then(function(r) {
-        if (r.data.session) {
-          window.location.href = 'questionnaire.html';
-        } else {
-          openAuth('signup');
-        }
-      });
+      window.location.href = 'questionnaire.html';
     }
 
     async function handleAuth() {

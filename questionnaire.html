@@ -196,8 +196,40 @@
       <span class="gift-icon">&#127873;</span>
       <span class="brand" id="brand-name"></span>
     </div>
-    <div class="navbar-right" id="nav-right"></div>
+    <div class="navbar-right" id="nav-right">
+      <button class="btn-outline" onclick="openAuth('login')">Connexion</button>
+      <button class="btn-primary" onclick="openAuth('signup')">S'inscrire</button>
+    </div>
   </nav>
+
+  <!-- MODAL AUTH (affiché au submit si pas connecté) -->
+  <div class="auth-overlay" id="authOverlay" style="display:none;">
+    <div class="auth-card">
+      <h2 id="authTitle">Cr&eacute;er un compte</h2>
+      <p class="auth-sub" id="authSub">Inscrivez-vous pour voir vos r&eacute;sultats</p>
+      <div class="auth-error" id="authError"></div>
+      <div class="form-group">
+        <label for="authEmail">Adresse e-mail</label>
+        <input type="email" id="authEmail" placeholder="vous@exemple.com">
+      </div>
+      <div class="form-group" id="authPrenomGroup" style="display:none;">
+        <label for="authPrenom">Pr&eacute;nom</label>
+        <input type="text" id="authPrenom" placeholder="Votre pr&eacute;nom">
+      </div>
+      <div class="form-group">
+        <label for="authPassword">Mot de passe</label>
+        <input type="password" id="authPassword" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;">
+      </div>
+      <button class="btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:4px;" id="authSubmitBtn" onclick="handleAuth()">S'inscrire</button>
+      <p class="auth-toggle" id="authToggle">
+        D&eacute;j&agrave; un compte ? <a onclick="toggleAuthMode()">Se connecter</a>
+      </p>
+      <p class="auth-toggle" id="forgotPasswordLink" style="margin-top:8px;display:none;">
+        <a onclick="handleForgotPassword()" style="color:#888;font-size:12px;">Mot de passe oubli&eacute; ?</a>
+      </p>
+      <div class="auth-error" id="authSuccess" style="background:#f0fdf4;color:#15803d;border-color:#bbf7d0;display:none;"></div>
+    </div>
+  </div>
 
   <!-- CONTENU -->
   <div class="q-wrap">
@@ -380,19 +412,19 @@
       document.getElementById('progressFill').style.width = (filled / 5 * 100) + '%';
     }
 
-    // -- Auth gate --
+    // -- Auth : adapter l'UI selon la session (sans bloquer l'accès) --
+    var _pendingSubmit = false; // flag pour auto-submit après login
+
     (async function() {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { window.location.href = 'index.html'; return; }
-      const prenom = (session.user.user_metadata && session.user.user_metadata.prenom)
-        || session.user.email.split('@')[0];
+      if (!session) return; // Pas connecté : on laisse le formulaire accessible
 
+      // Connecté : adapter la navbar
       document.getElementById('nav-right').innerHTML =
         '<a href="historique.html" class="btn-outline" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128203; Historique</a>' +
         '<a href="profil.html" class="btn-outline" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>';
 
       // -- Afficher les recherches restantes aujourd'hui --
-      // Admin bypass : pas de limite pour les comptes propriétaires
       const ADMIN_EMAILS = ['gyentrepreneur@gmail.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
       if (!ADMIN_EMAILS.includes(session.user.email)) {
         try {
@@ -408,18 +440,116 @@
           if (hintEl) {
             if (restantes === 0) {
               hintEl.innerHTML = '<span style="color:#b91c1c;font-weight:600;">\u26A0\uFE0F Limite atteinte \u2014 revenez demain !</span>';
-              // Désactiver le bouton dès le chargement si quota épuisé
               var btn = document.getElementById('submitBtn');
               if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
             } else {
               hintEl.innerHTML = 'R&eacute;sultats en moins de 30 secondes &middot; Gratuit &middot; <strong>' + restantes + ' recherche' + (restantes > 1 ? 's' : '') + ' restante' + (restantes > 1 ? 's' : '') + ' aujourd\'hui</strong>';
             }
           }
-        } catch (e) {
-          // fail silently, message par defaut reste affiché
-        }
+        } catch (e) {}
       }
     })();
+
+    // -- Auth modal --
+    var authMode = 'signup';
+
+    function openAuth(mode) {
+      authMode = mode;
+      document.getElementById('authError').style.display = 'none';
+      var successEl = document.getElementById('authSuccess');
+      if (successEl) successEl.style.display = 'none';
+      if (mode === 'login') {
+        document.getElementById('authTitle').textContent = 'Connexion';
+        document.getElementById('authSub').textContent = 'Connectez-vous pour voir vos r\u00e9sultats';
+        document.getElementById('authSubmitBtn').textContent = 'Se connecter';
+        document.getElementById('authToggle').innerHTML = "Pas encore de compte ? <a onclick='toggleAuthMode()'>S'inscrire</a>";
+        document.getElementById('authPrenomGroup').style.display = 'none';
+        document.getElementById('forgotPasswordLink').style.display = 'block';
+      } else {
+        document.getElementById('authTitle').textContent = 'Cr\u00e9er un compte';
+        document.getElementById('authSub').textContent = 'Inscrivez-vous pour voir vos r\u00e9sultats';
+        document.getElementById('authSubmitBtn').textContent = "S'inscrire";
+        document.getElementById('authToggle').innerHTML = "D\u00e9j\u00e0 un compte ? <a onclick='toggleAuthMode()'>Se connecter</a>";
+        document.getElementById('authPrenomGroup').style.display = 'block';
+        document.getElementById('forgotPasswordLink').style.display = 'none';
+      }
+      document.getElementById('authOverlay').style.display = 'flex';
+    }
+
+    function toggleAuthMode() { openAuth(authMode === 'login' ? 'signup' : 'login'); }
+
+    document.getElementById('authOverlay').addEventListener('click', function(e) {
+      if (e.target === this) { this.style.display = 'none'; _pendingSubmit = false; }
+    });
+
+    document.getElementById('authPassword').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') handleAuth();
+    });
+
+    async function handleForgotPassword() {
+      var email = document.getElementById('authEmail').value.trim();
+      var errorEl = document.getElementById('authError');
+      var successEl = document.getElementById('authSuccess');
+      errorEl.style.display = 'none';
+      successEl.style.display = 'none';
+      if (!email) {
+        errorEl.textContent = 'Veuillez saisir votre adresse e-mail.';
+        errorEl.style.display = 'block';
+        return;
+      }
+      try {
+        var { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + '/profil.html'
+        });
+        if (error) throw error;
+        successEl.textContent = '\u2705 E-mail de r\u00e9initialisation envoy\u00e9 \u00e0 ' + email;
+        successEl.style.display = 'block';
+      } catch(err) {
+        errorEl.textContent = (err && err.message) || 'Erreur.';
+        errorEl.style.display = 'block';
+      }
+    }
+
+    async function handleAuth() {
+      var email    = document.getElementById('authEmail').value.trim();
+      var password = document.getElementById('authPassword').value;
+      var errorEl  = document.getElementById('authError');
+      errorEl.style.display = 'none';
+      if (!email || !password) {
+        errorEl.textContent = 'Veuillez remplir tous les champs.';
+        errorEl.style.display = 'block';
+        return;
+      }
+      var btn = document.getElementById('authSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Chargement\u2026';
+      try {
+        if (authMode === 'signup') {
+          var prenom = document.getElementById('authPrenom').value.trim();
+          var { error } = await supabase.auth.signUp({ email: email, password: password, options: { data: { prenom: prenom } } });
+          if (error) throw error;
+        } else {
+          var { error } = await supabase.auth.signInWithPassword({ email: email, password: password });
+          if (error) throw error;
+        }
+        // Auth réussie : fermer le modal et adapter la navbar
+        document.getElementById('authOverlay').style.display = 'none';
+        document.getElementById('nav-right').innerHTML =
+          '<a href="historique.html" class="btn-outline" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128203; Historique</a>' +
+          '<a href="profil.html" class="btn-outline" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>';
+
+        // Si le submit était en attente, relancer automatiquement
+        if (_pendingSubmit) {
+          _pendingSubmit = false;
+          handleSubmit();
+        }
+      } catch (err) {
+        errorEl.textContent = err.message || 'Une erreur est survenue.';
+        errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = authMode === 'signup' ? "S'inscrire" : 'Se connecter';
+      }
+    }
 
     async function handleLogout() {
       await supabase.auth.signOut();
@@ -446,17 +576,26 @@
       submitBtn.disabled    = true;
       submitBtn.textContent = 'Analyse en cours...';
 
-      // -- Limite : 10 recherches gratuites par jour --
-      // Admin bypass : pas de limite pour le compte propriétaire
+      // -- Vérifier si l'utilisateur est connecté --
       try {
-        const { data: { session: sess } } = await supabase.auth.getSession();
-        const ADMIN_EMAILS_2 = ['gyentrepreneur@gmail.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
-        if (sess && !ADMIN_EMAILS_2.includes(sess.user.email)) {
-          const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-          const { count } = await supabase
+        var { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          // Pas connecté → ouvrir le modal d'inscription, puis auto-submit après
+          submitBtn.disabled    = false;
+          submitBtn.textContent = 'D\u00E9couvrir mes recommandations \u2728';
+          _pendingSubmit = true;
+          openAuth('signup');
+          return;
+        }
+
+        // -- Limite : 10 recherches gratuites par jour --
+        var ADMIN_EMAILS_2 = ['gyentrepreneur@gmail.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
+        if (!ADMIN_EMAILS_2.includes(session.user.email)) {
+          var today = new Date().toISOString().slice(0, 10);
+          var { count } = await supabase
             .from('searches')
             .select('id', { count: 'exact', head: true })
-            .eq('user_id', sess.user.id)
+            .eq('user_id', session.user.id)
             .gte('created_at', today + 'T00:00:00.000Z')
             .lte('created_at', today + 'T23:59:59.999Z');
           if (count >= 10) {
@@ -466,14 +605,11 @@
             return;
           }
         }
-      } catch (limitErr) {
-        /* limite quotidienne : erreur silencieuse en prod */
-        // On laisse passer si la verification echoue (fail-open)
-      }
+      } catch (limitErr) {}
 
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) { window.location.href = 'index.html'; return; }
+        var { data: { session } } = await supabase.auth.getSession();
+        if (!session) { return; }
 
         const infosSup = document.getElementById('infos-sup').value.trim() || null;
 
