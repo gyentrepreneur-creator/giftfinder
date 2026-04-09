@@ -8,36 +8,141 @@
   Usage n8n (node "Send Email" via Resend ou Brevo) :
     - Remplacer les variables {{...}} par les données du record Supabase
     - Subject : "🎁 Vos idées cadeaux pour {{occasion}} sont prêtes !"
-    - From    : Kadoizi <hello@giftfinder-cyan.vercel.app>
+    - From    : Kadoizi <hello@kadoizi.com>
     - To      : {{user_email}}
 
   Variables disponibles depuis n8n :
-    {{destinataire}}    — ex: "ma mère"
+    {{destinataire}}     — ex: "ma mère"
     {{occasion}}         — ex: "Anniversaire"
-    {{budget}}           — ^��LLL8�����ۘ���Y��\�[ۜ�_H8�%^��H����\�ܙ\�[]�_H8�%^��΋���Y��[�\�X�X[���\��[�\ܙ\�[]˚[�Y^����\�\��[XZ[_H8�%[XZ[H	�][\�]]\�
-�\�H���\�B�OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOB�KO��XY��Y]H�\��]H�U�N���Y]H�[YOH��Y]�ܝ��۝[�H��YY]�X�K]�Y[�]X[\��[OLK����Y]HY\]Z]�H�UPKP��\]X�H��۝[�H�QOYY�H���]O����Y0�Y\��YX]^�۝��\�O�]O��KKV�Y�\��O�����ܚ\��[��Γٙ�X�Q��[Y[��][��ς�Δ^[�\�[���M��Δ^[�\�[�����Γٙ�X�Q��[Y[��][��ς��[��ۛ��ܚ\��V�[�Y�KKO���[H\OH�^���ȏ��ʈ�\�]
-���KX�KH�]�X��]]^\�^�KXY�\��L	N�[\�]^\�^�KXY�\��L	N�B�X�K�\��]X�K[�X�N��\��]X�K\��X�N��B�[Y��[\�Z[�\��][ۋ[[�N��X�X�X���ܙ\����][�N��ۙN�^YX�ܘ][ێ��ۙN�B���H�X\��[��Z[\ܝ[��Y[�ΈZ[\ܝ[���Y�L	HZ[\ܝ[��B��ʈ�\�ۜ�]�H
-�YYXHۛH�ܙY[�[�
-X^]�Y�
-�
-H�[XZ[X�۝Z[�\���Y�L	HZ[\ܝ[��X^]�Y�L	HZ[\ܝ[��B���ZY��Y�L	HZ[\ܝ[��X^]�Y�L	HZ[\ܝ[��ZY��]]�Z[\ܝ[��B���X��X��[[���X��X��[[�X�[�\�\�^N�����Z[\ܝ[��Y�L	HZ[\ܝ[�X^]�Y�L	HZ[\ܝ[�\�X�[ێ��Z[\ܝ[�B���X��X��[[�X�[�\��^X[Yێ��[�\�Z[\ܝ[��B���[�\�[ۋ[�\�����^X[Yێ��[�\�Z[\ܝ[��\�^N�����Z[\ܝ[��X\��[��]]�Z[\ܝ[����]��ۙHZ[\ܝ[��B����Y�[��Y�L	HZ[\ܝ[��B��YK[[ؚ[H�\�^N��ۙHZ[\ܝ[��B��Y[��[[ؚ[H�Y[�Έ��Z[\ܝ[��B��\��]]H��۝\�^�N���Z[\ܝ[��[�KZZY��K��Z[\ܝ[��B��[YܚY�\�^N�����Z[\ܝ[��Y[��X���N�Z[\ܝ[��B�B���[O���XY����H�[OH�X\��[���Y[�ΌؘX��ܛ�[�X��܎�э�ёNٛ۝Y�[Z[N��[�]X�H�]YI�[�]X�K\�X[�[��\�\�Y�ȏ���KKH�ZXY\�
-�\�X�H[��H\�H\�[XZ[�\�[��H�ܜ�HKO��]��[OH�\�^N��ۙNٛ۝\�^�N�\�[�KZZY��\�X^ZZY���X^]�Y���X�]N��ݙ\���ΚY[��\��ZYN�[ȏ��<'�H��\�]�ۜ���]��H�ۘ���Y��\�[ۜ�_HY0�Y\��YX]^\��Z]\��\������\�[۟_H8�%0�X��]��^�[\�XZ[�[�[�B��]����KKH[XZ[ܘ\\�KO��X�H��OH��\�[�][ۈ��[�X�[��H���[Y[��H���ܙ\�H���YH�L	H��[OH��X��ܛ�[�X��܎�э�ёNȏ������[YۏH��[�\���[OH�Y[�Έ�L�ȏ���KKH[XZ[�۝Z[�\�KO��X�H�\��H�[XZ[X�۝Z[�\����OH��\�[�][ۈ��[�X�[��H���[Y[��H���ܙ\�H���YH����[OH�X^]�Y��ؘX��ܛ�[�X��܎�ٙ�����؛ܙ\�\�Y]\Ό��ݙ\���ΚY[�؛�\�Y�Ό
-̜�ؘJ
-�
-L�L���L�Nȏ���KKHPQT�8�%0�YܘY0�H�[�]ܛ��HKO������[OH��X��ܛ�[��[�X\�YܘYY[�
-L�YY�����H	K�э��
-L	K�
+    {{budget}}           — ex: "50-100€"
+    {{prenom}}           — ex: "Gylan"
+    {{results_url}}      — ex: "https://kadoizi.com/resultats.html?id=xxx"
+    {{nb_suggestions}}   — ex: "9"
+    {{search_id}}        — UUID de la recherche
+  =====================================================================
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vos idées cadeaux sont prêtes !</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+  <style>
+    /* Reset email */
+    body, table, td, p, a, li { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+    body { margin: 0; padding: 0; width: 100%; }
 
-L��HL	JN�Y[�΍
-̜�^X[Yێ��[�\�ȏ��KKH����X���HKO��]��[OH��۝\�^�N�L��[�KZZY��N�X\��[�X���N�L�ȏ�'�O�]���H�\��H�\��]]H��[OH�X\��[��ٛ۝\�^�N��ٛ۝]�ZY�����܎�ٙ������]\�\�X�[�΋L�\�[�KZZY��K��ȏ�����Y	�XX�]N�\��YX]^�۝��X�\���\ɛ����B��O���[OH�X\��[��ٛ۝\�^�N�M\���܎��ؘJ�MK�MK�MK�
-JN�[�KZZY��K�Nȏ�����HPHHəXX�]N�X�[ۛ��XX�]N�\�YZ[]\�\��Y��\�[ۜ��\���\������������KKH��HKO���\��H�Y[��[[ؚ[H��[OH�Y[�Ό͜
-�ȏ���KKH[���KO���[OH�X\��[���ٛ۝\�^�N�M����܎�����N�[�KZZY��K��Nȏ���ۛ�H��]�[I�����H��\�]�ۜ���]��XX�]N���ۙϞ�ۘ���Y��\�[ۜ�_HY	�XX�]N�\��YX]^���ۙψ��Yۙ]\�[Y[�əXX�]N�X�[ۛ��XX�]N�\��\�����΂�����KKH��X�\HH�X�\��H8�%�\�HKO��X�H��OH��\�[�][ۈ��[�X�[��H���[Y[��H���ܙ\�H���YH�L	H���[OH��X��ܛ�[���QQQ�N؛ܙ\�\�Y]\ΌM�X\��[�X���N��ȏ������[OH�Y[�Ό��ȏ��X�H��OH��\�[�][ۈ��[�X�[��H���[Y[��H���ܙ\�H���YH�L	H�������[OH�Y[��X���N�Lȏ���[��[OH��۝\�^�N�L�ٛ۝]�ZY������܎��э���^]�[�ٛܛN�\\��\�N�]\�\�X�[�Ό�ȏ�\�[�]Z\�O��[�������[��[OH��۝\�^�N�M�ٛ۝]�ZY������܎�̍��MP�ȏ���\�[�]Z\�__O��[���������������KKH[�����\�[ۈ
-��Y�]KO��X�H�\��H�[YܚY���OH��\�[�][ۈ��[�X�[��H���[Y[��H���ܙ\�H��������[OH�Y[��\�Y���Y[��X���N�ȏ���[��[OH�\�^N�[�[�KX����ؘX��ܛ�[���э�����܎�ٙ��ٛ۝\�^�N�L�ٛ۝]�ZY����Y[�΍L�؛ܙ\�\�Y]\ΎNN\ȏ��<'�H�����\�[۟_B���[�������[OH�Y[��X���N�ȏ���[��[OH�\�^N�[�[�KX����ؘX��ܛ�[���QQM�N���܎�ٙ��ٛ۝\�^�N�L�ٛ۝]�ZY����Y[�΍L�؛ܙ\�\�Y]\ΎNN\ȏ��<'䭈�؝Y�]_B���[�����������X�O�����������X�O����������X�O���KKH�H�[��\[KO��X�H��OH��\�[�][ۈ��[�X�[��H���[Y[��H���ܙ\�H���YH�L	H��[OH�X\��[�X���N��ȏ�����[YۏH��[�\����H�Y�H���\�ܙ\�[]�_H��\��H���Y�[���[OH�\�^N�[�[�KX����ؘX��ܛ�[��[�X\�YܘYY[�
-L�YY�����K�
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      .email-bg { background-color: #1a1935 !important; }
+      .email-card { background-color: #26215C !important; }
+      .text-dark { color: #EEEDFE !important; }
+      .text-muted { color: #b0acd0 !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#f3f2fb;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
 
-L��JN���܎�ٙ������^YX�ܘ][ێ��ۙNٛ۝\�^�N�M�ٛ۝]�ZY����Y[�ΌM�
-؛ܙ\�\�Y]\ΎNN\�]\�\�X�[�Ό��؛�\�Y�Ό
-M��ؘJ
-�
-L�L����JNȏ��8�*��\�Y\��ۘ���Y��\�[ۜ�_HY	�XX�]N�\��YX]^��O����������X�O���KKH^H�X�ۙZ\�HKO���[OH�X\��[���ٛ۝\�^�N�M���܎�͍���[�KZZY��K��N�^X[Yێ��[�\�ȏ��\���XX�]N��[]��۝\�ۚX�\�[�[���ۙύ���\�����ۙϋ������]��]�^�]\��H�]\�����X�\��\�[��	�\][�ɛ����Y\��X�\��\ɛ���ɜ�\][�˂�����KKH��\\�]]\�KO����[OH��ܙ\���ۙN؛ܙ\�]��\��Y�QQQ�N�X\��[���ȏ���KKH�X�[ۈ���[Y[�0��HX\��H�KO���[OH�X\��[��M�ٛ۝\�^�N�L�ٛ۝]�ZY������܎�̍��MP��^]�[�ٛܛN�\\��\�N�]\�\�X�[�Ό��ȏ�������Y��\�[ۜ�[��Y[�����X�H��OH��\�[�][ۈ��[�X�[��H���[Y[��H���ܙ\�H���YH�L	H�������[OH�Y[��X���N�Lݙ\�X�[X[Yێ����Y��ȏ���[��[OH��۝\�^�N�Nȏ�'��{�#���[�������[OH�Y[��X���N�L�Y[��[Y��Lٛ۝\�^�N�M���܎��MMN�[�KZZY��K�Nݙ\�X�[X[Yێ��ȏ����ۙ��[OH���܎�̍��MP�ȏ�Y[��[X^�ۈ\�X�����ۙψ]�X��^[�[\���XX�]N�[������������[OH�Y[��X���N�Lݙ\�X�[X[Yێ����Y��ȏ���[��[OH��۝\�^�N�Nȏ�'����[�������[OH�Y[��X���N�L�Y[��[Y��Lٛ۝\�^�N�M���܎��MMN�[�KZZY��K�Nݙ\�X�[X[Yێ��ȏ����ۙ��[OH���܎�̍��MP�ȏ�əXX�]N�X�[ۈ\��ۛ�[\əXX�]N�O���ۙψ�[ۈH�ٚ[]H�Y�]������������[OH�Y[��X���N�ݙ\�X�[X[Yێ����Y��ȏ���[��[OH��۝\�^�N�Nȏ��d��[�������[OH�Y[��X���N��Y[��[Y��Lٛ۝\�^�N�M���܎��MMN�[�KZZY��K�Nݙ\�X�[X[Yێ��ȏ����ۙ��[OH���܎�̍��MP�ȏ���Z]��Y[���	�XX�]N�����ۙψ]�X�\�ܚ\[ۈ	�XX�]N�Z[	�XX�]N�B���������X�O�������KKH���T�KO������[OH��X��ܛ�[��э�ёN�Y[�Ό�
-�^X[Yێ��[�\�؛ܙ\�]��\��Y�NM���ȏ���KKHY[�����X]^KO���[OH�X\��[��L�ȏ��H�Y�H�΋��[��Yܘ[K���K��Q��S�T����\��]H�؛[�Ȉ�[H����[�\����[OH���܎��э���^YX�ܘ][ێ��ۙNٛ۝\�^�N�L�ٛ۝]�ZY��L�X\��[�\�Y��M�ȏ��<'��[��Yܘ[B��O��H�Y�H�΋��Z��˘��K��Y�^�H�\��]H�؛[�Ȉ�[H����[�\����[OH���܎��э���^YX�ܘ][ێ��ۙNٛ۝\�^�N�L�ٛ۝]�ZY��Lȏ��<'�HZ���O������KKHY[�[ۜ�0�Y�[\�KO���[OH�X\��[��ٛ۝\�^�N�L\���܎��NNN�[�KZZY��K�Nȏ��H�Y�H�΋���Y��[�\�X�X[���\��[�\�Y[�[ۜ�[Y�[\˚[��[OH���܎��XXN�^YX�ܘ][ێ�[�\�[�Nȏ�Y[�[ۜ�	�XX�]N��[\��O��	�����ɛ����	�����ɛ���H�Y�H�΋���Y��[�\�X�X[���\��[�\��ۙ�Y[�X[]K�[��[OH���܎��XXN�^YX�ܘ][ێ�[�\�[�Nȏ��ۙ�Y[�X[]	�XX�]N��O��	�����ɛ���H�Y�H�΋���Y��[�\�X�X[���\��[�\���K�[��[OH���܎��XXN�^YX�ܘ][ێ�[�\�[�Nȏ���O�O������KKH[X^�ۈY��[X][ۈ\��Z[Y\�KO���[OH�X\��[��ٛ۝\�^�N�L���܎�ؘ���[�KZZY��K�Nȏ��[�[�]YH\�[�Z\�H[X^�ۋ��\���XX�]N�[\�ۜ�[���XX�]Nۉ�XX�]NٚX�H�\�\�X�]��[\\��[�\��ۙ][ۜ��\]Z\�\˂�����KKH[��X��ܚX�H���\HKO���[OH�X\��[��ٛ۝\�^�N�L���܎������[�KZZY��K�Nȏ����\��X�]�^��][XZ[�\���\�]�^�Y��X�I�XX�]N�[�H�X�\��H�\��Y�^�H]�X�	���][��Y�\��H��\�\��[XZ[_K�����H�Y�H�΋���Y��[�\�X�X[���\��[�\��ٚ[�[��[OH���܎������^YX�ܘ][ێ�[�\�[�Nȏ�əXX�]Nܙ\�[ۈ��\O�O�����������������X�O��KKH�[XZ[�۝Z[�\�KO���KKH\�X�H�\�KO��X�H��OH��\�[�][ۈ��[�X�[��H���[Y[��H���ܙ\�H���YH�L	H������[OH�Y[�Ό��^X[Yێ��[�\�ȏ���[OH�X\��[��ٛ۝\�^�N�L\���܎��XXNȏ��	���N�����Y�^�H	�Y\��H�Y�H�΋���Y��[�\�X�X[���\��[�\��[OH���܎��э���^YX�ܘ][ێ��ۙNȏ��Y��[�\�X�X[���\��[�\�O������������X�O�����������X�O���؛�O���[�
+  <!-- Wrapper -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="email-bg" style="background-color:#f3f2fb;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+
+        <!-- Container -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;">
+
+          <!-- Logo -->
+          <tr>
+            <td align="center" style="padding-bottom:24px;">
+              <span style="font-size:36px;">&#127873;</span>
+              <br>
+              <span style="font-size:20px;font-weight:700;color:#26215C;letter-spacing:0.5px;">Kadoizi</span>
+            </td>
+          </tr>
+
+          <!-- Card principale -->
+          <tr>
+            <td class="email-card" style="background-color:#ffffff;border-radius:16px;box-shadow:0 2px 16px rgba(60,52,137,0.08);padding:36px 32px;">
+
+              <!-- Titre -->
+              <h1 class="text-dark" style="margin:0 0 8px;font-size:22px;font-weight:700;color:#26215C;text-align:center;">
+                &#127873; Vos id&eacute;es cadeaux sont pr&ecirc;tes !
+              </h1>
+
+              <p class="text-muted" style="margin:0 0 24px;font-size:14px;color:#666;text-align:center;line-height:1.6;">
+                Bonjour {{prenom}}, nous avons trouv&eacute; {{nb_suggestions}} id&eacute;es cadeaux pour vous.
+              </p>
+
+              <!-- Résumé recherche -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f8f7fe;border-radius:12px;margin-bottom:24px;">
+                <tr>
+                  <td style="padding:18px 20px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="font-size:13px;color:#888;padding-bottom:6px;">Destinataire</td>
+                        <td align="right" class="text-dark" style="font-size:14px;font-weight:600;color:#26215C;padding-bottom:6px;">{{destinataire}}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size:13px;color:#888;padding-bottom:6px;">Occasion</td>
+                        <td align="right" class="text-dark" style="font-size:14px;font-weight:600;color:#26215C;padding-bottom:6px;">{{occasion}}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size:13px;color:#888;">Budget</td>
+                        <td align="right" class="text-dark" style="font-size:14px;font-weight:600;color:#26215C;">{{budget}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Bouton CTA -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center">
+                    <a href="{{results_url}}" target="_blank" style="display:inline-block;background:#3C3489;color:#EEEDFE;text-decoration:none;font-size:16px;font-weight:600;padding:14px 36px;border-radius:999px;mso-padding-alt:14px 36px;">
+                      Voir mes id&eacute;es cadeaux &rarr;
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p class="text-muted" style="margin:20px 0 0;font-size:12px;color:#aaa;text-align:center;line-height:1.5;">
+                Ce lien est personnel et valide pendant 30 jours.
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 0;text-align:center;">
+              <p style="margin:0 0 6px;font-size:12px;color:#999;">
+                Envoy&eacute; par <strong style="color:#3C3489;">Kadoizi</strong> &mdash; L&rsquo;IA qui trouve le cadeau parfait
+              </p>
+              <p style="margin:0 0 6px;font-size:11px;color:#bbb;">
+                <a href="https://kadoizi.com/mentions-legales.html" style="color:#999;text-decoration:underline;">Mentions l&eacute;gales</a>
+                &nbsp;&middot;&nbsp;
+                <a href="https://kadoizi.com/confidentialite.html" style="color:#999;text-decoration:underline;">Confidentialit&eacute;</a>
+              </p>
+              <p style="margin:0;font-size:11px;color:#ccc;">
+                Vous recevez cet email car vous avez lanc&eacute; une recherche sur Kadoizi.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

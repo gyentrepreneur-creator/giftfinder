@@ -159,6 +159,19 @@
     footer a:hover { color: #fff; }
     .footer-brand { color: #fff; font-weight: 700; margin-bottom: 12px; font-size: 16px; }
 
+    /* Filtrage articles */
+    .article-item { transition: opacity .25s ease; }
+    .article-item.hidden { display: none; }
+
+    /* Message aucun résultat */
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px 0;
+      color: #999;
+      font-size: 14px;
+    }
+
     @media (max-width: 600px) {
       .navbar { padding: 0 16px; }
       .blog-wrap { padding: 28px 16px 48px; }
@@ -187,14 +200,13 @@
 
 <!-- Filtres -->
 <div class="filters">
-  <button class="filter-pill active">Tous les articles</button>
-  <button class="filter-pill">🌸 Fête des Mères</button>
-  <button class="filter-pill">🎂 Anniversaire</button>
-  <button class="filter-pill">🎄 Noël</button>
-  <button class="filter-pill">💝 Saint-Valentin</button>
-  <button class="filter-pill">👨 Fête des Pères</button>
-  <button class="filter-pill">💍 Mariage</button>
-  <button class="filter-pill">💸 Petit budget</button>
+  <button class="filter-pill active" data-filter="all">Tous les articles</button>
+  <button class="filter-pill" data-filter="Fête des Mères">🌸 Fête des Mères</button>
+  <button class="filter-pill" data-filter="Anniversaire">🎂 Anniversaire</button>
+  <button class="filter-pill" data-filter="Noël">🎄 Noël</button>
+  <button class="filter-pill" data-filter="Saint-Valentin">💝 Saint-Valentin</button>
+  <button class="filter-pill" data-filter="Fête des Pères">👨 Fête des Pères</button>
+  <button class="filter-pill" data-filter="Mariage">💍 Mariage</button>
 </div>
 
 <!-- Grid -->
@@ -205,7 +217,7 @@
   <div class="articles-grid">
 
     <!-- Article 1 — Fête des Mères (LIVE) -->
-    <a href="fete-des-meres-2026.html">
+    <a href="fete-des-meres-2026.html" class="article-item" data-category="Fête des Mères">
       <div class="article-card">
         <div class="card-cover pink">🌸</div>
         <div class="card-body">
@@ -221,7 +233,7 @@
     </a>
 
     <!-- Article 2 — Anniversaire (LIVE) -->
-    <a href="idee-cadeau-anniversaire.html">
+    <a href="idee-cadeau-anniversaire.html" class="article-item" data-category="Anniversaire">
       <div class="article-card">
         <div class="card-cover purple">🎂</div>
         <div class="card-body">
@@ -237,7 +249,7 @@
     </a>
 
     <!-- Article 3 — Fête des Pères 2026 (LIVE) -->
-    <a href="idee-cadeau-fete-des-peres-2026.html">
+    <a href="idee-cadeau-fete-des-peres-2026.html" class="article-item" data-category="Fête des Pères">
       <div class="article-card">
         <div class="card-cover" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);">👨</div>
         <div class="card-body">
@@ -253,7 +265,7 @@
     </a>
 
     <!-- Article 4 — Mariage (LIVE) -->
-    <a href="idee-cadeau-mariage.html">
+    <a href="idee-cadeau-mariage.html" class="article-item" data-category="Mariage">
       <div class="article-card">
         <div class="card-cover" style="background: linear-gradient(135deg, #fff7ed 0%, #fce7f3 100%);">💍</div>
         <div class="card-body">
@@ -269,7 +281,7 @@
     </a>
 
     <!-- Article 5 — Noël 2026 (À venir) -->
-    <div class="card-soon">
+    <div class="card-soon article-item" data-category="Noël">
       <div class="article-card">
         <div class="card-cover amber">🎄</div>
         <div class="card-body">
@@ -285,7 +297,7 @@
     </div>
 
     <!-- Article 6 — Saint-Valentin (À venir) -->
-    <div class="card-soon">
+    <div class="card-soon article-item" data-category="Saint-Valentin">
       <div class="article-card">
         <div class="card-cover pink">💝</div>
         <div class="card-body">
@@ -328,6 +340,51 @@
   </div>
   <p style="margin-top:16px;font-size:11px;opacity:.5">© 2026 Kadoizi · Tous droits réservés</p>
 </footer>
+
+<script>
+  // ── Filtrage des articles par catégorie ──
+  (function() {
+    var pills = document.querySelectorAll('.filter-pill');
+    var items = document.querySelectorAll('.article-item');
+    var grid  = document.querySelector('.articles-grid');
+
+    pills.forEach(function(pill) {
+      pill.addEventListener('click', function() {
+        // Mise à jour du bouton actif
+        pills.forEach(function(p) { p.classList.remove('active'); });
+        pill.classList.add('active');
+
+        var filter = pill.getAttribute('data-filter');
+        var visibleCount = 0;
+
+        items.forEach(function(item) {
+          if (filter === 'all' || item.getAttribute('data-category') === filter) {
+            item.classList.remove('hidden');
+            visibleCount++;
+          } else {
+            item.classList.add('hidden');
+          }
+        });
+
+        // Message si aucun résultat visible
+        var noRes = grid.querySelector('.no-results');
+        if (visibleCount === 0) {
+          if (!noRes) {
+            noRes = document.createElement('div');
+            noRes.className = 'no-results';
+            noRes.textContent = 'Aucun article dans cette cat\u00e9gorie pour l\u2019instant.';
+            grid.appendChild(noRes);
+          }
+        } else if (noRes) {
+          noRes.remove();
+        }
+
+        // Scroll vers la grille
+        grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  })();
+</script>
 
 </body>
 </html>
