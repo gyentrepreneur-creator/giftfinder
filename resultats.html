@@ -503,7 +503,7 @@
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
         // Admin bypass : recherches illimitées
-        const ADMIN_EMAILS = ['gyentrepreneur@gmail.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
+        const ADMIN_EMAILS = ['bonjour@kadoizi.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
         if (ADMIN_EMAILS.includes(session.user.email)) {
           const adminEl = document.getElementById('ctaQuotaMsg');
           if (adminEl) adminEl.innerHTML = '<strong>Recherches illimitées</strong> 🎉';

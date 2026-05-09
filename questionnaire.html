@@ -425,7 +425,7 @@
         '<a href="profil" class="btn-outline" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>';
 
       // -- Afficher les recherches restantes aujourd'hui --
-      const ADMIN_EMAILS = ['gyentrepreneur@gmail.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
+      const ADMIN_EMAILS = ['bonjour@kadoizi.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
       if (!ADMIN_EMAILS.includes(session.user.email)) {
         try {
           const today = new Date().toISOString().slice(0, 10);
@@ -589,7 +589,7 @@
         }
 
         // -- Limite : 10 recherches gratuites par jour --
-        var ADMIN_EMAILS_2 = ['gyentrepreneur@gmail.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
+        var ADMIN_EMAILS_2 = ['bonjour@kadoizi.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
         if (!ADMIN_EMAILS_2.includes(session.user.email)) {
           var today = new Date().toISOString().slice(0, 10);
           var { count } = await supabase
