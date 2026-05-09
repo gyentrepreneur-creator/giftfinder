@@ -1,52 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://kadoizi.com/</loc>
+    <loc>https://www.kadoizi.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://kadoizi.com/questionnaire.html</loc>
+    <loc>https://www.kadoizi.com/questionnaire</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://kadoizi.com/blog/</loc>
+    <loc>https://www.kadoizi.com/blog/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://kadoizi.com/blog/fete-des-meres-2026.html</loc>
+    <loc>https://www.kadoizi.com/blog/fete-des-meres-2026</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://kadoizi.com/blog/idee-cadeau-anniversaire.html</loc>
+    <loc>https://www.kadoizi.com/blog/idee-cadeau-anniversaire</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://kadoizi.com/blog/idee-cadeau-fete-des-peres-2026.html</loc>
+    <loc>https://www.kadoizi.com/blog/idee-cadeau-fete-des-peres-2026</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://kadoizi.com/blog/idee-cadeau-mariage.html</loc>
+    <loc>https://www.kadoizi.com/blog/idee-cadeau-mariage</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://kadoizi.com/cgu.html</loc>
+    <loc>https://www.kadoizi.com/cgu</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://kadoizi.com/confidentialite.html</loc>
+    <loc>https://www.kadoizi.com/confidentialite</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://kadoizi.com/mentions-legales.html</loc>
+    <loc>https://www.kadoizi.com/mentions-legales</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

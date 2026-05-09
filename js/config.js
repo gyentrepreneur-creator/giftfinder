@@ -18,7 +18,7 @@ window.addEventListener('DOMContentLoaded', function() {
   // 2. Navbar : remplacement de l'icône cadeau par le logo
   var gi = document.querySelector('.gift-icon');
   if (gi) {
-    gi.outerHTML = '<a href="index.html" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;">' +
+    gi.outerHTML = '<a href="/" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;">' +
       '<img src="' + LOGO_NAV + '" alt="' + APP_NAME + '" height="38" style="border-radius:10px;">' +
       '<span style="font-weight:700;font-size:18px;color:#1a1935;">' + APP_NAME + '</span></a>';
   }

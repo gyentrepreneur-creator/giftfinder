@@ -2,7 +2,7 @@
   "name": "Kadoizi — Idées cadeaux IA",
   "short_name": "Kadoizi",
   "description": "9 idées cadeaux personnalisées en 30 secondes grâce à l'IA",
-  "start_url": "/questionnaire.html",
+  "start_url": "/questionnaire",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
@@ -29,14 +29,14 @@
       "name": "Nouvelle recherche",
       "short_name": "Recherche",
       "description": "Trouver une idée cadeau",
-      "url": "/questionnaire.html",
+      "url": "/questionnaire",
       "icons": [{ "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><text y='.9em' font-size='90'>🎁</text></svg>", "sizes": "96x96" }]
     },
     {
       "name": "Mon historique",
       "short_name": "Historique",
       "description": "Mes dernières recherches",
-      "url": "/historique.html",
+      "url": "/historique",
       "icons": [{ "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><text y='.9em' font-size='90'>📋</text></svg>", "sizes": "96x96" }]
     }
   ]

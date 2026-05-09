@@ -7,15 +7,15 @@
 const CACHE_NAME = 'giftfinder-v3';
 const STATIC_ASSETS = [
   '/',
-  '/index.html',
-  '/questionnaire.html',
-  '/historique.html',
-  '/resultats.html',
-  '/profil.html',
-  '/shared.html',
-  '/404.html',
-  '/cgu.html',
-  '/confidentialite.html',
+  '/',
+  '/questionnaire',
+  '/historique',
+  '/resultats',
+  '/profil',
+  '/shared',
+  '/404',
+  '/cgu',
+  '/confidentialite',
   '/mentions-legales.html',
   '/css/style.css',
   '/css/animations.css',
@@ -96,7 +96,7 @@ self.addEventListener('fetch', function(event) {
         // Offline fallback pour les pages HTML
         if (event.request.headers.get('accept') &&
             event.request.headers.get('accept').includes('text/html')) {
-          return caches.match('/index.html');
+          return caches.match('/');
         }
       });
     })

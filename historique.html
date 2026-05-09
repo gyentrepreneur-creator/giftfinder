@@ -316,12 +316,12 @@
 
   <footer class="footer">
     <div class="footer-top">
-      <span id="footer-brand"></span> &mdash; <a href="questionnaire.html">Nouvelle recherche</a>
+      <span id="footer-brand"></span> &mdash; <a href="questionnaire">Nouvelle recherche</a>
     </div>
     <div class="footer-links">
-      <a href="mentions-legales.html">Mentions l&eacute;gales</a>
-      <a href="confidentialite.html">Confidentialit&eacute;</a>
-      <a href="cgu.html">CGU</a>
+      <a href="mentions-legales">Mentions l&eacute;gales</a>
+      <a href="confidentialite">Confidentialit&eacute;</a>
+      <a href="cgu">CGU</a>
     </div>
     <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
     <div class="footer-social" style="display:flex;gap:28px;justify-content:center;align-items:center;margin-top:12px;">
@@ -511,8 +511,8 @@
       _userId = session.user.id;
 
       document.getElementById('nav-right').innerHTML =
-        '<a href="questionnaire.html" class="btn-outline">&#127873; Recherche</a>' +
-        '<a href="profil.html" class="btn-outline">&#128100; Mon profil</a>';
+        '<a href="questionnaire" class="btn-outline">&#127873; Recherche</a>' +
+        '<a href="profil" class="btn-outline">&#128100; Mon profil</a>';
 
       // Compte total
       var countRes = await supabase
@@ -540,8 +540,8 @@
 
   <!-- MOBILE BOTTOM NAV -->
   <nav class="mobile-bottom-nav">
-    <a href="historique.html" class="active">
+    <a href="historique" class="active">
       <span class="nav-icon">&#128203;</span>
       <span>Historique</span>
     </a>
-    <a href="questionnaire.html"
+    <a href="questionnaire"
