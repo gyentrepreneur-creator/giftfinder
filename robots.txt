@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 Disallow: /resultats.html
-Sitemap: https://kadoizi.com/sitemap.xml
+Disallow: /resultats
+Sitemap: https://www.kadoizi.com/sitemap.xml
