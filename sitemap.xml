@@ -4,36 +4,55 @@
     <loc>https://www.kadoizi.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <lastmod>2026-05-11</lastmod>
   </url>
   <url>
     <loc>https://www.kadoizi.com/questionnaire</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
+    <lastmod>2026-05-09</lastmod>
   </url>
   <url>
-    <loc>https://www.kadoizi.com/blog/</loc>
+    <loc>https://www.kadoizi.com/blog</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <lastmod>2026-05-11</lastmod>
+  </url>
+  <url>
+    <loc>https://www.kadoizi.com/blog/noel-2026</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-05-11</lastmod>
+  </url>
+  <url>
+    <loc>https://www.kadoizi.com/blog/saint-valentin-2027</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-05-11</lastmod>
   </url>
   <url>
     <loc>https://www.kadoizi.com/blog/fete-des-meres-2026</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2026-05-09</lastmod>
   </url>
   <url>
     <loc>https://www.kadoizi.com/blog/idee-cadeau-anniversaire</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
+    <lastmod>2026-05-09</lastmod>
   </url>
   <url>
     <loc>https://www.kadoizi.com/blog/idee-cadeau-fete-des-peres-2026</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2026-05-09</lastmod>
   </url>
   <url>
     <loc>https://www.kadoizi.com/blog/idee-cadeau-mariage</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
+    <lastmod>2026-05-09</lastmod>
   </url>
   <url>
     <loc>https://www.kadoizi.com/cgu</loc>
