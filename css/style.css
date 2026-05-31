@@ -225,17 +225,24 @@ button { cursor: pointer; font-family: inherit; }
 @media (max-width: 640px) {
   /* Top navbar : compacte */
   .navbar { padding: 0 12px; height: 52px; }
-  .navbar-left { gap: 6px; min-width: 0; }
+  .navbar-left { gap: 6px; min-width: 0; flex-shrink: 0; }
   .navbar-left .gift-icon { font-size: 18px; }
-  .navbar-left .brand { font-size: 15px; }
-  .navbar-right { gap: 6px; flex-wrap: nowrap; }
+  .navbar-left .brand { font-size: 15px; white-space: nowrap; }
+  .navbar-right { gap: 6px; flex-wrap: nowrap; flex-shrink: 1; }
+
+  /* Cacher les liens <a> redondants avec la nav du BAS (Mon profil, Recherche) */
+  .navbar-right > a { display: none !important; }
+
+  /* Boutons restants (Connexion, S'inscrire, Déconnexion, Recherche, etc.) : ultra-compacts */
+  .navbar-right > button,
   .navbar .btn-outline,
   .navbar .btn-primary {
-    padding: 6px 10px;
-    font-size: 12px;
-    border-radius: 6px;
-    white-space: nowrap;
-    line-height: 1.2;
+    padding: 5px 10px !important;
+    font-size: 12px !important;
+    border-radius: 6px !important;
+    white-space: nowrap !important;
+    line-height: 1.3 !important;
+    height: auto;
   }
 
   .hero h1 { font-size: 28px; }
@@ -249,11 +256,13 @@ button { cursor: pointer; font-family: inherit; }
 /* Très petit écran (≤380px iPhone SE/mini) : encore plus compact */
 @media (max-width: 380px) {
   .navbar { padding: 0 10px; }
-  .navbar-left .brand { font-size: 14px; }
+  .navbar-left .gift-icon { font-size: 16px; }
+  .navbar-left .brand { font-size: 13px; }
+  .navbar-right > button,
   .navbar .btn-outline,
   .navbar .btn-primary {
-    padding: 5px 8px;
-    font-size: 11px;
+    padding: 4px 8px !important;
+    font-size: 11px !important;
   }
 }
 
