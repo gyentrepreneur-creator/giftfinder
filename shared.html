@@ -12,12 +12,11 @@
   <meta property="og:type"        content="website">
   <meta property="og:title"       content="Idées cadeaux — Kadoizi">
   <meta property="og:description" content="Découvrez ces idées cadeaux personnalisées par l'IA Kadoizi !">
-  <meta property="og:image"       content="https://www.kadoizi.com/og-image.png">
+  <meta property="og:image"       content="https://giftfinder-cyan.vercel.app/og-image.png">
 
-  <link rel="icon" type="image/png" href="/logo.png">
-  <link rel="apple-touch-icon" href="/logo.png">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
   <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=202605312149">
   <style>
     body {
       margin: 0;
@@ -213,7 +212,7 @@
       <span class="brand" id="brand-name"></span>
     </div>
     <div class="navbar-right">
-      <a href="/" class="btn-primary" style="text-decoration:none;">
+      <a href="index.html" class="btn-primary" style="text-decoration:none;">
         Essayer gratuitement &#10024;
       </a>
     </div>
@@ -237,7 +236,7 @@
       <p style="font-size:14px;color:#666;margin-bottom:24px;" id="errorMessage">
         Ce lien de partage n&rsquo;existe pas ou a expir&eacute;.
       </p>
-      <a href="/" class="btn-primary" style="text-decoration:none;display:inline-block;padding:12px 28px;">
+      <a href="index.html" class="btn-primary" style="text-decoration:none;display:inline-block;padding:12px 28px;">
         Cr&eacute;er mes propres id&eacute;es cadeaux &#10024;
       </a>
     </div>
@@ -259,7 +258,7 @@
       <div class="s-cta-signup">
         <h2>&#127873; Trouvez vos propres id&eacute;es cadeaux !</h2>
         <p>Essayez <span id="brand-cta"></span> gratuitement — 9 suggestions personnalis&eacute;es par l&rsquo;IA en 30 secondes.</p>
-        <a href="/" class="s-cta-btn">Commencer gratuitement &#10024;</a>
+        <a href="index.html" class="s-cta-btn">Commencer gratuitement &#10024;</a>
       </div>
     </div>
 
@@ -267,18 +266,18 @@
 
   <footer class="footer">
     <div class="footer-top">
-      <span id="footer-brand"></span> &mdash; <a href="/">Trouver mes cadeaux</a>
+      <span id="footer-brand"></span> &mdash; <a href="index.html">Trouver mes cadeaux</a>
     </div>
     <div class="footer-links">
-      <a href="mentions-legales">Mentions l&eacute;gales</a>
-      <a href="confidentialite">Confidentialit&eacute;</a>
-      <a href="cgu">CGU</a>
+      <a href="mentions-legales.html">Mentions l&eacute;gales</a>
+      <a href="confidentialite.html">Confidentialit&eacute;</a>
+      <a href="cgu.html">CGU</a>
     </div>
     <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
     <div class="footer-social" style="display:flex;gap:28px;justify-content:center;align-items:center;margin-top:12px;">
-      <a href="https://www.instagram.com/kadoizi" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;">
+      <a href="https://www.instagram.com/giftfinder2.0" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#C13584" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-        <span style="font-size:11px;font-weight:600;letter-spacing:.3px;">@kadoizi</span>
+        <span style="font-size:11px;font-weight:600;letter-spacing:.3px;">@GIFTFINDER2.0</span>
       </a>
       <a href="https://www.tiktok.com/@kadoizi" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="#010101"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.45a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.77 1.52V6.76a4.85 4.85 0 0 1-1-.07z"/></svg>
@@ -300,8 +299,8 @@
     var params = new URLSearchParams(window.location.search);
     var token  = params.get('token');
 
-    if (!token || !/^[a-f0-9\-]{36}$/i.test(token)) {
-      showError('Lien de partage invalide ou manquant.');
+    if (!token) {
+      showError('Aucun token de partage fourni dans l\'URL.');
     } else {
       loadSharedResults(token);
     }
@@ -315,13 +314,13 @@
           .single();
 
         if (error || !data) {
-          showError('Ce lien de partage n\'existe pas ou a expir\u00e9.');
+          showError('Ce lien de partage n\'existe pas ou a expiré.');
           return;
         }
 
-        // V\u00e9rifier expiration
+        // Vérifier expiration
         if (data.expires_at && new Date(data.expires_at) < new Date()) {
-          showError('Ce lien de partage a expir\u00e9 (validit\u00e9 30 jours).');
+          showError('Ce lien de partage a expiré (validité 30 jours).');
           return;
         }
 
@@ -340,23 +339,23 @@
           ? JSON.parse(data.suggestions)
           : (Array.isArray(data.suggestions) ? data.suggestions : []);
       } catch(e) {
-        showError('Format de donn\u00e9es invalide.');
+        showError('Format de données invalide.');
         return;
       }
 
       if (!products.length) {
-        showError('Aucun r\u00e9sultat dans ce partage.');
+        showError('Aucun résultat dans ce partage.');
         return;
       }
 
       // Titre et sous-titre
-      var budgetLabel = { moins_25:'< 25\u20ac', '25_50':'25-50\u20ac', '50_100':'50-100\u20ac', '100_200':'100-200\u20ac', plus_200:'> 200\u20ac' };
+      var budgetLabel = { moins_25:'< 25€', '25_50':'25-50€', '50_100':'50-100€', '100_200':'100-200€', plus_200:'> 200€' };
       document.getElementById('resultsTitle').textContent =
-        '\ud83c\udf81 Id\u00e9es cadeaux' + (data.destinataire ? ' pour ' + data.destinataire : '');
+        '🎁 Idées cadeaux' + (data.destinataire ? ' pour ' + data.destinataire : '');
       document.getElementById('resultsSubtitle').textContent =
         (data.occasion ? data.occasion : '') +
-        (data.budget   ? (data.occasion ? ' \u2014 ' : '') + 'Budget ' + (budgetLabel[data.budget] || data.budget) : '') +
-        ' \u2014 Trouv\u00e9es par ' + APP_NAME;
+        (data.budget   ? (data.occasion ? ' — ' : '') + 'Budget ' + (budgetLabel[data.budget] || data.budget) : '') +
+        ' — Trouvées par ' + APP_NAME;
 
       // Remplissage de la grille
       var grid = document.getElementById('resultsGrid');
@@ -392,7 +391,7 @@
             badge +
             '<div class="s-card-title">' + esc(titre) + '</div>' +
             '<div class="s-card-desc">'  + esc(p.description || '') + '</div>' +
-            (prix ? '<div class="s-card-price">~' + esc(String(prix)) + '\u20ac</div>' : '') +
+            (prix ? '<div class="s-card-price">~' + esc(String(prix)) + '€</div>' : '') +
             buyBtn +
           '</div>';
 
@@ -411,8 +410,7 @@
     function esc(s) {
       return String(s)
         .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
-        .replace(/'/g,'&#39;');
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     // Enregistrement du service worker
