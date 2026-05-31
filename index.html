@@ -52,7 +52,7 @@
   }
   </script>
 
-  <!-- Schema.org WebApplication -->
+  <!-- Schema.org WebApplication (description du service) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -79,21 +79,9 @@
   }
   </script>
 
-  <link rel="icon" type="image/png" href="/logo.png">
-  <link rel="apple-touch-icon" href="/logo.png">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
+  <link rel="stylesheet" href="css/style.css?v=202605312149">
   <link rel="stylesheet" href="css/animations.css">
-  <style>
-    @media (max-width: 640px) {
-      body { padding-bottom: 70px; }
-      .mobile-bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: #fff; border-top: 1px solid #eee; box-shadow: 0 -4px 16px rgba(0,0,0,0.07); z-index: 200; }
-      .mobile-bottom-nav a { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 10px; font-weight: 500; color: #aaa; text-decoration: none; transition: color 0.15s; }
-      .mobile-bottom-nav a.active { color: #3C3489; }
-      .mobile-bottom-nav a .nav-icon { font-size: 20px; line-height: 1; }
-      .mobile-bottom-nav a.nav-center { position: relative; top: -12px; background: #3C3489; width: 52px; height: 52px; border-radius: 50%; flex: 0 0 52px; box-shadow: 0 4px 16px rgba(60,52,137,0.35); color: #EEEDFE !important; display: flex; align-items: center; justify-content: center; }
-      .mobile-bottom-nav a.nav-center .nav-icon { font-size: 22px; }
-    }
-  </style>
 </head>
 <body>
 
@@ -115,7 +103,7 @@
     </div>
     <h1 class="anim-fade-up anim-hero anim-delay-2">Fini les cadeaux<br><span class="highlight">ratés</span></h1>
     <p class="subtitle anim-fade-up anim-hero anim-delay-3">
-      Décris la personne, l'occasion et ton budget.<br>
+      Décrivez la personne, l'occasion et votre budget.<br>
       Notre IA trouve 9 idées parfaites en quelques secondes.
     </p>
     <div class="avatars-row anim-fade-up anim-hero anim-delay-4">
@@ -126,15 +114,15 @@
       <span class="stars">★★★★★</span>
       <span class="rating-text">+1 000 cadeaux trouvés</span>
     </div>
-    <button class="btn-cta anim-fade-up anim-hero anim-delay-5" onclick="handleHeroCta()">Trouver mon cadeau →</button>
+    <button class="btn-cta anim-fade-up anim-hero anim-delay-5" onclick="handleHeroCta()">Trouver un cadeau →</button>
     <span class="cta-sub anim-fade-in anim-hero anim-delay-6">Gratuit · Sans carte bancaire</span>
   </section>
 
   <section class="arguments">
     <div class="argument anim-fade-up anim-delay-1">
       <div class="arg-icon">🎯</div>
-      <h3>Personnalisé pour toi</h3>
-      <p>Des suggestions adaptées à la personne,<br>à l'occasion et à ton budget.</p>
+      <h3>100% personnalisé</h3>
+      <p>Des suggestions adaptées à la personne,<br>à l'occasion et à votre budget.</p>
     </div>
     <div class="argument anim-fade-up anim-delay-2">
       <div class="arg-icon">⚡</div>
@@ -158,23 +146,23 @@
 
   <footer class="footer">
     <div class="footer-top">
-      <span id="footer-brand"></span> &mdash; <a href="#" onclick="handleHeroCta();return false;">Trouver mon cadeau</a>
+      <span id="footer-brand"></span> &mdash; <a href="#" onclick="handleHeroCta();return false;">Trouver un cadeau</a>
     </div>
     <div class="footer-links">
-      <a href="blog/index">Blog</a>
-      <a href="mentions-legales">Mentions l&eacute;gales</a>
-      <a href="confidentialite">Confidentialit&eacute;</a>
-      <a href="cgu">CGU</a>
+      <a href="blog/index.html">Blog</a>
+      <a href="mentions-legales.html">Mentions l&eacute;gales</a>
+      <a href="confidentialite.html">Confidentialit&eacute;</a>
+      <a href="cgu.html">CGU</a>
     </div>
     <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
     <div class="footer-social" style="display:flex;gap:28px;justify-content:center;align-items:center;margin-top:12px;">
-      <a href="https://instagram.com/kadoizi" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#666;font-size:11px;">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#C13584" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-        <span>@kadoizi</span>
+      <a href="https://www.instagram.com/giftfinder2.0" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#C13584" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        <span style="font-size:11px;font-weight:600;letter-spacing:.3px;">@GIFTFINDER2.0</span>
       </a>
-      <a href="https://www.tiktok.com/@kadoizi" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#666;font-size:11px;">
+      <a href="https://www.tiktok.com/@kadoizi" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="#010101"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.45a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.77 1.52V6.76a4.85 4.85 0 0 1-1-.07z"/></svg>
-        <span>@kadoizi</span>
+        <span style="font-size:11px;font-weight:600;letter-spacing:.3px;">@kadoizi</span>
       </a>
     </div>
   </footer>
@@ -220,7 +208,8 @@
   <script src="js/animate.js"></script>
   <script>
     document.getElementById('brand-name').textContent = APP_NAME;
-    document.getElementById('footer-brand').textContent = APP_NAME;
+    var footerBrandEl = document.getElementById('footer-brand');
+    if (footerBrandEl) footerBrandEl.textContent = APP_NAME;
 
     let authMode = 'login';
 
@@ -275,20 +264,15 @@
         errorEl.style.display = 'block';
         return;
       }
-      try {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: window.location.origin + '/profil.html'
-        });
-        if (error) {
-          errorEl.textContent = error.message || 'Erreur lors de l\'envoi du mail.';
-          errorEl.style.display = 'block';
-        } else {
-          successEl.textContent = '\u2705 Un e-mail de r\u00E9initialisation a \u00E9t\u00E9 envoy\u00E9 \u00E0 ' + email;
-          successEl.style.display = 'block';
-        }
-      } catch(err) {
-        errorEl.textContent = (err && err.message) || 'Erreur r\u00E9seau.';
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/profil.html'
+      });
+      if (error) {
+        errorEl.textContent = error.message || 'Erreur lors de l\'envoi du mail.';
         errorEl.style.display = 'block';
+      } else {
+        successEl.textContent = '\u2705 Un e-mail de r\u00E9initialisation a \u00E9t\u00E9 envoy\u00E9 \u00E0 ' + email;
+        successEl.style.display = 'block';
       }
     }
 
@@ -312,7 +296,13 @@
     })();
 
     function handleHeroCta() {
-      window.location.href = 'questionnaire.html';
+      supabase.auth.getSession().then(function(r) {
+        if (r.data.session) {
+          window.location.href = 'questionnaire.html';
+        } else {
+          openAuth('signup');
+        }
+      });
     }
 
     async function handleAuth() {
@@ -354,23 +344,23 @@
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         document.getElementById('nav-right').innerHTML =
-          '<a href="profil" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>' +
-          '<button class="btn-primary" onclick="window.location.href=\'questionnaire.html\'">Trouver mon cadeau</button>';
+          '<a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>' +
+          '<button class="btn-primary" onclick="window.location.href=\'questionnaire.html\'">Trouver un cadeau</button>';
       }
     })();
 
     // ── Social proof dynamique ──
     // Tente de récupérer les stats réelles depuis Supabase.
     // En cas d'échec (RLS, erreur réseau) : les valeurs statiques restent affichées.
-    setTimeout(async function loadSocialProof() {
+    (async function loadSocialProof() {
       try {
         var now = new Date();
         var firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
-        // Requêtes parallèles : total + mois courant (head:false pour éviter 503 WAF Vercel)
+        // Requêtes parallèles : total + mois courant
         var results = await Promise.all([
-          supabase.from('searches').select('id', { count: 'exact', head: false }).in('statut', ['done', 'completed']),
-          supabase.from('searches').select('id', { count: 'exact', head: false }).in('statut', ['done', 'completed']).gte('created_at', firstOfMonth)
+          supabase.from('searches').select('id', { count: 'exact', head: true }).in('statut', ['done', 'completed']),
+          supabase.from('searches').select('id', { count: 'exact', head: true }).in('statut', ['done', 'completed']).gte('created_at', firstOfMonth)
         ]);
 
         var totalCount = results[0].count || 0;
@@ -379,7 +369,9 @@
         // Seulement si on a des données réelles
         if (totalCount > 0) {
           // Formater le total (arrondi aux centaines pour crédibilité)
-          var displayTotal = '+' + Math.max(1000, Math.floor(totalCount / 100) * 100).toLocaleString('fr-FR') + ' cadeaux trouvés';
+          var displayTotal = totalCount >= 1000
+            ? '+' + (Math.floor(totalCount / 100) * 100).toLocaleString('fr-FR') + ' cadeaux trouvés'
+            : '+' + totalCount + ' cadeau' + (totalCount > 1 ? 'x' : '') + ' trouvé' + (totalCount > 1 ? 's' : '');
 
           // Mettre à jour le badge hero
           var badgeEl = document.querySelector('.badge');
@@ -414,7 +406,7 @@
       } catch(e) {
         // Fail silently — les valeurs statiques restent affichées
       }
-    }, 1500);
+    })();
 
     // Enregistrement du Service Worker (PWA)
     if ('serviceWorker' in navigator) {
@@ -423,21 +415,5 @@
       });
     }
   </script>
-  <!-- MOBILE BOTTOM NAV -->
-  <nav class="mobile-bottom-nav">
-    <a href="historique">
-      <span class="nav-icon">&#128203;</span>
-      <span>Historique</span>
-    </a>
-    <a href="questionnaire" class="nav-center">
-      <span class="nav-icon">&#127873;</span>
-      <span>Recherche</span>
-    </a>
-    <a href="profil">
-      <span class="nav-icon">&#128100;</span>
-      <span>Profil</span>
-    </a>
-  </nav>
-
 </body>
 </html>
