@@ -5,9 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kadoizi &#8212; Questionnaire</title>
   <meta name="theme-color" content="#3C3489">
-  <link rel="icon" type="image/png" href="/logo.png">
-  <link rel="apple-touch-icon" href="/logo.png">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
+  <link rel="stylesheet" href="css/style.css?v=202605312149">
   <link rel="stylesheet" href="css/animations.css">
   <style>
     body {
@@ -102,31 +101,28 @@
     /* Chips */
     .chips-row { display: flex; flex-wrap: wrap; gap: 8px; }
     .chip {
-      padding: 9px 18px;
+      padding: 8px 16px;
       border-radius: 999px;
-      font-size: 14px;
-      font-weight: 600;
-      border: 2px solid rgba(60,52,137,0.40);
-      background: rgba(255,255,255,0.92);
+      font-size: 13px;
+      font-weight: 500;
+      border: 1.5px solid rgba(60,52,137,0.25);
+      background: rgba(255,255,255,0.72);
       color: #3C3489;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: all 0.15s;
       user-select: none;
       font-family: inherit;
       line-height: 1.4;
-      box-shadow: 0 2px 8px rgba(60,52,137,0.10);
     }
     .chip:hover {
-      background: rgba(60,52,137,0.09);
-      border-color: rgba(60,52,137,0.65);
-      transform: translateY(-3px) scale(1.04);
-      box-shadow: 0 6px 18px rgba(60,52,137,0.20);
+      background: rgba(60,52,137,0.07);
+      border-color: rgba(60,52,137,0.5);
+      transform: translateY(-2px);
     }
     .chip.selected {
-      background: linear-gradient(135deg, #3C3489 0%, #5548C8 100%);
+      background: #3C3489;
       color: #EEEDFE;
-      border-color: #5548C8;
-      box-shadow: 0 4px 16px rgba(60,52,137,0.40);
+      border-color: #3C3489;
       animation: chip-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     @keyframes chip-pop {
@@ -151,20 +147,18 @@
     .q-submit {
       width: 100%;
       padding: 16px;
-      background: linear-gradient(135deg, #3C3489 0%, #5548C8 100%);
+      background: #3C3489;
       color: #EEEDFE;
       border: none;
       border-radius: 12px;
       font-size: 16px;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: background 0.15s, transform 0.1s;
       font-family: inherit;
       margin-top: 8px;
-      box-shadow: 0 4px 18px rgba(60,52,137,0.35);
-      letter-spacing: 0.3px;
     }
-    .q-submit:hover   { background: linear-gradient(135deg, #2d2768 0%, #4538B8 100%); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(60,52,137,0.45); }
+    .q-submit:hover   { background: #2d2768; }
     .q-submit:active  { transform: scale(0.98); }
     .q-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
@@ -197,40 +191,8 @@
       <span class="gift-icon">&#127873;</span>
       <span class="brand" id="brand-name"></span>
     </div>
-    <div class="navbar-right" id="nav-right">
-      <button class="btn-outline" onclick="openAuth('login')">Connexion</button>
-      <button class="btn-primary" onclick="openAuth('signup')">S'inscrire</button>
-    </div>
+    <div class="navbar-right" id="nav-right"></div>
   </nav>
-
-  <!-- MODAL AUTH (affiché au submit si pas connecté) -->
-  <div class="auth-overlay" id="authOverlay" style="display:none;">
-    <div class="auth-card">
-      <h2 id="authTitle">Cr&eacute;er un compte</h2>
-      <p class="auth-sub" id="authSub">Inscrivez-vous pour voir vos r&eacute;sultats</p>
-      <div class="auth-error" id="authError"></div>
-      <div class="form-group">
-        <label for="authEmail">Adresse e-mail</label>
-        <input type="email" id="authEmail" placeholder="vous@exemple.com">
-      </div>
-      <div class="form-group" id="authPrenomGroup" style="display:none;">
-        <label for="authPrenom">Pr&eacute;nom</label>
-        <input type="text" id="authPrenom" placeholder="Votre pr&eacute;nom">
-      </div>
-      <div class="form-group">
-        <label for="authPassword">Mot de passe</label>
-        <input type="password" id="authPassword" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;">
-      </div>
-      <button class="btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:4px;" id="authSubmitBtn" onclick="handleAuth()">S'inscrire</button>
-      <p class="auth-toggle" id="authToggle">
-        D&eacute;j&agrave; un compte ? <a onclick="toggleAuthMode()">Se connecter</a>
-      </p>
-      <p class="auth-toggle" id="forgotPasswordLink" style="margin-top:8px;display:none;">
-        <a onclick="handleForgotPassword()" style="color:#888;font-size:12px;">Mot de passe oubli&eacute; ?</a>
-      </p>
-      <div class="auth-error" id="authSuccess" style="background:#f0fdf4;color:#15803d;border-color:#bbf7d0;display:none;"></div>
-    </div>
-  </div>
 
   <!-- CONTENU -->
   <div class="q-wrap">
@@ -333,18 +295,18 @@
 
   <footer class="footer">
     <div class="footer-top">
-      <span id="footer-brand"></span> &mdash; <a href="/">Retour &agrave; l'accueil</a>
+      <span id="footer-brand"></span> &mdash; <a href="index.html">Retour &agrave; l'accueil</a>
     </div>
     <div class="footer-links">
-      <a href="mentions-legales">Mentions l&eacute;gales</a>
-      <a href="confidentialite">Confidentialit&eacute;</a>
-      <a href="cgu">CGU</a>
+      <a href="mentions-legales.html">Mentions l&eacute;gales</a>
+      <a href="confidentialite.html">Confidentialit&eacute;</a>
+      <a href="cgu.html">CGU</a>
     </div>
     <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
     <div class="footer-social" style="display:flex;gap:28px;justify-content:center;align-items:center;margin-top:12px;">
-      <a href="https://www.instagram.com/kadoizi" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;">
+      <a href="https://www.instagram.com/giftfinder2.0" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#C13584" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-        <span style="font-size:11px;font-weight:600;letter-spacing:.3px;">@kadoizi</span>
+        <span style="font-size:11px;font-weight:600;letter-spacing:.3px;">@GIFTFINDER2.0</span>
       </a>
       <a href="https://www.tiktok.com/@kadoizi" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="#010101"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.45a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.77 1.52V6.76a4.85 4.85 0 0 1-1-.07z"/></svg>
@@ -413,20 +375,20 @@
       document.getElementById('progressFill').style.width = (filled / 5 * 100) + '%';
     }
 
-    // -- Auth : adapter l'UI selon la session (sans bloquer l'accès) --
-    var _pendingSubmit = false; // flag pour auto-submit après login
-
+    // -- Auth gate --
     (async function() {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return; // Pas connecté : on laisse le formulaire accessible
+      if (!session) { window.location.href = 'index.html'; return; }
+      const prenom = (session.user.user_metadata && session.user.user_metadata.prenom)
+        || session.user.email.split('@')[0];
 
-      // Connecté : adapter la navbar
       document.getElementById('nav-right').innerHTML =
-        '<a href="historique" class="btn-outline" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128203; Historique</a>' +
-        '<a href="profil" class="btn-outline" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>';
+        '<a href="historique.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128203; Historique</a>' +
+        '<a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>';
 
       // -- Afficher les recherches restantes aujourd'hui --
-      const ADMIN_EMAILS = ['bonjour@kadoizi.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
+      // Admin bypass : pas de limite pour les comptes propriétaires
+      const ADMIN_EMAILS = ['gyentrepreneur@gmail.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
       if (!ADMIN_EMAILS.includes(session.user.email)) {
         try {
           const today = new Date().toISOString().slice(0, 10);
@@ -441,116 +403,18 @@
           if (hintEl) {
             if (restantes === 0) {
               hintEl.innerHTML = '<span style="color:#b91c1c;font-weight:600;">\u26A0\uFE0F Limite atteinte \u2014 revenez demain !</span>';
+              // Désactiver le bouton dès le chargement si quota épuisé
               var btn = document.getElementById('submitBtn');
               if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
             } else {
               hintEl.innerHTML = 'R&eacute;sultats en moins de 30 secondes &middot; Gratuit &middot; <strong>' + restantes + ' recherche' + (restantes > 1 ? 's' : '') + ' restante' + (restantes > 1 ? 's' : '') + ' aujourd\'hui</strong>';
             }
           }
-        } catch (e) {}
+        } catch (e) {
+          // fail silently, message par defaut reste affiché
+        }
       }
     })();
-
-    // -- Auth modal --
-    var authMode = 'signup';
-
-    function openAuth(mode) {
-      authMode = mode;
-      document.getElementById('authError').style.display = 'none';
-      var successEl = document.getElementById('authSuccess');
-      if (successEl) successEl.style.display = 'none';
-      if (mode === 'login') {
-        document.getElementById('authTitle').textContent = 'Connexion';
-        document.getElementById('authSub').textContent = 'Connectez-vous pour voir vos r\u00e9sultats';
-        document.getElementById('authSubmitBtn').textContent = 'Se connecter';
-        document.getElementById('authToggle').innerHTML = "Pas encore de compte ? <a onclick='toggleAuthMode()'>S'inscrire</a>";
-        document.getElementById('authPrenomGroup').style.display = 'none';
-        document.getElementById('forgotPasswordLink').style.display = 'block';
-      } else {
-        document.getElementById('authTitle').textContent = 'Cr\u00e9er un compte';
-        document.getElementById('authSub').textContent = 'Inscrivez-vous pour voir vos r\u00e9sultats';
-        document.getElementById('authSubmitBtn').textContent = "S'inscrire";
-        document.getElementById('authToggle').innerHTML = "D\u00e9j\u00e0 un compte ? <a onclick='toggleAuthMode()'>Se connecter</a>";
-        document.getElementById('authPrenomGroup').style.display = 'block';
-        document.getElementById('forgotPasswordLink').style.display = 'none';
-      }
-      document.getElementById('authOverlay').style.display = 'flex';
-    }
-
-    function toggleAuthMode() { openAuth(authMode === 'login' ? 'signup' : 'login'); }
-
-    document.getElementById('authOverlay').addEventListener('click', function(e) {
-      if (e.target === this) { this.style.display = 'none'; _pendingSubmit = false; }
-    });
-
-    document.getElementById('authPassword').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') handleAuth();
-    });
-
-    async function handleForgotPassword() {
-      var email = document.getElementById('authEmail').value.trim();
-      var errorEl = document.getElementById('authError');
-      var successEl = document.getElementById('authSuccess');
-      errorEl.style.display = 'none';
-      successEl.style.display = 'none';
-      if (!email) {
-        errorEl.textContent = 'Veuillez saisir votre adresse e-mail.';
-        errorEl.style.display = 'block';
-        return;
-      }
-      try {
-        var { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: window.location.origin + '/profil.html'
-        });
-        if (error) throw error;
-        successEl.textContent = '\u2705 E-mail de r\u00e9initialisation envoy\u00e9 \u00e0 ' + email;
-        successEl.style.display = 'block';
-      } catch(err) {
-        errorEl.textContent = (err && err.message) || 'Erreur.';
-        errorEl.style.display = 'block';
-      }
-    }
-
-    async function handleAuth() {
-      var email    = document.getElementById('authEmail').value.trim();
-      var password = document.getElementById('authPassword').value;
-      var errorEl  = document.getElementById('authError');
-      errorEl.style.display = 'none';
-      if (!email || !password) {
-        errorEl.textContent = 'Veuillez remplir tous les champs.';
-        errorEl.style.display = 'block';
-        return;
-      }
-      var btn = document.getElementById('authSubmitBtn');
-      btn.disabled = true;
-      btn.textContent = 'Chargement\u2026';
-      try {
-        if (authMode === 'signup') {
-          var prenom = document.getElementById('authPrenom').value.trim();
-          var { error } = await supabase.auth.signUp({ email: email, password: password, options: { data: { prenom: prenom } } });
-          if (error) throw error;
-        } else {
-          var { error } = await supabase.auth.signInWithPassword({ email: email, password: password });
-          if (error) throw error;
-        }
-        // Auth réussie : fermer le modal et adapter la navbar
-        document.getElementById('authOverlay').style.display = 'none';
-        document.getElementById('nav-right').innerHTML =
-          '<a href="historique" class="btn-outline" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128203; Historique</a>' +
-          '<a href="profil" class="btn-outline" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>';
-
-        // Si le submit était en attente, relancer automatiquement
-        if (_pendingSubmit) {
-          _pendingSubmit = false;
-          handleSubmit();
-        }
-      } catch (err) {
-        errorEl.textContent = err.message || 'Une erreur est survenue.';
-        errorEl.style.display = 'block';
-        btn.disabled = false;
-        btn.textContent = authMode === 'signup' ? "S'inscrire" : 'Se connecter';
-      }
-    }
 
     async function handleLogout() {
       await supabase.auth.signOut();
@@ -577,26 +441,17 @@
       submitBtn.disabled    = true;
       submitBtn.textContent = 'Analyse en cours...';
 
-      // -- Vérifier si l'utilisateur est connecté --
+      // -- Limite : 10 recherches gratuites par jour --
+      // Admin bypass : pas de limite pour le compte propriétaire
       try {
-        var { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-          // Pas connecté → ouvrir le modal d'inscription, puis auto-submit après
-          submitBtn.disabled    = false;
-          submitBtn.textContent = 'D\u00E9couvrir mes recommandations \u2728';
-          _pendingSubmit = true;
-          openAuth('signup');
-          return;
-        }
-
-        // -- Limite : 10 recherches gratuites par jour --
-        var ADMIN_EMAILS_2 = ['bonjour@kadoizi.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
-        if (!ADMIN_EMAILS_2.includes(session.user.email)) {
-          var today = new Date().toISOString().slice(0, 10);
-          var { count } = await supabase
+        const { data: { session: sess } } = await supabase.auth.getSession();
+        const ADMIN_EMAILS_2 = ['gyentrepreneur@gmail.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
+        if (sess && !ADMIN_EMAILS_2.includes(sess.user.email)) {
+          const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+          const { count } = await supabase
             .from('searches')
             .select('id', { count: 'exact', head: true })
-            .eq('user_id', session.user.id)
+            .eq('user_id', sess.user.id)
             .gte('created_at', today + 'T00:00:00.000Z')
             .lte('created_at', today + 'T23:59:59.999Z');
           if (count >= 10) {
@@ -606,11 +461,14 @@
             return;
           }
         }
-      } catch (limitErr) {}
+      } catch (limitErr) {
+        console.warn('Impossible de verifier la limite quotidienne :', limitErr.message);
+        // On laisse passer si la verification echoue (fail-open)
+      }
 
       try {
-        var { data: { session } } = await supabase.auth.getSession();
-        if (!session) { return; }
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) { window.location.href = 'index.html'; return; }
 
         const infosSup = document.getElementById('infos-sup').value.trim() || null;
 
@@ -662,15 +520,15 @@
 
   <!-- MOBILE BOTTOM NAV -->
   <nav class="mobile-bottom-nav">
-    <a href="historique">
+    <a href="historique.html">
       <span class="nav-icon">&#128203;</span>
       <span>Historique</span>
     </a>
-    <a href="questionnaire" class="nav-center active">
+    <a href="questionnaire.html" class="nav-center active">
       <span class="nav-icon">&#127873;</span>
       <span>Recherche</span>
     </a>
-    <a href="profil">
+    <a href="profil.html">
       <span class="nav-icon">&#128100;</span>
       <span>Profil</span>
     </a>
