@@ -5,9 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kadoizi &mdash; Page introuvable</title>
   <meta name="robots" content="noindex, nofollow">
-  <link rel="icon" type="image/png" href="/logo.png">
-  <link rel="apple-touch-icon" href="/logo.png">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
+  <link rel="stylesheet" href="css/style.css?v=202605312149">
   <style>
     body {
       margin: 0;
@@ -157,10 +156,10 @@
   <nav class="navbar">
     <div class="navbar-left">
       <span class="gift-icon">&#127873;</span>
-      <a href="/" class="brand" id="brand-name">Kadoizi</a>
+      <a href="index.html" class="brand" id="brand-name">Kadoizi</a>
     </div>
     <div class="navbar-right" id="nav-right">
-      <a href="/" class="btn-outline">Accueil</a>
+      <a href="index.html" class="btn-outline">Accueil</a>
     </div>
   </nav>
 
@@ -175,8 +174,8 @@
         Heureusement, on est tr&egrave;s forts pour trouver des cadeaux &mdash; pas des pages perdues.
       </p>
       <div class="not-found-actions">
-        <a href="/" class="btn-home">&#127968; Retour &agrave; l&rsquo;accueil</a>
-        <a href="questionnaire" class="btn-search">&#10024; Chercher un cadeau</a>
+        <a href="index.html" class="btn-home">&#127968; Retour &agrave; l&rsquo;accueil</a>
+        <a href="questionnaire.html" class="btn-search">&#10024; Chercher un cadeau</a>
       </div>
       <p class="countdown" id="countdown-msg"></p>
     </div>
@@ -185,12 +184,12 @@
   <!-- Footer -->
   <footer class="footer">
     <div class="footer-top">
-      <span id="footer-brand">Kadoizi</span> &mdash; <a href="/">Retour &agrave; l&rsquo;accueil</a>
+      <span id="footer-brand">Kadoizi</span> &mdash; <a href="index.html">Retour &agrave; l&rsquo;accueil</a>
     </div>
     <div class="footer-links">
-      <a href="mentions-legales">Mentions l&eacute;gales</a>
-      <a href="confidentialite">Confidentialit&eacute;</a>
-      <a href="cgu">CGU</a>
+      <a href="mentions-legales.html">Mentions l&eacute;gales</a>
+      <a href="confidentialite.html">Confidentialit&eacute;</a>
+      <a href="cgu.html">CGU</a>
     </div>
   </footer>
 
@@ -213,4 +212,15 @@
     function updateCountdown() {
       if (!countdownEl) return;
       if (seconds > 0) {
-        countdownEl.textContent = 'Redirection automatique dans ' + 
+        countdownEl.textContent = 'Redirection automatique dans ' + seconds + ' seconde' + (seconds > 1 ? 's' : '') + '...';
+        seconds--;
+        setTimeout(updateCountdown, 1000);
+      } else {
+        window.location.href = 'index.html';
+      }
+    }
+
+    updateCountdown();
+  </script>
+</body>
+</html>
