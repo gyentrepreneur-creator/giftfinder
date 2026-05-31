@@ -223,13 +223,38 @@ button { cursor: pointer; font-family: inherit; }
 }
 
 @media (max-width: 640px) {
-  .navbar { padding: 0 16px; }
+  /* Top navbar : compacte */
+  .navbar { padding: 0 12px; height: 52px; }
+  .navbar-left { gap: 6px; min-width: 0; }
+  .navbar-left .gift-icon { font-size: 18px; }
+  .navbar-left .brand { font-size: 15px; }
+  .navbar-right { gap: 6px; flex-wrap: nowrap; }
+  .navbar .btn-outline,
+  .navbar .btn-primary {
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+    line-height: 1.2;
+  }
+
   .hero h1 { font-size: 28px; }
   .arguments { flex-direction: column; }
   .argument + .argument { border-left: none; border-top: 1px solid #eee; }
   .card { padding: 24px; margin: 0 12px; }
   .results-grid { grid-template-columns: 1fr; }
   body { padding-bottom: 64px; }
+}
+
+/* Très petit écran (≤380px iPhone SE/mini) : encore plus compact */
+@media (max-width: 380px) {
+  .navbar { padding: 0 10px; }
+  .navbar-left .brand { font-size: 14px; }
+  .navbar .btn-outline,
+  .navbar .btn-primary {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
 }
 
 /* ── Mobile bottom navigation ── */
