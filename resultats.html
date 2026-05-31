@@ -5,10 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kadoizi &mdash; Vos id&eacute;es cadeaux</title>
   <meta name="theme-color" content="#3C3489">
-  <link rel="icon" type="image/png" href="/logo.png">
-  <link rel="apple-touch-icon" href="/logo.png">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
   <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=202605312149">
   <link rel="stylesheet" href="css/animations.css">
   <style>
     body {
@@ -18,7 +17,7 @@
       position: relative;
       overflow-x: hidden;
     }
-    .deco { display: none;
+    .deco {
       position: fixed;
       border-radius: 50%;
       opacity: 0.15;
@@ -31,7 +30,6 @@
     .deco-ambre  { background: #EF9F27; width:  60px; height:  60px; bottom: 60px; left: 40px; }
 
     .navbar { position: relative; z-index: 10; }
-    footer { position: relative; z-index: 2; }
 
     .r-main {
       padding: 40px 20px 60px;
@@ -42,7 +40,14 @@
     }
 
     /* -- Loader -- */
-    .r-loader { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 420px; text-align: center; }
+    .r-loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 420px;
+      text-align: center;
+    }
     .r-gift {
       font-size: 56px;
       margin-bottom: 12px;
@@ -64,7 +69,10 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* -- Error -- */
-    .r-error {      align-items: center;
+    .r-error {
+      display: none;
+      flex-direction: column;
+      align-items: center;
       justify-content: center;
       min-height: 380px;
       text-align: center;
@@ -177,43 +185,24 @@
 
     @media (max-width: 860px) { .r-grid { grid-template-columns: repeat(2,1fr); } }
     @media (max-width: 540px) { .r-grid { grid-template-columns: 1fr; } }
-  
-/* -- Mobile bottom nav -- */
-.mobile-bottom-nav { display: none; }
-@media (max-width: 640px) {
-  .mobile-bottom-nav {
-    display: flex;
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: #fff;
-    border-top: 1px solid rgba(60,52,137,0.12);
-    padding: 6px 0 8px;
-    justify-content: space-around;
-    z-index: 100;
-    box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
-  }
-  .mobile-bottom-nav a {
-    display: flex; flex-direction: column;
-    align-items: center; text-decoration: none;
-    color: #888; font-size: 10px; gap: 2px;
-  }
-  .mobile-bottom-nav a:hover { color: #3C3489; }
-  .mobile-bottom-nav .nav-icon { font-size: 22px; line-height: 1; }
-}
-</style>
+  </style>
 </head>
 <body>
 
   <!-- Cercles decoratifs -->
+  <div class="deco deco-violet"></div>
+  <div class="deco deco-rose"></div>
+  <div class="deco deco-vert"></div>
+  <div class="deco deco-ambre"></div>
 
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="navbar-left">
-      <img class="gift-icon" alt="Kadoizi" height="32" style="border-radius:8px;vertical-align:middle;margin-right:4px;">
+      <span class="gift-icon">&#127873;</span>
       <span class="brand" id="brand-name"></span>
     </div>
     <div class="navbar-right">
-      <a href="profil" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>
+      <a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>
       <button class="btn-outline" style="border-color:#3C3489;color:#3C3489;"
               onclick="window.location.href='questionnaire.html'">Nouveau formulaire</button>
       <button class="btn-primary" onclick="manualRefresh()">Rafra&icirc;chir</button>
@@ -227,15 +216,15 @@
     <div id="loader" class="r-loader">
       <div class="r-gift">&#127873;</div>
       <div class="r-spinner"></div>
-      <h2 style="font-size:20px;font-weight:700;color:#26215C;margin:0 0 8px;">Notre IA cherche tes id&eacute;es&hellip;</h2>
+      <h2 style="font-size:20px;font-weight:700;color:#26215C;margin:0 0 8px;">Notre IA cherche vos id&eacute;es&hellip;</h2>
       <p style="font-size:14px;color:#666;max-width:300px;line-height:1.6;margin:0;">
-        On analyse ton profil pour te trouver 9 id&eacute;es qui collent.</p>
+        Nous analysons votre profil et trouvons les meilleures id&eacute;es cadeaux.</p>
       <p style="font-size:13px;color:#888;margin:6px 0 0;">Cela prend moins de 30 secondes.</p>
       <p style="font-size:11px;color:#bbb;margin:12px 0 0;" id="pollingStatus">V&eacute;rification en cours&hellip;</p>
     </div>
 
     <!-- Etat : erreur -->
-    <div id="errorState" class="r-error" style="display:none;">
+    <div id="errorState" class="r-error">
       <div style="font-size:48px;margin-bottom:16px;">&#128533;</div>
       <h2 style="font-size:20px;font-weight:700;color:#26215C;margin-bottom:8px;">Une erreur est survenue</h2>
       <p style="font-size:14px;color:#666;" id="errorMessage">Impossible de charger les r&eacute;sultats.</p>
@@ -246,14 +235,14 @@
     <!-- État : résultats -->
     <div id="resultsSection" style="display:none;">
       <div class="r-hdr anim-fade-up anim-hero">
-        <h1><img id="r-title-main-logo" alt="Kadoizi" height="34" style="border-radius:8px;vertical-align:middle;margin-right:8px;"> Vos id&eacute;es cadeaux</h1>
+        <h1>&#127873; Vos id&eacute;es cadeaux</h1>
         <p style="font-size:14px;color:#666;" id="resultsSubtitle">S&eacute;lectionn&eacute;es par notre IA pour vous</p>
       </div>
       <div class="r-grid" id="resultsGrid"></div>
 
       <!-- Bouton partage social -->
       <div id="shareSection" style="text-align:center;margin-top:36px;padding-top:28px;border-top:1px solid rgba(60,52,137,0.1);">
-        <p style="font-size:13px;color:#888;margin-bottom:14px;">Tu as aim&eacute; ces suggestions ?</p>
+        <p style="font-size:13px;color:#888;margin-bottom:14px;">Vous avez aim&eacute; ces suggestions ?</p>
         <button id="shareBtn" onclick="handleShare()" style="
           display:inline-flex;align-items:center;gap:8px;
           background:#fff;border:1.5px solid rgba(60,52,137,0.25);
@@ -267,7 +256,7 @@
         </div>
       </div>
 
-      <!-- CTA Trouver mon cadeau -->
+      <!-- CTA Nouvelle recherche -->
       <div style="text-align:center;margin-top:40px;padding:28px 20px;
                   background:rgba(255,255,255,0.6);border-radius:20px;
                   border:1.5px solid rgba(60,52,137,0.1);">
@@ -282,7 +271,7 @@
           padding:14px 32px;border-radius:12px;
           font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;
           transition:background .15s;">
-          Trouver mon cadeau &#10024;
+          Nouvelle recherche &#10024;
         </button>
       </div>
     </div>
@@ -291,18 +280,18 @@
 
   <footer class="footer">
     <div class="footer-top">
-      <span id="footer-brand"></span> &mdash; <a href="questionnaire">Trouver mon cadeau</a>
+      <span id="footer-brand"></span> &mdash; <a href="questionnaire.html">Nouvelle recherche</a>
     </div>
     <div class="footer-links">
-      <a href="mentions-legales">Mentions l&eacute;gales</a>
-      <a href="confidentialite">Confidentialit&eacute;</a>
-      <a href="cgu">CGU</a>
+      <a href="mentions-legales.html">Mentions l&eacute;gales</a>
+      <a href="confidentialite.html">Confidentialit&eacute;</a>
+      <a href="cgu.html">CGU</a>
     </div>
     <p class="footer-amazon">En tant que Partenaire Amazon, je r&eacute;alise un b&eacute;n&eacute;fice sur les achats remplissant les conditions requises.</p>
     <div class="footer-social" style="display:flex;gap:28px;justify-content:center;align-items:center;margin-top:12px;">
-      <a href="https://www.instagram.com/kadoizi" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;">
+      <a href="https://www.instagram.com/giftfinder2.0" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#C13584" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-        <span style="font-size:11px;font-weight:600;letter-spacing:.3px;">@kadoizi</span>
+        <span style="font-size:11px;font-weight:600;letter-spacing:.3px;">@GIFTFINDER2.0</span>
       </a>
       <a href="https://www.tiktok.com/@kadoizi" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:#555;">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="#010101"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.45a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.77 1.52V6.76a4.85 4.85 0 0 1-1-.07z"/></svg>
@@ -321,16 +310,14 @@
     document.getElementById('footer-brand').textContent = APP_NAME;
 
     const params   = new URLSearchParams(window.location.search);
-    const rawId    = params.get('id') || '';
-    // Sanitize : n'accepter que les UUID valides (lettres, chiffres, tirets)
-    const searchId = /^[a-f0-9\-]{36}$/i.test(rawId) ? rawId : null;
+    const searchId = params.get('id');
 
     if (!searchId) showError('Aucun identifiant de recherche fourni. Veuillez relancer une recherche.');
 
-    let pollInterval   = null;
-    let pollCount      = 0;
-    let pollStartTime  = 0;
-    let _currentData   = null; // stocke les données pour handleShare
+    let pollInterval  = null;
+    let pollCount     = 0;
+    const MAX_POLLS   = 60;
+    let _currentData  = null; // stocke les données pour handleShare
 
     (async function() {
       const { data: { session } } = await supabase.auth.getSession();
@@ -338,38 +325,17 @@
       if (searchId) startPolling();
     })();
 
-    let pollElapsed = 0; // temps total écoulé en secondes
-
     function startPolling() {
-      pollStartTime = Date.now();
-      pollElapsed = 0;
-      pollCount = 0;
-      scheduleNextPoll();
+      pollInterval = setInterval(checkStatus, POLLING_INTERVAL);
       checkStatus();
-    }
-
-    function getPollingDelay() {
-      // Rapide au début (2s), ralentit après 20s (4s), puis après 60s (6s)
-      if (pollElapsed < 20) return 2000;
-      if (pollElapsed < 60) return 4000;
-      return 6000;
-    }
-
-    function scheduleNextPoll() {
-      var delay = getPollingDelay();
-      pollInterval = setTimeout(function() {
-        checkStatus();
-        if (pollInterval) scheduleNextPoll();
-      }, delay);
     }
 
     async function checkStatus() {
       pollCount++;
-      pollElapsed = Math.round((Date.now() - pollStartTime) / 1000);
       document.getElementById('pollingStatus').textContent =
-        'V\u00E9rification #' + pollCount + '... (' + pollElapsed + 's)';
+        'V\u00E9rification #' + pollCount + '... (' + (pollCount * POLLING_INTERVAL / 1000) + 's)';
 
-      if (pollElapsed > 180) { // timeout à 3 minutes
+      if (pollCount > MAX_POLLS) {
         stopPolling();
         showError('D\u00E9lai d\'attente d\u00E9pass\u00E9. Veuillez rafra\u00EEchir ou relancer une recherche.');
         return;
@@ -391,17 +357,18 @@
           stopPolling();
           showError('Erreur lors de la g\u00E9n\u00E9ration. Veuillez r\u00E9essayer.');
         }
-      } catch (_) { /* silencieux en prod */ }
+      } catch (err) {
+        console.error('Erreur polling :', err.message);
+      }
     }
 
     function stopPolling() {
-      if (pollInterval) { clearTimeout(pollInterval); pollInterval = null; }
+      if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
     }
 
     function displayResults(data) {
       _currentData = data; // sauvegarde pour handleShare
       document.getElementById('loader').style.display = 'none';
-      document.getElementById('errorState').style.display = 'none';
       document.getElementById('resultsSection').style.display = 'block'; // affiché tôt pour éviter page blanche
 
       try {
@@ -437,7 +404,7 @@
           (data.occasion ? ' - ' + data.occasion : '') +
           (data.budget   ? ' - Budget ' + (budgetLabel[data.budget] || data.budget) : '');
         if (data.destinataire) {
-          document.title = 'Cadeaux pour ' + data.destinataire + ' \u2014 ' + APP_NAME;  
+          document.title = 'Cadeaux pour ' + data.destinataire + ' \u2014 ' + APP_NAME;
         }
 
         var grid = document.getElementById('resultsGrid');
@@ -449,8 +416,9 @@
             card.className = 'r-card';
 
             var imgHtml;
-            if (p.image || p.img) {   
-              imgHtml = '<div class="r-card-img"><img src="' + esc(p.image || p.img) +                      '" alt="' + esc(p.nom || p.name || '') + '" onerror="this.parentElement.innerHTML=\'&#127873;\'"></div>';
+            if (p.image || p.img) {
+              imgHtml = '<div class="r-card-img"><img src="' + esc(p.image || p.img) +
+                        '" alt="' + esc(p.nom || p.name || '') + '" onerror="this.parentElement.innerHTML=\'&#127873;\'"></div>';
             } else {
               imgHtml = '<div class="r-card-img">&#127873;</div>';
             }
@@ -483,7 +451,7 @@
 
             grid.appendChild(card);
           } catch (cardErr) {
-            /* erreur carte silencieuse en prod */
+            console.error('Erreur carte produit :', cardErr);
           }
         });
 
@@ -494,7 +462,7 @@
 
         updateNewSearchCTA();
       } catch (e) {
-        /* erreur affichage silencieuse en prod */
+        console.error('displayResults erreur :', e);
         showError('Erreur lors de l\'affichage. Veuillez rafra\u00EEchir la page.');
       }
     }
@@ -504,7 +472,7 @@
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
         // Admin bypass : recherches illimitées
-        const ADMIN_EMAILS = ['bonjour@kadoizi.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
+        const ADMIN_EMAILS = ['gyentrepreneur@gmail.com', 'genegylan@gmail.com', 'shadeeosseni@gmail.com'];
         if (ADMIN_EMAILS.includes(session.user.email)) {
           const adminEl = document.getElementById('ctaQuotaMsg');
           if (adminEl) adminEl.innerHTML = '<strong>Recherches illimitées</strong> 🎉';
@@ -583,7 +551,7 @@
         var { error } = await supabase.from('shared_results').insert([payload]);
         if (error) throw error;
 
-        var shareUrl = window.location.origin + '/shared.html?token=' + token;
+        var shareUrl = 'https://giftfinder-cyan.vercel.app/shared.html?token=' + token;
         var text = 'D\u00E9couvrez ces id\u00E9es cadeaux trouv\u00E9es par ' + APP_NAME + ' \u2728 ';
 
         if (navigator.share) {
@@ -599,7 +567,7 @@
           }, 3000);
         }
       } catch (err) {
-        /* erreur partage silencieuse en prod */
+        console.error('Erreur partage :', err);
         // Fallback : partager l'URL courante
         var fallbackUrl = window.location.href;
         navigator.clipboard.writeText(fallbackUrl).then(function() {
@@ -614,8 +582,7 @@
     function esc(s) {
       return String(s)
         .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
-        .replace(/'/g,'&#39;');
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     // Enregistrement du Service Worker (PWA)
@@ -628,15 +595,15 @@
 
   <!-- MOBILE BOTTOM NAV -->
   <nav class="mobile-bottom-nav">
-    <a href="historique">
+    <a href="historique.html">
       <span class="nav-icon">&#128203;</span>
       <span>Historique</span>
     </a>
-    <a href="questionnaire" class="nav-center">
+    <a href="questionnaire.html" class="nav-center">
       <span class="nav-icon">&#127873;</span>
       <span>Recherche</span>
     </a>
-    <a href="profil">
+    <a href="profil.html">
       <span class="nav-icon">&#128100;</span>
       <span>Profil</span>
     </a>
