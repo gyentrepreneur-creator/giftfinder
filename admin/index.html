@@ -2262,20 +2262,54 @@
       $('#chat-input').focus();
     }));
 
-    // Chat send
-    $('#chat-form').addEventListener('submit', e => {
+    // Chat send — REAL call to bigboss-chat Edge Function (Claude Haiku 4.5)
+    const chatHistory = []; // {role: 'user'|'assistant', content: string}
+    function escapeHtml(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function renderMd(s) {
+      // Mini markdown : **bold**, `code`, links, line breaks
+      return escapeHtml(s)
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/`([^`]+)`/g, '<code style="background:rgba(60,52,137,.08);padding:1px 5px;border-radius:4px;font-size:.9em">$1</code>')
+        .replace(/(https?:\/\/[^\s)]+)/g, '<a href="$1" target="_blank" style="color:inherit;text-decoration:underline">$1</a>')
+        .replace(/\n/g, '<br>');
+    }
+    $('#chat-form').addEventListener('submit', async e => {
       e.preventDefault();
       const txt = $('#chat-input').value.trim();
       if (!txt) return;
       const msgs = $('#chat-messages');
-      msgs.insertAdjacentHTML('beforeend', `<div class="msg user">${txt}</div>`);
+      msgs.insertAdjacentHTML('beforeend', `<div class="msg user">${escapeHtml(txt)}</div>`);
       $('#chat-input').value = '';
       msgs.scrollTop = msgs.scrollHeight;
-      setTimeout(() => {
-        msgs.insertAdjacentHTML('beforeend',
-          `<div class="msg bot"><div class="msg-author">BigBoss</div>Reçu : "${txt.replace(/</g,'&lt;')}". Une fois connecté au webhook n8n /webhook/bigboss-chat je traiterai ça pour de vrai. Là je suis encore en mock 🔮</div>`);
-        msgs.scrollTop = msgs.scrollHeight;
-      }, 700);
+      chatHistory.push({ role: 'user', content: txt });
+
+      // Loading indicator
+      const loadingId = 'msg-loading-' + Date.now();
+      msgs.insertAdjacentHTML('beforeend', `<div class="msg bot" id="${loadingId}"><div class="msg-author">BigBoss</div><em>🤔 réflexion…</em></div>`);
+      msgs.scrollTop = msgs.scrollHeight;
+
+      try {
+        const res = await fetch(SB_URL + '/functions/v1/bigboss-chat', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            'Authorization': 'Bearer ' + currentSession.access_token,
+          },
+          body: JSON.stringify({ messages: chatHistory }),
+        });
+        const data = await res.json();
+        document.getElementById(loadingId)?.remove();
+        if (data.error) {
+          msgs.insertAdjacentHTML('beforeend', `<div class="msg bot"><div class="msg-author">BigBoss · erreur</div>${escapeHtml(data.error)}</div>`);
+        } else {
+          chatHistory.push({ role: 'assistant', content: data.response });
+          msgs.insertAdjacentHTML('beforeend', `<div class="msg bot"><div class="msg-author">BigBoss</div>${renderMd(data.response)}</div>`);
+        }
+      } catch (err) {
+        document.getElementById(loadingId)?.remove();
+        msgs.insertAdjacentHTML('beforeend', `<div class="msg bot"><div class="msg-author">BigBoss · erreur réseau</div>${escapeHtml(err.message)}</div>`);
+      }
+      msgs.scrollTop = msgs.scrollHeight;
     });
 
     renderDrawer();
