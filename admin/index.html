@@ -2007,14 +2007,16 @@
         }
       } catch (e) { console.warn('Pulse load failed', e); }
 
-      // Approvals — defensive : remplace mock SEULEMENT si on a des données réelles
+      // Approvals — keep mocks ALWAYS, append real data on top
       try {
         const aprRes = await api('approvals');
+        if (window.__dlog) __dlog('aprRes keys=' + Object.keys(aprRes||{}).join(','), 'info');
         if (Array.isArray(aprRes?.approvals) && aprRes.approvals.length > 0) {
-          APPROVALS.length = 0;
           aprRes.approvals.forEach(a => {
             try {
-              APPROVALS.push({
+              // Avoid duplicate by id
+              if (APPROVALS.find(x => x.id === a.id)) return;
+              APPROVALS.unshift({
                 id: a.id || 'no-id', status: a.status || 'pending',
                 title: 'Vidéo · ' + String(a.script || a.generation_id || a.id || '').slice(0, 40),
                 brief: a.script ? String(a.script).slice(0, 80) + '…' : 'Brief en cours',
@@ -2022,21 +2024,20 @@
                 duration: '—', emoji: '🎬', attempt: a.attempt || 1,
                 music: { title: 'À suggérer par MusicCurator', trending: 'TBD', emotion: '' }
               });
-            } catch (mapErr) { console.warn('approval map err', mapErr); }
+            } catch (mapErr) { if (window.__dlog) __dlog('approval map err: ' + mapErr.message, 'err'); }
           });
           renderApprovals();
         }
-        // Si vide ou non-tableau : on GARDE le mock data initial (3 vidéos)
-      } catch (e) { console.warn('Approvals load failed', e); }
+      } catch (e) { if (window.__dlog) __dlog('Approvals load failed: ' + e.message, 'err'); }
 
-      // Inbox TikTok — defensive : remplace mock seulement si données réelles
+      // Inbox TikTok — keep mocks ALWAYS, append real on top
       try {
         const inboxRes = await api('inbox');
         if (Array.isArray(inboxRes?.inbox) && inboxRes.inbox.length > 0) {
-          TT_HELPER.length = 0;
           inboxRes.inbox.forEach(t => {
             try {
-              TT_HELPER.push({
+              if (TT_HELPER.find(x => x.id === t.id)) return;
+              TT_HELPER.unshift({
                 id: t.id || 'no-id',
                 title: 'Vidéo · ' + String(t.render_id || t.id || '').slice(0, 30),
                 publishId: t.publish_id || '',
@@ -2046,13 +2047,13 @@
                 emoji: '📱',
                 music: { title: 'À suggérer', trending: 'TBD', emotion: '' }
               });
-            } catch (mapErr) { console.warn('inbox map err', mapErr); }
+            } catch (mapErr) { if (window.__dlog) __dlog('inbox map err: ' + mapErr.message, 'err'); }
           });
           renderHelper();
           const banner = $('.view[data-view="tt-helper"] .tt-banner-title');
           if (banner) banner.textContent = `${TT_HELPER.length} vidéo${TT_HELPER.length > 1 ? 's' : ''} en attente dans ton inbox TikTok`;
         }
-      } catch (e) { console.warn('Inbox load failed', e); }
+      } catch (e) { if (window.__dlog) __dlog('Inbox load failed: ' + e.message, 'err'); }
 
       // Feed (posts publiés) — defensive
       try {
@@ -2383,7 +2384,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v7-2026-06-01-render-debug';
+    const APP_VERSION = 'v8-2026-06-01-mocks-always';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
