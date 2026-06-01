@@ -1849,6 +1849,63 @@
     }
 
     async function loadAllLiveData() {
+      // Workflows live (cron syncs n8n → Supabase toutes 5 min)
+      try {
+        const wfRes = await api('workflows');
+        if (wfRes.workflows?.length) {
+          WORKFLOWS.length = 0;
+          wfRes.workflows.forEach(w => WORKFLOWS.push({
+            name: w.workflow_name,
+            short: w.short || w.workflow_name.slice(0, 8).toUpperCase(),
+            emoji: w.emoji || '⚙️',
+            state: w.state,
+            meta: w.trigger_meta || (w.last_execution_at ? fmtTime(w.last_execution_at) : 'idle'),
+            role: w.role_description || '',
+            lastRun: w.last_execution_at ? fmtTime(w.last_execution_at) + ' · ' + (w.last_execution_status || 'success') : 'jamais exécuté',
+            execs7d: w.executions_7d || 0,
+          }));
+          renderWorkflows();
+        }
+      } catch (e) { console.warn('Workflows load failed', e); }
+
+      // Reports analytics
+      try {
+        const reportsRes = await api('reports');
+        if (reportsRes.reports !== undefined) {
+          REPORTS.length = 0;
+          reportsRes.reports.forEach(r => REPORTS.push({
+            id: r.id,
+            type: r.report_type,
+            emoji: r.emoji || '📊',
+            title: r.title,
+            date: fmtTime(r.generated_at) + ' · ' + (r.author || 'Agent_Analytics'),
+            summary: r.summary || '',
+            sections: r.sections || {}
+          }));
+          renderReports();
+        }
+      } catch (e) { console.warn('Reports load failed', e); }
+
+      // Costs live (fal.ai + Resend + ElevenLabs réels)
+      try {
+        const costsRes = await api('costs');
+        if (costsRes.costs?.length) {
+          $('#costs-list').innerHTML = costsRes.costs.map(c =>
+            `<div class="cost-card">
+              <div class="cost-row">
+                <div class="cost-icon">${c.icon}</div>
+                <div class="cost-info">
+                  <div class="cost-name">${c.name}</div>
+                  <div class="cost-detail">${c.detail}</div>
+                </div>
+                <div class="cost-value">${c.value}</div>
+              </div>
+              <div class="cost-bar ${c.state}"><div style="width:${c.pct}%"></div></div>
+            </div>`
+          ).join('');
+        }
+      } catch (e) { console.warn('Costs load failed', e); }
+
       // Ideas
       try {
         const ideasRes = await api('ideas');
