@@ -1587,7 +1587,7 @@
           <div class="zone-head">
             <span class="zone-title">🚨 Notifications</span>
             <span class="zone-meta" id="alerts-meta">— non lues</span>
-            <button class="zone-action">Tout effacer</button>
+            <button class="zone-action" id="alerts-clear-all">Tout effacer</button>
           </div>
           <div class="alert-list" id="alert-list"></div>
         </div>
@@ -2207,6 +2207,20 @@
       </div>`
     ).join('');
 
+    // "Tout effacer" button handler (Notifications)
+    document.getElementById('alerts-clear-all')?.addEventListener('click', async () => {
+      const total = ALERTS_TOTAL || ALERTS.length;
+      if (total === 0) { alert('Aucune alerte à effacer.'); return; }
+      if (!confirm(`Es-tu sûr ? Cela va résoudre ${total} alerte${total > 1 ? 's' : ''} en DB.`)) return;
+      try {
+        const { data, error } = await sbClient.rpc('admin_dismiss_all_alerts');
+        if (error) { alert('Erreur : ' + error.message); return; }
+        alert(`✅ ${data} alertes résolues.`);
+        ALERTS.length = 0; ALERTS_TOTAL = 0;
+        renderAlerts();
+      } catch (e) { alert('Erreur réseau : ' + e.message); }
+    });
+
     // Alerts — render function (used at init + after API load)
     function renderAlerts() {
       const total = ALERTS_TOTAL || ALERTS.length;
@@ -2337,7 +2351,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v19-2026-06-02-alerts-real';
+    const APP_VERSION = 'v20-2026-06-02-clear-all-confirm';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
