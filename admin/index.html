@@ -1737,6 +1737,35 @@
   </main>
 
   <script>
+    // ════════ DEBUG PANEL VISIBLE ════════
+    (function setupDebug(){
+      const panel = document.createElement('div');
+      panel.id = 'debug-panel';
+      panel.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,.85);color:#0f0;font:11px/1.3 monospace;padding:8px;max-height:35vh;overflow:auto;z-index:99999;display:none;white-space:pre-wrap;word-break:break-all;border-top:2px solid #f80';
+      panel.innerHTML = '<div style="color:#f80;font-weight:bold;margin-bottom:6px">🔧 DEBUG (tap to close)</div><div id="debug-log"></div>';
+      panel.onclick = () => panel.style.display = 'none';
+      document.addEventListener('DOMContentLoaded', () => document.body.appendChild(panel));
+      window.__dlog = (msg, type='info') => {
+        const log = document.getElementById('debug-log');
+        if (!log) return;
+        const colors = {info:'#0f0', err:'#f44', warn:'#fa0', api:'#4af'};
+        const line = document.createElement('div');
+        line.style.color = colors[type] || '#0f0';
+        line.textContent = '[' + new Date().toTimeString().slice(0,8) + '] ' + msg;
+        log.appendChild(line);
+        panel.style.display = 'block';
+        log.scrollTop = log.scrollHeight;
+      };
+      window.addEventListener('error', e => __dlog('JS ERR: ' + e.message + ' @ ' + (e.filename||'').split('/').pop() + ':' + e.lineno, 'err'));
+      window.addEventListener('unhandledrejection', e => __dlog('PROMISE ERR: ' + (e.reason?.message || String(e.reason||'')), 'err'));
+      // Toggle button
+      const tog = document.createElement('button');
+      tog.textContent = '🔧';
+      tog.style.cssText = 'position:fixed;top:60px;right:6px;background:#f80;color:#000;border:0;border-radius:6px;padding:4px 8px;font-weight:bold;z-index:99998;font-size:14px';
+      tog.onclick = (e) => { e.stopPropagation(); panel.style.display = panel.style.display === 'none' ? 'block' : 'none'; };
+      document.addEventListener('DOMContentLoaded', () => document.body.appendChild(tog));
+    })();
+
     // ════════ SUPABASE CLIENT + AUTH ════════
     const SB_URL = 'https://dzlyrswuyafxjswuxdcu.supabase.co';
     const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6bHlyc3d1eWFmeGpzd3V4ZGN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwOTQxOTQsImV4cCI6MjA4OTY3MDE5NH0.e2y0_xX4XF4BOoRnP85DVdyn-x7M8hvjhNPBkEMWvJU';
@@ -1747,8 +1776,15 @@
       const headers = { 'content-type': 'application/json' };
       if (currentSession?.access_token) headers['Authorization'] = 'Bearer ' + currentSession.access_token;
       const url = `${SB_URL}/functions/v1/admin-api?route=${route}`;
-      const res = await fetch(url, { method: opts.method || 'GET', headers, body: opts.body ? JSON.stringify(opts.body) : undefined });
-      return res.json();
+      try {
+        const res = await fetch(url, { method: opts.method || 'GET', headers, body: opts.body ? JSON.stringify(opts.body) : undefined });
+        const json = await res.json();
+        if (window.__dlog) __dlog('API ' + route + ' → ' + res.status + ' · ' + (Array.isArray(json[Object.keys(json)[0]]) ? Object.keys(json)[0] + '[' + json[Object.keys(json)[0]].length + ']' : JSON.stringify(json).slice(0,80)), res.status >= 400 ? 'err' : 'api');
+        return json;
+      } catch (e) {
+        if (window.__dlog) __dlog('API ' + route + ' FETCH FAIL: ' + e.message, 'err');
+        throw e;
+      }
     }
 
     // ════════ MOCK DATA ════════
@@ -2364,7 +2400,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v5-2026-06-01-defensive';
+    const APP_VERSION = 'v6-2026-06-01-debug';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
