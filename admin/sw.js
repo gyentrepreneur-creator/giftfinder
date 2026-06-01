@@ -1,5 +1,5 @@
 // Kadoizi Cockpit Service Worker v3 — full purge + version notify
-const VERSION = 'v10-2026-06-01-22h30-preview-fix';
+const VERSION = 'v11-2026-06-01-22h45-rejected-badges';
 
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 
