@@ -1,5 +1,5 @@
 // Kadoizi Cockpit Service Worker v3 — full purge + version notify
-const VERSION = 'v8-2026-06-01-22h-real-videos';
+const VERSION = 'v9-2026-06-01-22h15-render-approve';
 
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 
