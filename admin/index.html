@@ -1486,21 +1486,30 @@
 
     $('#login-form').addEventListener('submit', async e => {
       e.preventDefault();
-      const email = $('#login-email').value;
+      const email = $('#login-email').value.trim();
       const pwd = $('#login-pwd').value;
       const btn = e.target.querySelector('button[type="submit"]');
       const orig = btn.innerHTML;
       btn.innerHTML = '⏳ Connexion...';
       btn.disabled = true;
       try {
+        // Test connectivité Supabase
+        let r;
+        try {
+          r = await fetch(SB_URL + '/auth/v1/health', { headers: { apikey: SB_ANON } });
+        } catch (netErr) {
+          throw new Error('Réseau Supabase inaccessible (PWA cache?). Essaie d\'abord dans Safari normal.\n\nDétail : ' + netErr.message);
+        }
+        if (!r.ok) throw new Error('Supabase health KO: ' + r.status);
+
         const { data, error } = await sbClient.auth.signInWithPassword({ email, password: pwd });
         if (error) throw error;
-        // Verify is admin via API
         const health = await api('pulse');
         if (health.error === 'Not an admin') throw new Error('Compte non autorisé. Contacte un admin.');
         await showApp(data.session);
       } catch (err) {
-        alert('Erreur connexion : ' + (err.message || err));
+        const msg = err.message || err.toString();
+        alert('Erreur connexion :\n' + msg + '\n\nUA: ' + navigator.userAgent.slice(0, 80));
         btn.innerHTML = orig;
         btn.disabled = false;
       }
