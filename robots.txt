@@ -2,4 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /resultats.html
 Disallow: /resultats
+Disallow: /admin
+Disallow: /admin/
 Sitemap: https://www.kadoizi.com/sitemap.xml
