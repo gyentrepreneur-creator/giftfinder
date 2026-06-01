@@ -1146,6 +1146,63 @@
     .modal-btn.primary { background: var(--primary); color: #fff; }
     .modal-btn.outline { background: #fff; color: var(--primary); border: 1.5px solid var(--primary); }
 
+    /* ─── BOTTOM TABS (mobile only) ─── */
+    .bottom-tabs {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 64px;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-top: 1px solid rgba(60,52,137,.08);
+      z-index: 99;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .bottom-tabs > div {
+      display: flex; align-items: stretch; justify-content: space-around;
+      height: 100%;
+    }
+    .bt-item {
+      flex: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      background: transparent; border: none;
+      color: var(--muted);
+      font-size: 10px; font-weight: 600;
+      transition: color var(--t-fast);
+      position: relative;
+      padding: 6px 4px 4px;
+    }
+    .bt-item .bt-icon { font-size: 22px; line-height: 1; }
+    .bt-item .bt-label { font-size: 10px; line-height: 1; letter-spacing: -.005em; }
+    .bt-item.active { color: var(--primary); }
+    .bt-item.active::before {
+      content: ''; position: absolute; top: 0; left: 50%;
+      width: 24px; height: 3px; transform: translateX(-50%);
+      background: var(--primary); border-radius: 0 0 4px 4px;
+    }
+    .bt-item .bt-badge {
+      position: absolute; top: 4px; right: 28%;
+      background: var(--coral); color: #fff;
+      font-size: 9px; font-weight: 800;
+      min-width: 16px; height: 16px;
+      border-radius: 999px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 4px;
+    }
+
+    @media (max-width: 820px) {
+      .bottom-tabs { display: block; }
+      .main { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0)); }
+      .menu-btn { display: none; }
+    }
+    @media (min-width: 821px) {
+      .bottom-tabs { display: none !important; }
+    }
+
     /* ─── LOGIN ─── */
     .login-screen {
       position: fixed; inset: 0;
@@ -1295,6 +1352,17 @@
       <span class="icon">🚪</span><span>Déconnexion</span>
     </div>
     <div class="drawer-foot">Kadoizi Admin · v0.2 prototype · 01/06/2026</div>
+  </nav>
+
+  <!-- ───────────── BOTTOM TABS (mobile) ───────────── -->
+  <nav class="bottom-tabs" id="bottom-tabs" style="display:none">
+    <div>
+      <button class="bt-item active" data-view="pulse"><span class="bt-icon">🟢</span><span class="bt-label">Pulse</span></button>
+      <button class="bt-item" data-view="supervise"><span class="bt-icon">🎬</span><span class="bt-label">Vidéos</span><span class="bt-badge">2</span></button>
+      <button class="bt-item" data-view="tt-helper"><span class="bt-icon">📱</span><span class="bt-label">Helper</span><span class="bt-badge">1</span></button>
+      <button class="bt-item" data-view="feed"><span class="bt-icon">📊</span><span class="bt-label">Feed</span></button>
+      <button class="bt-item" data-view="__more"><span class="bt-icon">☰</span><span class="bt-label">Plus</span></button>
+    </div>
   </nav>
 
   <!-- ───────────── MAIN ───────────── -->
@@ -1574,6 +1642,7 @@
       $('#login-screen').style.display = 'none';
       $('#app-header').style.display = 'flex';
       $('#main').style.display = 'block';
+      $('#bottom-tabs').style.display = 'block';
       // Charge les ideas live
       try {
         const ideasRes = await api('ideas');
@@ -1640,17 +1709,27 @@
           $('#login-screen').style.display = 'flex';
           $('#app-header').style.display = 'none';
           $('#main').style.display = 'none';
+          $('#bottom-tabs').style.display = 'none';
           $('#login-email').value = ''; $('#login-pwd').value = '';
           closeDrawer(); return;
         }
-        $$('.drawer-item').forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
-        $$('.view').forEach(s => s.classList.remove('active'));
-        $(`.view[data-view="${v}"]`)?.classList.add('active');
+        switchView(v);
         closeDrawer();
-        $('#main').scrollTop = 0;
       }));
     }
+
+    // Switch view (utilisé par drawer + bottom-tabs)
+    function switchView(v) {
+      if (!v || v === '__more') { openDrawer(); return; }
+      $$('.drawer-item').forEach(i => { if (i.dataset.view === v) i.classList.add('active'); else i.classList.remove('active'); });
+      $$('.bt-item').forEach(i => { if (i.dataset.view === v) i.classList.add('active'); else i.classList.remove('active'); });
+      $$('.view').forEach(s => s.classList.remove('active'));
+      $(`.view[data-view="${v}"]`)?.classList.add('active');
+      $('#main').scrollTop = 0;
+    }
+
+    // Bottom tabs handlers
+    $$('.bt-item').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
     const openDrawer = () => { $('#drawer').classList.add('open'); $('#drawer-overlay').classList.add('open'); };
     const closeDrawer = () => { $('#drawer').classList.remove('open'); $('#drawer-overlay').classList.remove('open'); };
     $('#menu-btn').addEventListener('click', openDrawer);
