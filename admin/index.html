@@ -2331,7 +2331,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v12-2026-06-01-rejected-badges';
+    const APP_VERSION = 'v13-2026-06-01-helper-real';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
@@ -2361,18 +2361,8 @@
     // APPROVALS = données réelles uniquement (chargées via api/approvals)
     const APPROVALS = [];
 
-    const TT_HELPER = [
-      {
-        id: 'tt1',
-        title: 'V2 Fête des Mères (2e push test)',
-        publishId: 'v_inbox_url~v2.7646169433387616278',
-        pushedAt: 'il y a 3h',
-        videoUrl: 'https://dzlyrswuyafxjswuxdcu.supabase.co/storage/v1/object/public/kadoizi-videos/preview-v2-tempo.mp4',
-        cap: "Ha ouais ?! 😱 Dimanche 31 mai, t'as toujours rien offert pour la Fête des Mères ?\n\nKadoizi = 9 idées qui tapent juste en 30 secondes 🎁\n👉 https://www.kadoizi.com\n\n#fetedesmeres #cadeau #cadeaumaman #ideecadeau #cadeauoriginal #fyp #pourtoi #kadoizi",
-        emoji: '😱',
-        music: { title: 'Magnetic - ILLIT (sped up)', trending: '+187% en 24h', emotion: 'guilt-trip humour' }
-      }
-    ];
+    // TT_HELPER = données réelles uniquement (chargées via api/inbox)
+    const TT_HELPER = [];
 
     const FEED = [
       {
@@ -2579,8 +2569,23 @@
     // ─── RENDER TIKTOK HELPER ───
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     function renderHelper() {
-      $('#tt-helper-list').innerHTML = TT_HELPER.map(t =>
-        `<div class="tt-helper-card">
+      // Update banner
+      const banner = $('.view[data-view="tt-helper"] .tt-banner');
+      const bannerTitle = $('.view[data-view="tt-helper"] .tt-banner-title');
+      const bannerSub = $('.view[data-view="tt-helper"] .tt-banner-sub');
+      if (TT_HELPER.length === 0) {
+        if (bannerTitle) bannerTitle.textContent = 'Aucune vidéo en attente de publication';
+        if (bannerSub) bannerSub.textContent = "Quand t'auras approuvé une vidéo dans Supervision, elle apparaitra ici prête à publier sur TikTok.";
+        if (banner) banner.style.opacity = '0.6';
+        $('#tt-helper-list').innerHTML = `<div class="empty" style="text-align:center;padding:var(--space-6) var(--space-3);color:var(--text-muted)"><div class="empty-emoji" style="font-size:48px;margin-bottom:var(--space-3)">📭</div><div>Inbox TikTok vide</div></div>`;
+        return;
+      }
+      if (bannerTitle) bannerTitle.textContent = `${TT_HELPER.length} vidéo${TT_HELPER.length > 1 ? 's' : ''} en attente dans ton inbox TikTok`;
+      if (bannerSub) bannerSub.textContent = 'Ouvre TikTok mobile · ajoute un son trending · colle la caption · publie';
+      if (banner) banner.style.opacity = '1';
+      $('#tt-helper-list').innerHTML = TT_HELPER.map(t => {
+        const hasVideo = t.videoUrl && !/^https?:\/\/(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.)/i.test(t.videoUrl);
+        return `<div class="tt-helper-card">
           <div class="tt-helper-head">
             <div class="tt-helper-thumb">${t.emoji}</div>
             <div class="tt-helper-info">
@@ -2589,22 +2594,14 @@
               <span class="tt-helper-tag">📱 SEND_TO_USER_INBOX</span>
             </div>
           </div>
-          <div class="vid-card-music" style="margin-bottom:var(--space-3)">
-            <div class="vid-card-music-icon">🎵</div>
-            <div class="vid-card-music-text">
-              <div class="vid-card-music-label">Son suggéré · ${t.music.trending}</div>
-              <div class="vid-card-music-name">${t.music.title} · ${t.music.emotion}</div>
-            </div>
-            <button class="btn-mini btn-preview" style="padding:5px 9px;font-size:10px;flex:0" onclick="copyCap(this, '${t.music.title}')">📋</button>
-          </div>
           <div class="tt-caption-box">${t.cap}</div>
           <div class="tt-helper-actions">
-            <button class="btn-mini btn-preview" onclick="window.open('${t.videoUrl}','_blank')">👁 Aperçu vidéo</button>
-            <button class="btn-mini btn-preview" onclick="copyCap(this, \`${t.cap.replace(/`/g, '\\`')}\`)">📋 Copier caption</button>
+            ${hasVideo ? `<button class="btn-mini btn-preview" onclick="window.open('${t.videoUrl}','_blank')">👁 Aperçu vidéo</button>` : `<button class="btn-mini btn-preview" disabled style="opacity:.5">👁 Vidéo locale</button>`}
+            <button class="btn-mini btn-preview" onclick='copyCap(this, ${JSON.stringify(t.cap)})'>📋 Copier caption</button>
             <button class="btn-mini btn-primary" onclick="openTikTok()">${isMobile ? '📱 Ouvrir TikTok' : '🖥️ Ouvrir TikTok web'}</button>
           </div>
-        </div>`
-      ).join('');
+        </div>`;
+      }).join('');
     }
     renderHelper();
 
