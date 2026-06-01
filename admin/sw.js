@@ -1,5 +1,5 @@
 // Kadoizi Cockpit Service Worker v3 — full purge + version notify
-const VERSION = 'v6-2026-06-01-21h-render-debug';
+const VERSION = 'v7-2026-06-01-21h15-mocks-always';
 
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 
