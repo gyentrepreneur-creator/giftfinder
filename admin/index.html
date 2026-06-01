@@ -1633,10 +1633,10 @@
       <p class="view-subtitle">Valide les vidéos avant qu'elles partent vers TikTok</p>
 
       <div class="grid-4" style="margin-bottom:var(--space-4)">
-        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">⏳</div><div class="kpi-label">En attente</div></div><div class="kpi-value">2</div><div class="kpi-delta flat">awaiting approval</div></div>
-        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">✅</div><div class="kpi-label">Approuvées 7j</div></div><div class="kpi-value">1</div><div class="kpi-delta up">↑ V2 Fête des Mères</div></div>
-        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">✕</div><div class="kpi-label">Rejetées 7j</div></div><div class="kpi-value">0</div><div class="kpi-delta flat">stable</div></div>
-        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">🎞️</div><div class="kpi-label">En render</div></div><div class="kpi-value">0</div><div class="kpi-delta flat">idle</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">⏳</div><div class="kpi-label">En attente</div></div><div class="kpi-value" id="kpi-approv-pending">—</div><div class="kpi-delta flat">awaiting approval</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">✅</div><div class="kpi-label">Approuvées 7j</div></div><div class="kpi-value" id="kpi-approv-approved">—</div><div class="kpi-delta flat">last 7 days</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">✕</div><div class="kpi-label">Rejetées 7j</div></div><div class="kpi-value" id="kpi-approv-rejected">—</div><div class="kpi-delta flat">last 7 days</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">🎞️</div><div class="kpi-label">En render</div></div><div class="kpi-value" id="kpi-render-active">—</div><div class="kpi-delta flat">queue active</div></div>
       </div>
 
       <div class="filter-tabs">
@@ -1919,9 +1919,18 @@
         }
       } catch (e) { console.warn('Ideas load failed', e); }
 
-      // Pulse alerts
+      // Pulse alerts + KPIs Vidéos
       try {
         const pulseRes = await api('pulse');
+        // Populer KPIs Vidéos (page Supervision)
+        if (pulseRes?.counts) {
+          const c = pulseRes.counts;
+          const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v ?? 0; };
+          set('kpi-approv-pending', c.pending);
+          set('kpi-approv-approved', c.approved_7d);
+          set('kpi-approv-rejected', c.rejected_7d);
+          set('kpi-render-active', c.render_active);
+        }
         if (pulseRes.alerts) {
           ALERTS.length = 0;
           if (pulseRes.alerts.length === 0) {
@@ -1971,30 +1980,23 @@
         }
       } catch (e) { console.warn('Pulse load failed', e); }
 
-      // Approvals
+      // Approvals — DONNÉES RÉELLES UNIQUEMENT
       try {
         const aprRes = await api('approvals');
-        if (aprRes.approvals !== undefined) {
+        if (Array.isArray(aprRes?.approvals)) {
           APPROVALS.length = 0;
-          aprRes.approvals.forEach(a => APPROVALS.push({
-            id: a.id, status: a.status,
-            title: 'Vidéo · ' + (a.script || a.generation_id || a.id).slice(0, 40),
-            brief: a.script ? a.script.slice(0, 80) + '…' : 'Brief en cours',
-            cap: a.caption || '(pas de caption)',
-            duration: '—', emoji: '🎬', attempt: a.attempt || 1,
-            music: { title: 'À suggérer par MusicCurator', trending: 'TBD', emotion: '' }
-          }));
-          if (APPROVALS.length === 0) {
-            // Fallback : garde les démos
-            APPROVALS.push({
-              id: 'demo1', status: 'approved',
-              title: 'V2 Fête des Mères (publiée)',
-              brief: 'Concept "Ha ouais ?!"',
-              cap: "Ha ouais ?! 😱 Première vidéo publiée le 31/05.",
-              duration: '24s', emoji: '🎁', attempt: 1,
-              music: { title: 'Magnetic - ILLIT (sped up)', trending: 'trending', emotion: 'guilt-trip' }
-            });
-          }
+          aprRes.approvals.forEach(a => {
+            try {
+              APPROVALS.push({
+                id: a.id || 'no-id', status: a.status || 'pending',
+                title: 'Vidéo · ' + String(a.script || a.generation_id || a.id || '').slice(0, 40),
+                brief: a.script ? String(a.script).slice(0, 80) + '…' : 'Brief en cours',
+                cap: a.caption || '(pas de caption)',
+                duration: '—', emoji: '🎬', attempt: a.attempt || 1,
+                music: { title: 'À suggérer par MusicCurator', trending: 'TBD', emotion: '' }
+              });
+            } catch (mapErr) { console.warn('approval map err', mapErr); }
+          });
           renderApprovals();
         }
       } catch (e) { console.warn('Approvals load failed', e); }
@@ -2315,7 +2317,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v3-2026-06-01-15h';
+    const APP_VERSION = 'v9-2026-06-01-real-videos';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
@@ -2342,32 +2344,8 @@
     }
 
     // ════════ DATA POUR AUTRES SECTIONS ════════
-    const APPROVALS = [
-      {
-        id: 'apr1', status: 'pending',
-        title: 'V3 — Fête des Pères 2026',
-        brief: 'Hook taquin "Vraiment papa ?"',
-        cap: "Vraiment papa ? Tu lui as encore offert des chaussettes ?\n\nKadoizi te trouve 9 idées qui vont le scotcher en 30 secondes 🎁\n👉 https://www.kadoizi.com\n\n#fetedesperes #cadeaupapa #cadeauoriginal #fyp #pourtoi #kadoizi",
-        duration: '24s', emoji: '👨', attempt: 1,
-        music: { title: "Magnetic - ILLIT (sped up)", trending: '+187% · 24h', emotion: 'guilt-trip humour' }
-      },
-      {
-        id: 'apr2', status: 'pending',
-        title: 'V4 — Anniversaire 30 ans',
-        brief: 'Crémaillère / 30 ans / mariage',
-        cap: "Crémaillère, 30 ans, mariage de pote...\n\nKadoizi te sauve à chaque fois. 9 idées qui tapent juste en 30 secondes 🎁\n👉 https://www.kadoizi.com\n\n#cadeau #anniversaire30ans #ideecadeau #fyp #kadoizi",
-        duration: '22s', emoji: '🎂', attempt: 1,
-        music: { title: "Espresso - Sabrina Carpenter", trending: '+62% · 7j', emotion: 'fun party' }
-      },
-      {
-        id: 'apr0', status: 'approved',
-        title: 'V2 — Fête des Mères (publiée)',
-        brief: 'Concept "Ha ouais ?!"',
-        cap: "Ha ouais ?! 😱 Dimanche 31 mai, t'as toujours rien offert pour la Fête des Mères ?\n\nKadoizi = 9 idées qui tapent juste en 30 secondes 🎁",
-        duration: '24s', emoji: '🎁', attempt: 1,
-        music: { title: 'Magnetic - ILLIT (sped up)', trending: 'trending', emotion: 'guilt-trip' }
-      },
-    ];
+    // APPROVALS = données réelles uniquement (chargées via api/approvals)
+    const APPROVALS = [];
 
     const TT_HELPER = [
       {
