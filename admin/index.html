@@ -381,17 +381,121 @@
 
     /* Adapt bubbles size on mobile */
     @media (max-width: 720px) {
-      .wf-bubbles { gap: 8px; }
-      .wf-bubble { width: 54px; height: 54px; }
+      .wf-bubbles { gap: 6px; }
+      .wf-bubble { width: 50px; height: 50px; }
       .wf-bubble .wf-emoji { font-size: 16px; margin-bottom: 1px; }
-      .wf-bubble .wf-short { font-size: 7px; max-width: 50px; }
-      .wf-bubble .wf-status-dot { width: 8px; height: 8px; top: 4px; right: 4px; }
+      .wf-bubble .wf-short { font-size: 7px; max-width: 46px; letter-spacing: .02em; }
+      .wf-bubble .wf-status-dot { width: 8px; height: 8px; top: 3px; right: 3px; }
     }
     @media (max-width: 420px) {
       .wf-bubbles { gap: 4px; }
-      .wf-bubble { width: 46px; height: 46px; }
-      .wf-bubble .wf-emoji { font-size: 14px; }
-      .wf-bubble .wf-short { font-size: 6px; }
+      .wf-bubble { width: 42px; height: 42px; }
+      .wf-bubble .wf-emoji { font-size: 14px; margin-bottom: 0; }
+      .wf-bubble .wf-short { font-size: 6px; max-width: 40px; }
+      .wf-bubble .wf-status-dot { width: 7px; height: 7px; top: 2px; right: 2px; }
+    }
+
+    /* Mobile : tighter spacing + adaptations */
+    @media (max-width: 720px) {
+      .main { padding: var(--space-3) var(--space-2); padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0)); }
+      .app-header { padding: 0 var(--space-3); height: 54px; }
+      .app-brand { font-size: 14px; }
+      .app-brand-logo { width: 28px; height: 28px; }
+      .header-mini { padding: 4px 8px; font-size: 10px; }
+      .header-mini .mini-dot { width: 7px; height: 7px; }
+      .main { top: 54px; }
+
+      .zone { padding: var(--space-3); border-radius: var(--r-md); }
+      .zone-title { font-size: 12px; }
+      .zone-meta { font-size: 10px; }
+      .zone-action { font-size: 10px; padding: 3px 6px; }
+
+      .view-title { font-size: 18px; }
+      .view-subtitle { font-size: 12px; margin-bottom: var(--space-3); }
+
+      /* KPI : 2x2 sur mobile au lieu de 4 col */
+      .grid-4 { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .kpi { padding: var(--space-3); }
+      .kpi-emoji { width: 30px; height: 30px; font-size: 14px; border-radius: 8px; }
+      .kpi-label { font-size: 9px; }
+      .kpi-value { font-size: 22px; }
+      .kpi-delta { font-size: 10px; }
+
+      /* Pulse spacing */
+      .pulse-page { gap: var(--space-2); }
+
+      /* Health rows compacts */
+      .health-row { padding: 8px 10px; gap: 10px; }
+      .health-icon { width: 32px; height: 32px; font-size: 14px; border-radius: 8px; }
+      .health-name { font-size: 12px; }
+      .health-meta { font-size: 10px; }
+      .health-bar { width: 40px; }
+
+      /* Alerts compactes */
+      .alert-row { padding: 8px 10px; gap: 8px; }
+      .alert-title { font-size: 12px; }
+      .alert-msg { font-size: 11px; }
+      .alert-time { font-size: 9px; }
+      .alert-emoji { font-size: 16px; }
+      .alert-dismiss { width: 22px; height: 22px; font-size: 12px; }
+
+      /* Chat */
+      .chat-window { min-height: 200px; }
+      .chat-quick-strip { gap: 4px; margin-bottom: var(--space-2); }
+      .quick-chip { padding: 5px 9px; font-size: 11px; }
+      .msg { max-width: 85%; padding: 8px 12px; font-size: 12px; }
+      .chat-input { padding: 8px 10px; }
+      .chat-input input { padding: 8px 12px; font-size: 13px; }
+      .chat-send { width: 36px; height: 36px; font-size: 14px; }
+
+      /* Filter tabs scroll horizontal */
+      .filter-tabs { overflow-x: auto; flex-wrap: nowrap; max-width: 100%; scrollbar-width: none; }
+      .filter-tabs::-webkit-scrollbar { display: none; }
+      .filter-tab { flex-shrink: 0; font-size: 11px; padding: 5px 11px; }
+
+      /* Vid cards en colonne unique sur mobile */
+      .grid-3 { grid-template-columns: 1fr; gap: 10px; }
+      .vid-card-thumb { max-height: 220px; }
+      .vid-card-title { font-size: 13px; }
+      .vid-card-meta { font-size: 10px; }
+      .vid-card-cap { font-size: 11px; }
+
+      /* TT helper compact */
+      .tt-banner { padding: 10px var(--space-3); }
+      .tt-banner-emoji { font-size: 26px; }
+      .tt-banner-title { font-size: 12px; }
+      .tt-banner-sub { font-size: 10px; }
+      .tt-helper-card { padding: var(--space-3); }
+      .tt-helper-thumb { width: 60px; }
+      .tt-helper-title { font-size: 13px; }
+      .tt-helper-meta { font-size: 10px; }
+      .tt-caption-box { font-size: 11px; padding: 10px; max-height: 140px; }
+      .tt-helper-actions { gap: 6px; }
+      .tt-helper-actions .btn-mini { padding: 9px 8px; font-size: 11px; min-width: 0; }
+
+      /* Costs */
+      .cost-card { padding: var(--space-3); }
+      .cost-icon { width: 36px; height: 36px; font-size: 16px; }
+      .cost-name { font-size: 12px; }
+      .cost-detail { font-size: 10px; }
+      .cost-value { font-size: 15px; }
+
+      /* Ideas */
+      .idea-card { padding: 10px 12px; }
+      .idea-title { font-size: 12px; }
+      .idea-desc { font-size: 11px; }
+      .idea-foot { font-size: 9px; }
+
+      /* Links */
+      .link-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .link-card { padding: 10px; gap: 8px; }
+      .link-icon-box { width: 32px; height: 32px; font-size: 16px; }
+      .link-name { font-size: 11px; }
+      .link-url { font-size: 9px; }
+
+      /* Feed */
+      .feed-stats { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .feed-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
     }
 
     /* ─── HEALTH PULSE ─── */
