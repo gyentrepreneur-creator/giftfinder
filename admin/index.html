@@ -2052,7 +2052,7 @@
               FEED.push({
                 id: f.id || 'no-id',
                 title: 'Post · ' + String(f.post_id || f.tiktok_publish_id || f.id || '').slice(0, 30),
-                date: f.heure_publication || f.created_at ? new Date(f.heure_publication || f.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) : 'récent',
+                date: f.heure_publication || f.created_at ? new Date(f.heure_publication || f.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Europe/Paris' }) : 'récent',
                 platform: f.platform || 'TikTok',
                 emoji: '🎬',
                 url: f.platform === 'tiktok' && f.post_id ? `https://www.tiktok.com/@kadoizi/video/${f.post_id}` : (f.video_url || '#'),
@@ -2332,7 +2332,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v15-2026-06-01-feed-real';
+    const APP_VERSION = 'v16-2026-06-01-feed-tz-paris';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
