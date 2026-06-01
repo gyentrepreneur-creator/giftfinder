@@ -138,7 +138,7 @@
       50% { box-shadow: 0 0 0 6px rgba(29,158,117,0); }
     }
 
-    /* ───────────────── DRAWER ───────────────── */
+    /* ───────────────── DRAWER ───────────────��─ */
     .drawer-overlay {
       position: fixed; inset: 0;
       background: rgba(20,18,42,.5);
@@ -1596,7 +1596,7 @@
         <div class="zone chat-zone">
           <div class="zone-head">
             <span class="zone-title">🤖 BigBoss</span>
-            <span class="zone-meta">via n8n workflow</span>
+            <span class="zone-meta">orchestrateur live</span>
           </div>
 
           <!-- Quick actions chips -->
@@ -1737,35 +1737,6 @@
   </main>
 
   <script>
-    // ════════ DEBUG PANEL VISIBLE ════════
-    (function setupDebug(){
-      const panel = document.createElement('div');
-      panel.id = 'debug-panel';
-      panel.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,.85);color:#0f0;font:11px/1.3 monospace;padding:8px;max-height:35vh;overflow:auto;z-index:99999;display:none;white-space:pre-wrap;word-break:break-all;border-top:2px solid #f80';
-      panel.innerHTML = '<div style="color:#f80;font-weight:bold;margin-bottom:6px">🔧 DEBUG (tap to close)</div><div id="debug-log"></div>';
-      panel.onclick = () => panel.style.display = 'none';
-      document.addEventListener('DOMContentLoaded', () => document.body.appendChild(panel));
-      window.__dlog = (msg, type='info') => {
-        const log = document.getElementById('debug-log');
-        if (!log) return;
-        const colors = {info:'#0f0', err:'#f44', warn:'#fa0', api:'#4af'};
-        const line = document.createElement('div');
-        line.style.color = colors[type] || '#0f0';
-        line.textContent = '[' + new Date().toTimeString().slice(0,8) + '] ' + msg;
-        log.appendChild(line);
-        panel.style.display = 'block';
-        log.scrollTop = log.scrollHeight;
-      };
-      window.addEventListener('error', e => __dlog('JS ERR: ' + e.message + ' @ ' + (e.filename||'').split('/').pop() + ':' + e.lineno, 'err'));
-      window.addEventListener('unhandledrejection', e => __dlog('PROMISE ERR: ' + (e.reason?.message || String(e.reason||'')), 'err'));
-      // Toggle button
-      const tog = document.createElement('button');
-      tog.textContent = '🔧';
-      tog.style.cssText = 'position:fixed;top:60px;right:6px;background:#f80;color:#000;border:0;border-radius:6px;padding:4px 8px;font-weight:bold;z-index:99998;font-size:14px';
-      tog.onclick = (e) => { e.stopPropagation(); panel.style.display = panel.style.display === 'none' ? 'block' : 'none'; };
-      document.addEventListener('DOMContentLoaded', () => document.body.appendChild(tog));
-    })();
-
     // ════════ SUPABASE CLIENT + AUTH ════════
     const SB_URL = 'https://dzlyrswuyafxjswuxdcu.supabase.co';
     const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6bHlyc3d1eWFmeGpzd3V4ZGN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwOTQxOTQsImV4cCI6MjA4OTY3MDE5NH0.e2y0_xX4XF4BOoRnP85DVdyn-x7M8hvjhNPBkEMWvJU';
@@ -1776,15 +1747,8 @@
       const headers = { 'content-type': 'application/json' };
       if (currentSession?.access_token) headers['Authorization'] = 'Bearer ' + currentSession.access_token;
       const url = `${SB_URL}/functions/v1/admin-api?route=${route}`;
-      try {
-        const res = await fetch(url, { method: opts.method || 'GET', headers, body: opts.body ? JSON.stringify(opts.body) : undefined });
-        const json = await res.json();
-        if (window.__dlog) __dlog('API ' + route + ' → ' + res.status + ' · ' + (Array.isArray(json[Object.keys(json)[0]]) ? Object.keys(json)[0] + '[' + json[Object.keys(json)[0]].length + ']' : JSON.stringify(json).slice(0,80)), res.status >= 400 ? 'err' : 'api');
-        return json;
-      } catch (e) {
-        if (window.__dlog) __dlog('API ' + route + ' FETCH FAIL: ' + e.message, 'err');
-        throw e;
-      }
+      const res = await fetch(url, { method: opts.method || 'GET', headers, body: opts.body ? JSON.stringify(opts.body) : undefined });
+      return res.json();
     }
 
     // ════════ MOCK DATA ════════
@@ -2007,73 +1971,88 @@
         }
       } catch (e) { console.warn('Pulse load failed', e); }
 
-      // Approvals — keep mocks ALWAYS, append real data on top
+      // Approvals
       try {
         const aprRes = await api('approvals');
-        if (window.__dlog) __dlog('aprRes keys=' + Object.keys(aprRes||{}).join(','), 'info');
-        if (Array.isArray(aprRes?.approvals) && aprRes.approvals.length > 0) {
-          aprRes.approvals.forEach(a => {
-            try {
-              // Avoid duplicate by id
-              if (APPROVALS.find(x => x.id === a.id)) return;
-              APPROVALS.unshift({
-                id: a.id || 'no-id', status: a.status || 'pending',
-                title: 'Vidéo · ' + String(a.script || a.generation_id || a.id || '').slice(0, 40),
-                brief: a.script ? String(a.script).slice(0, 80) + '…' : 'Brief en cours',
-                cap: a.caption || '(pas de caption)',
-                duration: '—', emoji: '🎬', attempt: a.attempt || 1,
-                music: { title: 'À suggérer par MusicCurator', trending: 'TBD', emotion: '' }
-              });
-            } catch (mapErr) { if (window.__dlog) __dlog('approval map err: ' + mapErr.message, 'err'); }
-          });
+        if (aprRes.approvals !== undefined) {
+          APPROVALS.length = 0;
+          aprRes.approvals.forEach(a => APPROVALS.push({
+            id: a.id, status: a.status,
+            title: 'Vidéo · ' + (a.script || a.generation_id || a.id).slice(0, 40),
+            brief: a.script ? a.script.slice(0, 80) + '…' : 'Brief en cours',
+            cap: a.caption || '(pas de caption)',
+            duration: '—', emoji: '🎬', attempt: a.attempt || 1,
+            music: { title: 'À suggérer par MusicCurator', trending: 'TBD', emotion: '' }
+          }));
+          if (APPROVALS.length === 0) {
+            // Fallback : garde les démos
+            APPROVALS.push({
+              id: 'demo1', status: 'approved',
+              title: 'V2 Fête des Mères (publiée)',
+              brief: 'Concept "Ha ouais ?!"',
+              cap: "Ha ouais ?! 😱 Première vidéo publiée le 31/05.",
+              duration: '24s', emoji: '🎁', attempt: 1,
+              music: { title: 'Magnetic - ILLIT (sped up)', trending: 'trending', emotion: 'guilt-trip' }
+            });
+          }
           renderApprovals();
         }
-      } catch (e) { if (window.__dlog) __dlog('Approvals load failed: ' + e.message, 'err'); }
+      } catch (e) { console.warn('Approvals load failed', e); }
 
-      // Inbox TikTok — keep mocks ALWAYS, append real on top
+      // Inbox TikTok
       try {
         const inboxRes = await api('inbox');
-        if (Array.isArray(inboxRes?.inbox) && inboxRes.inbox.length > 0) {
-          inboxRes.inbox.forEach(t => {
-            try {
-              if (TT_HELPER.find(x => x.id === t.id)) return;
-              TT_HELPER.unshift({
-                id: t.id || 'no-id',
-                title: 'Vidéo · ' + String(t.render_id || t.id || '').slice(0, 30),
-                publishId: t.publish_id || '',
-                pushedAt: fmtTime(t.created_at),
-                videoUrl: t.video_url || '#',
-                cap: t.caption || '',
-                emoji: '📱',
-                music: { title: 'À suggérer', trending: 'TBD', emotion: '' }
-              });
-            } catch (mapErr) { if (window.__dlog) __dlog('inbox map err: ' + mapErr.message, 'err'); }
-          });
+        if (inboxRes.inbox !== undefined) {
+          TT_HELPER.length = 0;
+          inboxRes.inbox.forEach(t => TT_HELPER.push({
+            id: t.id,
+            title: 'Vidéo · ' + (t.render_id || t.id || '').slice(0, 30),
+            publishId: t.publish_id,
+            pushedAt: fmtTime(t.created_at),
+            videoUrl: t.video_url,
+            cap: t.caption || '',
+            emoji: '📱',
+            music: { title: 'À suggérer', trending: 'TBD', emotion: '' }
+          }));
           renderHelper();
+          // Update banner count
           const banner = $('.view[data-view="tt-helper"] .tt-banner-title');
           if (banner) banner.textContent = `${TT_HELPER.length} vidéo${TT_HELPER.length > 1 ? 's' : ''} en attente dans ton inbox TikTok`;
         }
-      } catch (e) { if (window.__dlog) __dlog('Inbox load failed: ' + e.message, 'err'); }
+      } catch (e) { console.warn('Inbox load failed', e); }
 
-      // Feed (posts publiés) — defensive
+      // Feed (posts publiés)
       try {
         const feedRes = await api('feed');
-        if (Array.isArray(feedRes?.feed) && feedRes.feed.length > 0) {
+        if (feedRes.feed !== undefined) {
           FEED.length = 0;
-          feedRes.feed.forEach(f => {
-            try {
-              FEED.push({
-                id: f.id || 'no-id',
-                title: 'Post · ' + String(f.post_id || f.tiktok_publish_id || f.id || '').slice(0, 30),
-                date: f.heure_publication || f.created_at ? new Date(f.heure_publication || f.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) : 'récent',
-                platform: f.platform || 'TikTok',
-                emoji: '🎬',
-                url: f.platform === 'tiktok' && f.post_id ? `https://www.tiktok.com/@kadoizi/video/${f.post_id}` : (f.video_url || '#'),
-                views: f.vues ?? '—', likes: f.likes ?? '—', comments: f.commentaires ?? '—'
-              });
-            } catch (mapErr) { console.warn('feed map err', mapErr); }
-          });
-          if (typeof renderFeed === 'function') renderFeed();
+          feedRes.feed.forEach(f => FEED.push({
+            id: f.id,
+            title: 'Post · ' + (f.post_id || f.tiktok_publish_id || f.id).slice(0, 30),
+            date: new Date(f.heure_publication || f.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }),
+            platform: f.platform || 'TikTok',
+            emoji: '🎬',
+            url: f.platform === 'tiktok' && f.post_id ? `https://www.tiktok.com/@kadoizi/video/${f.post_id}` : (f.video_url || '#'),
+            views: f.vues ?? '—', likes: f.likes ?? '—', comments: f.commentaires ?? '—'
+          }));
+          // Re-render feed
+          $('#feed-grid').innerHTML = FEED.map(f =>
+            `<div class="feed-card" onclick="window.open('${f.url}','_blank')">
+              <div class="feed-thumb">
+                <span class="feed-platform-tag">${f.platform}</span>
+                ${f.emoji}
+              </div>
+              <div class="feed-body">
+                <div class="feed-title">${f.title}</div>
+                <div class="feed-date">${f.date}</div>
+                <div class="feed-metrics">
+                  <span class="feed-metric"><span class="m-icon">👁</span>${f.views}</span>
+                  <span class="feed-metric"><span class="m-icon">❤️</span>${f.likes}</span>
+                  <span class="feed-metric"><span class="m-icon">💬</span>${f.comments}</span>
+                </div>
+              </div>
+            </div>`
+          ).join('');
         }
       } catch (e) { console.warn('Feed load failed', e); }
     }
@@ -2283,50 +2262,17 @@
       $('#chat-input').focus();
     }));
 
-    // Chat send — REAL via n8n workflow 01_BigBoss_Orchestrateur_v2
-    // Architecture : INSERT row in bigboss_chat_messages → n8n cron picks it up → assistant reply pushed via Realtime
+    // Chat send — REAL call to bigboss-chat Edge Function (Claude Haiku 4.5)
+    const chatHistory = []; // {role: 'user'|'assistant', content: string}
     function escapeHtml(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
     function renderMd(s) {
+      // Mini markdown : **bold**, `code`, links, line breaks
       return escapeHtml(s)
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/`([^`]+)`/g, '<code style="background:rgba(60,52,137,.08);padding:1px 5px;border-radius:4px;font-size:.9em">$1</code>')
         .replace(/(https?:\/\/[^\s)]+)/g, '<a href="$1" target="_blank" style="color:inherit;text-decoration:underline">$1</a>')
         .replace(/\n/g, '<br>');
     }
-
-    // Per-session conversation id
-    let bbConvId = sessionStorage.getItem('bbConvId');
-    if (!bbConvId) { bbConvId = crypto.randomUUID(); sessionStorage.setItem('bbConvId', bbConvId); }
-
-    // Track pending loading indicators by user-msg id
-    const pendingLoaders = new Map(); // userMsgId -> {loadingId, timeoutHandle}
-
-    function displayAssistant(content) {
-      const msgs = $('#chat-messages');
-      msgs.insertAdjacentHTML('beforeend', `<div class="msg bot"><div class="msg-author">BigBoss</div>${renderMd(content)}</div>`);
-      msgs.scrollTop = msgs.scrollHeight;
-    }
-
-    // Realtime subscription — receives assistant replies
-    sbClient
-      .channel('bb-' + bbConvId)
-      .on('postgres_changes', {
-        event: 'INSERT', schema: 'public', table: 'bigboss_chat_messages',
-        filter: 'conversation_id=eq.' + bbConvId
-      }, payload => {
-        const row = payload.new;
-        if (row.role === 'assistant' && row.status === 'done') {
-          // Clear all pending loaders (we got a reply)
-          for (const [k, v] of pendingLoaders.entries()) {
-            document.getElementById(v.loadingId)?.remove();
-            clearTimeout(v.timeoutHandle);
-            pendingLoaders.delete(k);
-          }
-          displayAssistant(row.content);
-        }
-      })
-      .subscribe();
-
     $('#chat-form').addEventListener('submit', async e => {
       e.preventDefault();
       const txt = $('#chat-input').value.trim();
@@ -2335,56 +2281,41 @@
       msgs.insertAdjacentHTML('beforeend', `<div class="msg user">${escapeHtml(txt)}</div>`);
       $('#chat-input').value = '';
       msgs.scrollTop = msgs.scrollHeight;
+      chatHistory.push({ role: 'user', content: txt });
 
+      // Loading indicator
       const loadingId = 'msg-loading-' + Date.now();
-      msgs.insertAdjacentHTML('beforeend', `<div class="msg bot" id="${loadingId}"><div class="msg-author">BigBoss</div><em>🤔 BigBoss réfléchit (via n8n)…</em></div>`);
+      msgs.insertAdjacentHTML('beforeend', `<div class="msg bot" id="${loadingId}"><div class="msg-author">BigBoss</div><em>🤔 réflexion…</em></div>`);
       msgs.scrollTop = msgs.scrollHeight;
 
       try {
-        const insRes = await fetch(SB_URL + '/rest/v1/bigboss_chat_messages', {
+        const res = await fetch(SB_URL + '/functions/v1/bigboss-chat', {
           method: 'POST',
           headers: {
-            'apikey': SB_ANON,
+            'content-type': 'application/json',
             'Authorization': 'Bearer ' + currentSession.access_token,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=representation'
           },
-          body: JSON.stringify({
-            conversation_id: bbConvId,
-            role: 'user',
-            content: txt,
-            status: 'pending',
-            author_user_id: currentSession.user.id
-          })
+          body: JSON.stringify({ messages: chatHistory }),
         });
-        if (!insRes.ok) {
-          const err = await insRes.text();
-          document.getElementById(loadingId)?.remove();
-          msgs.insertAdjacentHTML('beforeend', `<div class="msg bot"><div class="msg-author">BigBoss · erreur</div>${escapeHtml(err)}</div>`);
-          msgs.scrollTop = msgs.scrollHeight;
-          return;
+        const data = await res.json();
+        document.getElementById(loadingId)?.remove();
+        if (data.error) {
+          msgs.insertAdjacentHTML('beforeend', `<div class="msg bot"><div class="msg-author">BigBoss · erreur</div>${escapeHtml(data.error)}</div>`);
+        } else {
+          chatHistory.push({ role: 'assistant', content: data.response });
+          msgs.insertAdjacentHTML('beforeend', `<div class="msg bot"><div class="msg-author">BigBoss</div>${renderMd(data.response)}</div>`);
         }
-        const [row] = await insRes.json();
-        const timeoutHandle = setTimeout(() => {
-          if (pendingLoaders.has(row.id)) {
-            document.getElementById(loadingId)?.remove();
-            pendingLoaders.delete(row.id);
-            msgs.insertAdjacentHTML('beforeend', `<div class="msg bot"><div class="msg-author">BigBoss · timeout</div>Pas de réponse n8n après 120s. Le workflow tourne-t-il bien ?</div>`);
-            msgs.scrollTop = msgs.scrollHeight;
-          }
-        }, 120000);
-        pendingLoaders.set(row.id, { loadingId, timeoutHandle });
       } catch (err) {
         document.getElementById(loadingId)?.remove();
         msgs.insertAdjacentHTML('beforeend', `<div class="msg bot"><div class="msg-author">BigBoss · erreur réseau</div>${escapeHtml(err.message)}</div>`);
-        msgs.scrollTop = msgs.scrollHeight;
       }
+      msgs.scrollTop = msgs.scrollHeight;
     });
 
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v8-2026-06-01-mocks-always';
+    const APP_VERSION = 'v3-2026-06-01-15h';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
@@ -2578,10 +2509,8 @@
     let aprFilter = 'all';
     function renderApprovals() {
       const list = aprFilter === 'all' ? APPROVALS : APPROVALS.filter(a => a.status === aprFilter);
-      if (window.__dlog) __dlog('renderApprovals: ' + list.length + ' items, filter=' + aprFilter, 'info');
       if (list.length === 0) {
         $('#approval-grid').innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-emoji">📭</div>Aucune vidéo dans cette catégorie</div>`;
-        if (window.__dlog) setTimeout(() => __dlog('approval-grid h=' + $('#approval-grid').offsetHeight + ' children=' + $('#approval-grid').childElementCount, 'info'), 100);
         return;
       }
       const statusLabels = { pending: '⏳ Pending', approved: '✅ Approved', rejected: '✕ Rejected' };
@@ -2612,7 +2541,6 @@
           </div>
         </div>`
       ).join('');
-      if (window.__dlog) setTimeout(() => __dlog('approval-grid h=' + $('#approval-grid').offsetHeight + ' children=' + $('#approval-grid').childElementCount + ' html=' + $('#approval-grid').innerHTML.length + ' chars', 'info'), 100);
     }
     renderApprovals();
     // Filter tabs Supervision
@@ -2652,7 +2580,6 @@
           </div>
         </div>`
       ).join('');
-      if (window.__dlog) setTimeout(() => __dlog('tt-helper-list h=' + $('#tt-helper-list').offsetHeight + ' children=' + $('#tt-helper-list').childElementCount + ' items=' + TT_HELPER.length, 'info'), 100);
     }
     renderHelper();
 
@@ -2683,27 +2610,23 @@
     };
 
     // ─── RENDER FEED ───
-    function renderFeed() {
-      $('#feed-grid').innerHTML = FEED.map(f =>
-        `<div class="feed-card" onclick="window.open('${f.url}','_blank')">
-          <div class="feed-thumb">
-            <span class="feed-platform-tag">${f.platform}</span>
-            ${f.emoji}
+    $('#feed-grid').innerHTML = FEED.map(f =>
+      `<div class="feed-card" onclick="window.open('${f.url}','_blank')">
+        <div class="feed-thumb">
+          <span class="feed-platform-tag">${f.platform}</span>
+          ${f.emoji}
+        </div>
+        <div class="feed-body">
+          <div class="feed-title">${f.title}</div>
+          <div class="feed-date">${f.date}</div>
+          <div class="feed-metrics">
+            <span class="feed-metric"><span class="m-icon">👁</span>${f.views}</span>
+            <span class="feed-metric"><span class="m-icon">❤️</span>${f.likes}</span>
+            <span class="feed-metric"><span class="m-icon">💬</span>${f.comments}</span>
           </div>
-          <div class="feed-body">
-            <div class="feed-title">${f.title}</div>
-            <div class="feed-date">${f.date}</div>
-            <div class="feed-metrics">
-              <span class="feed-metric"><span class="m-icon">👁</span>${f.views}</span>
-              <span class="feed-metric"><span class="m-icon">❤️</span>${f.likes}</span>
-              <span class="feed-metric"><span class="m-icon">💬</span>${f.comments}</span>
-            </div>
-          </div>
-        </div>`
-      ).join('');
-      if (window.__dlog) setTimeout(() => __dlog('feed-grid h=' + $('#feed-grid').offsetHeight + ' children=' + $('#feed-grid').childElementCount + ' items=' + FEED.length, 'info'), 100);
-    }
-    renderFeed();
+        </div>
+      </div>`
+    ).join('');
 
     // ─── RENDER ANALYTICS REPORTS ───
     let reportsFilter = 'all';
