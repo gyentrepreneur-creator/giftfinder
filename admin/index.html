@@ -1814,13 +1814,9 @@
       { name: 'ElevenLabs', meta: '2700 / 10k chars', state: 'ok', pct: 27, icon: '🎙️' },
     ];
 
-    const ALERTS = [
-      { sev: 'success', emoji: '🎉', title: 'V2 Fête des Mères publiée', msg: 'Detection auto via TikTok Status API · post_id 7646169364957465889', time: 'il y a 1h' },
-      { sev: 'warning', emoji: '⚠️', title: 'fal.ai balance faible', msg: 'Il reste ~$8.20 de crédits. Recharge avant V3 Fête des Pères.', time: 'il y a 2h' },
-      { sev: 'info', emoji: 'ℹ️', title: 'Cron TikTok_Publish_Detect OK', msg: 'Premier run réussi · 1 publication détectée', time: 'il y a 1h' },
-      { sev: 'info', emoji: '👤', title: '0 nouveaux signups', msg: 'Welcome_Email idle depuis 12 min', time: 'il y a 12 min' },
-      { sev: 'success', emoji: '✅', title: 'Pipeline TikTok câblé bout-en-bout', msg: 'Approve → Edge Function → Inbox → Detect = OK', time: 'il y a 3h' },
-    ];
+    // ALERTS = données réelles uniquement (chargées via api/pulse)
+    const ALERTS = [];
+    let ALERTS_TOTAL = 0;
 
     // ════════ INIT ════════
     const $ = s => document.querySelector(s);
@@ -1942,40 +1938,19 @@
         }
         if (pulseRes.alerts) {
           ALERTS.length = 0;
-          if (pulseRes.alerts.length === 0) {
-            ALERTS.push({ sev: 'success', emoji: '✅', title: 'Aucune alerte active', msg: 'Tous les systèmes sont sains', time: 'live' });
-          } else {
-            pulseRes.alerts.forEach(a => {
-              const sev = a.severity === 'critical' ? 'critical' : a.severity === 'warning' ? 'warning' : 'info';
-              const emojiBySev = { critical: '🔴', warning: '⚠️', info: 'ℹ️', success: '✅' };
-              ALERTS.push({
-                id: a.id, sev,
-                emoji: emojiBySev[sev],
-                title: a.kind || a.severity || 'Alerte',
-                msg: a.message,
-                time: fmtTime(a.created_at)
-              });
+          ALERTS_TOTAL = pulseRes.alerts_total || pulseRes.alerts.length;
+          pulseRes.alerts.forEach(a => {
+            const sev = a.severity === 'critical' ? 'critical' : a.severity === 'warning' ? 'warning' : 'info';
+            const emojiBySev = { critical: '🔴', warning: '⚠️', info: 'ℹ️' };
+            ALERTS.push({
+              id: a.id, sev,
+              emoji: emojiBySev[sev],
+              title: a.source || a.alert_key || a.severity || 'Alerte',
+              msg: a.message,
+              time: fmtTime(a.created_at)
             });
-          }
-          // Re-render alerts
-          $('#alerts-meta').textContent = `${ALERTS.length} active${ALERTS.length > 1 ? 's' : ''}`;
-          $('#alert-list').innerHTML = ALERTS.map((a, i) =>
-            `<div class="alert-row ${a.sev}" data-idx="${i}">
-              <div class="alert-emoji">${a.emoji}</div>
-              <div class="alert-body">
-                <div class="alert-title">${a.title}</div>
-                <div class="alert-msg">${a.msg}</div>
-                <div class="alert-time">${a.time}</div>
-              </div>
-              ${a.id ? `<button class="alert-dismiss" data-dismiss="${a.id}" aria-label="Dismiss">✕</button>` : ''}
-            </div>`
-          ).join('');
-          $$('.alert-dismiss').forEach(btn => btn.addEventListener('click', async e => {
-            e.stopPropagation();
-            const id = btn.dataset.dismiss;
-            try { await api('dismiss-alert', { method: 'POST', body: { alert_id: id } }); } catch {}
-            btn.closest('.alert-row').style.display = 'none';
-          }));
+          });
+          renderAlerts();
           $$('.alert-row').forEach(row => row.addEventListener('click', () => {
             const a = ALERTS[+row.dataset.idx];
             const sevLabel = { critical: '🔴 Critique', warning: '🟠 Warning', info: 'ℹ️ Info', success: '✅ Succès' }[a.sev];
@@ -2232,45 +2207,75 @@
       </div>`
     ).join('');
 
-    // Alerts
-    $('#alerts-meta').textContent = `${ALERTS.length} actives`;
-    $('#alert-list').innerHTML = ALERTS.map((a, i) =>
-      `<div class="alert-row ${a.sev}" data-idx="${i}">
-        <div class="alert-emoji">${a.emoji}</div>
-        <div class="alert-body">
-          <div class="alert-title">${a.title}</div>
-          <div class="alert-msg">${a.msg}</div>
-          <div class="alert-time">${a.time}</div>
-        </div>
-        <button class="alert-dismiss" data-dismiss="${i}" aria-label="Dismiss">✕</button>
-      </div>`
-    ).join('');
-    // Dismiss buttons (stop event propagation)
-    $$('.alert-dismiss').forEach(btn => btn.addEventListener('click', e => {
-      e.stopPropagation();
-      btn.closest('.alert-row').style.display = 'none';
-    }));
-    // Click on alert row → modal with full details
-    $$('.alert-row').forEach(row => row.addEventListener('click', () => {
-      const a = ALERTS[+row.dataset.idx];
-      const sevLabel = { critical: '🔴 Critique', warning: '🟠 Warning', info: 'ℹ️ Info', success: '✅ Succès' }[a.sev] || a.sev;
-      openModal({
-        emoji: a.emoji,
-        emojiKind: a.sev === 'critical' ? 'err' : a.sev === 'warning' ? 'warn' : a.sev === 'success' ? 'ok' : 'info',
-        title: a.title,
-        meta: a.time + ' · ' + sevLabel,
-        body: a.msg,
-        kv: {
-          'Sévérité': sevLabel,
-          'Reçu': a.time,
-          'Source': 'system_alerts',
-        },
-        actions: [
-          { label: 'Ignorer', style: 'outline', fn: () => row.style.display = 'none' },
-          { label: 'OK, compris', style: 'primary', fn: () => row.style.display = 'none' },
-        ]
+    // Alerts — render function (used at init + after API load)
+    function renderAlerts() {
+      const total = ALERTS_TOTAL || ALERTS.length;
+      $('#alerts-meta').textContent = total > 0 ? `${total} active${total > 1 ? 's' : ''}` : '✅ tout va bien';
+      if (ALERTS.length === 0) {
+        $('#alert-list').innerHTML = `<div class="alert-row info" style="opacity:.7"><div class="alert-emoji">✅</div><div class="alert-body"><div class="alert-title">Aucune alerte active</div><div class="alert-msg">Tous les systèmes sont sains</div><div class="alert-time">live</div></div></div>`;
+        return;
+      }
+      const rows = ALERTS.map((a, i) =>
+        `<div class="alert-row ${a.sev}" data-idx="${i}">
+          <div class="alert-emoji">${a.emoji}</div>
+          <div class="alert-body">
+            <div class="alert-title">${a.title}</div>
+            <div class="alert-msg">${a.msg}</div>
+            <div class="alert-time">${a.time}</div>
+          </div>
+          ${a.id ? `<button class="alert-dismiss" data-dismiss="${a.id}" aria-label="Dismiss">✕</button>` : ''}
+        </div>`
+      ).join('');
+      // Bouton "Voir tout" si plus de 10 alertes
+      const seeAll = (total > ALERTS.length)
+        ? `<button class="btn-mini btn-preview" id="alerts-see-all" style="margin-top:var(--space-3);width:100%">Voir tout (${total} alertes)</button>`
+        : '';
+      $('#alert-list').innerHTML = rows + seeAll;
+      // Dismiss buttons
+      $$('#alert-list .alert-dismiss').forEach(btn => btn.addEventListener('click', async e => {
+        e.stopPropagation();
+        const id = btn.dataset.dismiss;
+        btn.disabled = true; btn.textContent = '⏳';
+        try {
+          const r = await api('dismiss-alert', { method: 'POST', body: { alert_id: id } });
+          if (r.error) { alert('Erreur : ' + r.error); btn.disabled = false; btn.textContent = '✕'; return; }
+          btn.closest('.alert-row').style.display = 'none';
+          ALERTS_TOTAL = Math.max(0, (ALERTS_TOTAL || 0) - 1);
+          $('#alerts-meta').textContent = ALERTS_TOTAL > 0 ? `${ALERTS_TOTAL} active${ALERTS_TOTAL > 1 ? 's' : ''}` : '✅ tout va bien';
+        } catch (err) { alert('Erreur réseau : ' + err.message); btn.disabled = false; btn.textContent = '✕'; }
+      }));
+      // Click on row → modal
+      $$('#alert-list .alert-row[data-idx]').forEach(row => row.addEventListener('click', () => {
+        const a = ALERTS[+row.dataset.idx];
+        const sevLabel = { critical: '🔴 Critique', warning: '🟠 Warning', info: 'ℹ️ Info' }[a.sev] || a.sev;
+        openModal({
+          emoji: a.emoji,
+          emojiKind: a.sev === 'critical' ? 'err' : a.sev === 'warning' ? 'warn' : 'info',
+          title: a.title, meta: a.time + ' · ' + sevLabel, body: a.msg,
+          kv: { 'Sévérité': sevLabel, 'Reçu': a.time, 'Source': 'system_alerts' },
+          actions: [{ label: 'Fermer', style: 'primary' }]
+        });
+      }));
+      // "Voir tout" button
+      const seeAllBtn = document.getElementById('alerts-see-all');
+      if (seeAllBtn) seeAllBtn.addEventListener('click', async () => {
+        seeAllBtn.disabled = true; seeAllBtn.textContent = '⏳ Chargement...';
+        try {
+          const r = await api('alerts-all');
+          if (Array.isArray(r?.alerts)) {
+            ALERTS.length = 0;
+            r.alerts.forEach(a => {
+              const sev = a.severity === 'critical' ? 'critical' : a.severity === 'warning' ? 'warning' : 'info';
+              const emojiBySev = { critical: '🔴', warning: '⚠️', info: 'ℹ️' };
+              ALERTS.push({ id: a.id, sev, emoji: emojiBySev[sev], title: a.source || a.alert_key || 'Alerte', msg: a.message, time: fmtTime(a.created_at) });
+            });
+            ALERTS_TOTAL = ALERTS.length;
+            renderAlerts();
+          }
+        } catch (err) { alert('Erreur : ' + err.message); }
       });
-    }));
+    }
+    renderAlerts();
 
     // Chat quick actions
     $$('.quick-chip').forEach(chip => chip.addEventListener('click', () => {
@@ -2332,7 +2337,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v18-2026-06-01-feed-clean-date';
+    const APP_VERSION = 'v19-2026-06-02-alerts-real';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
