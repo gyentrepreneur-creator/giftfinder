@@ -1833,18 +1833,171 @@
       $('#app-header').style.display = 'flex';
       $('#main').style.display = 'block';
       $('#bottom-tabs').style.display = 'block';
-      // Charge les ideas live
+      // Charge toutes les sections live en parallèle
+      loadAllLiveData();
+    }
+
+    function fmtTime(iso) {
+      if (!iso) return '';
+      const d = new Date(iso);
+      const now = Date.now();
+      const diff = Math.floor((now - d.getTime()) / 1000);
+      if (diff < 60) return 'à l\'instant';
+      if (diff < 3600) return `il y a ${Math.floor(diff/60)} min`;
+      if (diff < 86400) return `il y a ${Math.floor(diff/3600)} h`;
+      return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+    }
+
+    async function loadAllLiveData() {
+      // Ideas
       try {
         const ideasRes = await api('ideas');
-        if (ideasRes.ideas?.length) {
+        if (ideasRes.ideas) {
           IDEAS.length = 0;
           ideasRes.ideas.forEach(i => IDEAS.push({
             id: i.id, title: i.title, desc: i.description || '', status: i.status,
-            date: new Date(i.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) + ' · ' + (i.author || 'admin')
+            date: fmtTime(i.created_at) + ' · ' + (i.author || 'admin')
           }));
           renderIdeas();
         }
       } catch (e) { console.warn('Ideas load failed', e); }
+
+      // Pulse alerts
+      try {
+        const pulseRes = await api('pulse');
+        if (pulseRes.alerts) {
+          ALERTS.length = 0;
+          if (pulseRes.alerts.length === 0) {
+            ALERTS.push({ sev: 'success', emoji: '✅', title: 'Aucune alerte active', msg: 'Tous les systèmes sont sains', time: 'live' });
+          } else {
+            pulseRes.alerts.forEach(a => {
+              const sev = a.severity === 'critical' ? 'critical' : a.severity === 'warning' ? 'warning' : 'info';
+              const emojiBySev = { critical: '🔴', warning: '⚠️', info: 'ℹ️', success: '✅' };
+              ALERTS.push({
+                id: a.id, sev,
+                emoji: emojiBySev[sev],
+                title: a.kind || a.severity || 'Alerte',
+                msg: a.message,
+                time: fmtTime(a.created_at)
+              });
+            });
+          }
+          // Re-render alerts
+          $('#alerts-meta').textContent = `${ALERTS.length} active${ALERTS.length > 1 ? 's' : ''}`;
+          $('#alert-list').innerHTML = ALERTS.map((a, i) =>
+            `<div class="alert-row ${a.sev}" data-idx="${i}">
+              <div class="alert-emoji">${a.emoji}</div>
+              <div class="alert-body">
+                <div class="alert-title">${a.title}</div>
+                <div class="alert-msg">${a.msg}</div>
+                <div class="alert-time">${a.time}</div>
+              </div>
+              ${a.id ? `<button class="alert-dismiss" data-dismiss="${a.id}" aria-label="Dismiss">✕</button>` : ''}
+            </div>`
+          ).join('');
+          $$('.alert-dismiss').forEach(btn => btn.addEventListener('click', async e => {
+            e.stopPropagation();
+            const id = btn.dataset.dismiss;
+            try { await api('dismiss-alert', { method: 'POST', body: { alert_id: id } }); } catch {}
+            btn.closest('.alert-row').style.display = 'none';
+          }));
+          $$('.alert-row').forEach(row => row.addEventListener('click', () => {
+            const a = ALERTS[+row.dataset.idx];
+            const sevLabel = { critical: '🔴 Critique', warning: '🟠 Warning', info: 'ℹ️ Info', success: '✅ Succès' }[a.sev];
+            openModal({
+              emoji: a.emoji,
+              emojiKind: a.sev === 'critical' ? 'err' : a.sev === 'warning' ? 'warn' : a.sev === 'success' ? 'ok' : 'info',
+              title: a.title, meta: a.time + ' · ' + sevLabel, body: a.msg,
+              actions: [{ label: 'Fermer', style: 'primary' }]
+            });
+          }));
+        }
+      } catch (e) { console.warn('Pulse load failed', e); }
+
+      // Approvals
+      try {
+        const aprRes = await api('approvals');
+        if (aprRes.approvals !== undefined) {
+          APPROVALS.length = 0;
+          aprRes.approvals.forEach(a => APPROVALS.push({
+            id: a.id, status: a.status,
+            title: 'Vidéo · ' + (a.script || a.generation_id || a.id).slice(0, 40),
+            brief: a.script ? a.script.slice(0, 80) + '…' : 'Brief en cours',
+            cap: a.caption || '(pas de caption)',
+            duration: '—', emoji: '🎬', attempt: a.attempt || 1,
+            music: { title: 'À suggérer par MusicCurator', trending: 'TBD', emotion: '' }
+          }));
+          if (APPROVALS.length === 0) {
+            // Fallback : garde les démos
+            APPROVALS.push({
+              id: 'demo1', status: 'approved',
+              title: 'V2 Fête des Mères (publiée)',
+              brief: 'Concept "Ha ouais ?!"',
+              cap: "Ha ouais ?! 😱 Première vidéo publiée le 31/05.",
+              duration: '24s', emoji: '🎁', attempt: 1,
+              music: { title: 'Magnetic - ILLIT (sped up)', trending: 'trending', emotion: 'guilt-trip' }
+            });
+          }
+          renderApprovals();
+        }
+      } catch (e) { console.warn('Approvals load failed', e); }
+
+      // Inbox TikTok
+      try {
+        const inboxRes = await api('inbox');
+        if (inboxRes.inbox !== undefined) {
+          TT_HELPER.length = 0;
+          inboxRes.inbox.forEach(t => TT_HELPER.push({
+            id: t.id,
+            title: 'Vidéo · ' + (t.render_id || t.id || '').slice(0, 30),
+            publishId: t.publish_id,
+            pushedAt: fmtTime(t.created_at),
+            videoUrl: t.video_url,
+            cap: t.caption || '',
+            emoji: '📱',
+            music: { title: 'À suggérer', trending: 'TBD', emotion: '' }
+          }));
+          renderHelper();
+          // Update banner count
+          const banner = $('.view[data-view="tt-helper"] .tt-banner-title');
+          if (banner) banner.textContent = `${TT_HELPER.length} vidéo${TT_HELPER.length > 1 ? 's' : ''} en attente dans ton inbox TikTok`;
+        }
+      } catch (e) { console.warn('Inbox load failed', e); }
+
+      // Feed (posts publiés)
+      try {
+        const feedRes = await api('feed');
+        if (feedRes.feed !== undefined) {
+          FEED.length = 0;
+          feedRes.feed.forEach(f => FEED.push({
+            id: f.id,
+            title: 'Post · ' + (f.post_id || f.tiktok_publish_id || f.id).slice(0, 30),
+            date: new Date(f.heure_publication || f.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }),
+            platform: f.platform || 'TikTok',
+            emoji: '🎬',
+            url: f.platform === 'tiktok' && f.post_id ? `https://www.tiktok.com/@kadoizi/video/${f.post_id}` : (f.video_url || '#'),
+            views: f.vues ?? '—', likes: f.likes ?? '—', comments: f.commentaires ?? '—'
+          }));
+          // Re-render feed
+          $('#feed-grid').innerHTML = FEED.map(f =>
+            `<div class="feed-card" onclick="window.open('${f.url}','_blank')">
+              <div class="feed-thumb">
+                <span class="feed-platform-tag">${f.platform}</span>
+                ${f.emoji}
+              </div>
+              <div class="feed-body">
+                <div class="feed-title">${f.title}</div>
+                <div class="feed-date">${f.date}</div>
+                <div class="feed-metrics">
+                  <span class="feed-metric"><span class="m-icon">👁</span>${f.views}</span>
+                  <span class="feed-metric"><span class="m-icon">❤️</span>${f.likes}</span>
+                  <span class="feed-metric"><span class="m-icon">💬</span>${f.comments}</span>
+                </div>
+              </div>
+            </div>`
+          ).join('');
+        }
+      } catch (e) { console.warn('Feed load failed', e); }
     }
 
     $('#login-form').addEventListener('submit', async e => {
