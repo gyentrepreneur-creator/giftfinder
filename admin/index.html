@@ -2122,18 +2122,31 @@
     $('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-    // Workflows bubbles
+    // Workflows bubbles — auto-wrap, tous visibles
     function renderWorkflows() {
-      const row1 = WORKFLOWS.slice(0, 7);
-      const row2 = WORKFLOWS.slice(7, 13);
       const makeBubble = (w, idx) => `
         <div class="wf-bubble ${w.state}" data-tooltip="${w.short}" data-wf-idx="${idx}">
           <span class="wf-emoji">${w.emoji}</span>
           <span class="wf-short">${w.short}</span>
           <span class="wf-status-dot"></span>
         </div>`;
+      // Split en 3 rangées équilibrées (7 / 6 / reste si > 13)
+      const total = WORKFLOWS.length;
+      const perRow = Math.ceil(total / Math.ceil(total / 7));
+      const row1 = WORKFLOWS.slice(0, perRow);
+      const row2 = WORKFLOWS.slice(perRow, perRow * 2);
+      const row3 = WORKFLOWS.slice(perRow * 2);
       $('#wf-row-1').innerHTML = row1.map((w, i) => makeBubble(w, i)).join('');
-      $('#wf-row-2').innerHTML = row2.map((w, i) => makeBubble(w, 7 + i)).join('');
+      $('#wf-row-2').innerHTML = row2.map((w, i) => makeBubble(w, perRow + i)).join('');
+      // Row 3 : créer le container si pas existant
+      let row3El = document.getElementById('wf-row-3');
+      if (!row3El && row3.length > 0) {
+        row3El = document.createElement('div');
+        row3El.id = 'wf-row-3';
+        row3El.className = 'wf-row';
+        document.getElementById('wf-row-2').after(row3El);
+      }
+      if (row3El) row3El.innerHTML = row3.map((w, i) => makeBubble(w, perRow * 2 + i)).join('');
       const okCount = WORKFLOWS.filter(w => w.state === 'ok').length;
       $('#wf-meta').textContent = `${okCount}/${WORKFLOWS.length} actifs`;
       // Click → modal
@@ -2323,7 +2336,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v22-2026-06-02-workflows-real';
+    const APP_VERSION = 'v23-2026-06-02-workflows-3rows';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
