@@ -1596,7 +1596,7 @@
         <div class="zone chat-zone">
           <div class="zone-head">
             <span class="zone-title">🤖 BigBoss</span>
-            <span class="zone-meta">orchestrateur live</span>
+            <span class="zone-meta">via n8n workflow</span>
           </div>
 
           <!-- Quick actions chips -->
@@ -2262,17 +2262,50 @@
       $('#chat-input').focus();
     }));
 
-    // Chat send — REAL call to bigboss-chat Edge Function (Claude Haiku 4.5)
-    const chatHistory = []; // {role: 'user'|'assistant', content: string}
+    // Chat send — REAL via n8n workflow 01_BigBoss_Orchestrateur_v2
+    // Architecture : INSERT row in bigboss_chat_messages → n8n cron picks it up → assistant reply pushed via Realtime
     function escapeHtml(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
     function renderMd(s) {
-      // Mini markdown : **bold**, `code`, links, line breaks
       return escapeHtml(s)
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/`([^`]+)`/g, '<code style="background:rgba(60,52,137,.08);padding:1px 5px;border-radius:4px;font-size:.9em">$1</code>')
         .replace(/(https?:\/\/[^\s)]+)/g, '<a href="$1" target="_blank" style="color:inherit;text-decoration:underline">$1</a>')
         .replace(/\n/g, '<br>');
     }
+
+    // Per-session conversation id
+    let bbConvId = sessionStorage.getItem('bbConvId');
+    if (!bbConvId) { bbConvId = crypto.randomUUID(); sessionStorage.setItem('bbConvId', bbConvId); }
+
+    // Track pending loading indicators by user-msg id
+    const pendingLoaders = new Map(); // userMsgId -> {loadingId, timeoutHandle}
+
+    function displayAssistant(content) {
+      const msgs = $('#chat-messages');
+      msgs.insertAdjacentHTML('beforeend', `<div class="msg bot"><div class="msg-author">BigBoss</div>${renderMd(content)}</div>`);
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    // Realtime subscription — receives assistant replies
+    sbClient
+      .channel('bb-' + bbConvId)
+      .on('postgres_changes', {
+        event: 'INSERT', schema: 'public', table: 'bigboss_chat_messages',
+        filter: 'conversation_id=eq.' + bbConvId
+      }, payload => {
+        const row = payload.new;
+        if (row.role === 'assistant' && row.status === 'done') {
+          // Clear all pending loaders (we got a reply)
+          for (const [k, v] of pendingLoaders.entries()) {
+            document.getElementById(v.loadingId)?.remove();
+            clearTimeout(v.timeoutHandle);
+            pendingLoaders.delete(k);
+          }
+          displayAssistant(row.content);
+        }
+      })
+      .subscribe();
+
     $('#chat-form').addEventListener('submit', async e => {
       e.preventDefault();
       const txt = $('#chat-input').value.trim();
@@ -2281,41 +2314,56 @@
       msgs.insertAdjacentHTML('beforeend', `<div class="msg user">${escapeHtml(txt)}</div>`);
       $('#chat-input').value = '';
       msgs.scrollTop = msgs.scrollHeight;
-      chatHistory.push({ role: 'user', content: txt });
 
-      // Loading indicator
       const loadingId = 'msg-loading-' + Date.now();
-      msgs.insertAdjacentHTML('beforeend', `<div class="msg bot" id="${loadingId}"><div class="msg-author">BigBoss</div><em>🤔 réflexion…</em></div>`);
+      msgs.insertAdjacentHTML('beforeend', `<div class="msg bot" id="${loadingId}"><div class="msg-author">BigBoss</div><em>🤔 BigBoss réfléchit (via n8n)…</em></div>`);
       msgs.scrollTop = msgs.scrollHeight;
 
       try {
-        const res = await fetch(SB_URL + '/functions/v1/bigboss-chat', {
+        const insRes = await fetch(SB_URL + '/rest/v1/bigboss_chat_messages', {
           method: 'POST',
           headers: {
-            'content-type': 'application/json',
+            'apikey': SB_ANON,
             'Authorization': 'Bearer ' + currentSession.access_token,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
           },
-          body: JSON.stringify({ messages: chatHistory }),
+          body: JSON.stringify({
+            conversation_id: bbConvId,
+            role: 'user',
+            content: txt,
+            status: 'pending',
+            author_user_id: currentSession.user.id
+          })
         });
-        const data = await res.json();
-        document.getElementById(loadingId)?.remove();
-        if (data.error) {
-          msgs.insertAdjacentHTML('beforeend', `<div class="msg bot"><div class="msg-author">BigBoss · erreur</div>${escapeHtml(data.error)}</div>`);
-        } else {
-          chatHistory.push({ role: 'assistant', content: data.response });
-          msgs.insertAdjacentHTML('beforeend', `<div class="msg bot"><div class="msg-author">BigBoss</div>${renderMd(data.response)}</div>`);
+        if (!insRes.ok) {
+          const err = await insRes.text();
+          document.getElementById(loadingId)?.remove();
+          msgs.insertAdjacentHTML('beforeend', `<div class="msg bot"><div class="msg-author">BigBoss · erreur</div>${escapeHtml(err)}</div>`);
+          msgs.scrollTop = msgs.scrollHeight;
+          return;
         }
+        const [row] = await insRes.json();
+        const timeoutHandle = setTimeout(() => {
+          if (pendingLoaders.has(row.id)) {
+            document.getElementById(loadingId)?.remove();
+            pendingLoaders.delete(row.id);
+            msgs.insertAdjacentHTML('beforeend', `<div class="msg bot"><div class="msg-author">BigBoss · timeout</div>Pas de réponse n8n après 120s. Le workflow tourne-t-il bien ?</div>`);
+            msgs.scrollTop = msgs.scrollHeight;
+          }
+        }, 120000);
+        pendingLoaders.set(row.id, { loadingId, timeoutHandle });
       } catch (err) {
         document.getElementById(loadingId)?.remove();
         msgs.insertAdjacentHTML('beforeend', `<div class="msg bot"><div class="msg-author">BigBoss · erreur réseau</div>${escapeHtml(err.message)}</div>`);
+        msgs.scrollTop = msgs.scrollHeight;
       }
-      msgs.scrollTop = msgs.scrollHeight;
     });
 
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v3-2026-06-01-15h';
+    const APP_VERSION = 'v4-2026-06-01-n8n-chat';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
