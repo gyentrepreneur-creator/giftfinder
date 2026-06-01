@@ -2331,7 +2331,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v13-2026-06-01-helper-real';
+    const APP_VERSION = 'v14-2026-06-01-helper-music-desc';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
@@ -2594,10 +2594,19 @@
               <span class="tt-helper-tag">📱 SEND_TO_USER_INBOX</span>
             </div>
           </div>
+          <div class="vid-card-music" style="margin-bottom:var(--space-3)">
+            <div class="vid-card-music-icon">🎵</div>
+            <div class="vid-card-music-text">
+              <div class="vid-card-music-label">Son TikTok à utiliser</div>
+              <div class="vid-card-music-name" style="opacity:.7;font-style:italic">À choisir manuellement (MusicCurator à venir)</div>
+            </div>
+            <button class="btn-mini btn-preview" style="padding:5px 9px;font-size:10px;flex:0" onclick="window.open('https://www.tiktok.com/business/creative-center/inspiration/popular/music/pc/fr','_blank')">🔥 Trending</button>
+          </div>
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px;letter-spacing:.04em">📝 DESCRIPTION À COLLER :</div>
           <div class="tt-caption-box">${t.cap}</div>
           <div class="tt-helper-actions">
             ${hasVideo ? `<button class="btn-mini btn-preview" onclick="window.open('${t.videoUrl}','_blank')">👁 Aperçu vidéo</button>` : `<button class="btn-mini btn-preview" disabled style="opacity:.5">👁 Vidéo locale</button>`}
-            <button class="btn-mini btn-preview" onclick='copyCap(this, ${JSON.stringify(t.cap)})'>📋 Copier caption</button>
+            <button class="btn-mini btn-preview" onclick='copyCap(this, ${JSON.stringify(t.cap)})'>📋 Copier description</button>
             <button class="btn-mini btn-primary" onclick="openTikTok()">${isMobile ? '📱 Ouvrir TikTok' : '🖥️ Ouvrir TikTok web'}</button>
           </div>
         </div>`;
