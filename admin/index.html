@@ -1971,70 +1971,71 @@
         }
       } catch (e) { console.warn('Pulse load failed', e); }
 
-      // Approvals
+      // Approvals — defensive : remplace mock SEULEMENT si on a des données réelles
       try {
         const aprRes = await api('approvals');
-        if (aprRes.approvals !== undefined) {
+        if (Array.isArray(aprRes?.approvals) && aprRes.approvals.length > 0) {
           APPROVALS.length = 0;
-          aprRes.approvals.forEach(a => APPROVALS.push({
-            id: a.id, status: a.status,
-            title: 'Vidéo · ' + (a.script || a.generation_id || a.id).slice(0, 40),
-            brief: a.script ? a.script.slice(0, 80) + '…' : 'Brief en cours',
-            cap: a.caption || '(pas de caption)',
-            duration: '—', emoji: '🎬', attempt: a.attempt || 1,
-            music: { title: 'À suggérer par MusicCurator', trending: 'TBD', emotion: '' }
-          }));
-          if (APPROVALS.length === 0) {
-            // Fallback : garde les démos
-            APPROVALS.push({
-              id: 'demo1', status: 'approved',
-              title: 'V2 Fête des Mères (publiée)',
-              brief: 'Concept "Ha ouais ?!"',
-              cap: "Ha ouais ?! 😱 Première vidéo publiée le 31/05.",
-              duration: '24s', emoji: '🎁', attempt: 1,
-              music: { title: 'Magnetic - ILLIT (sped up)', trending: 'trending', emotion: 'guilt-trip' }
-            });
-          }
+          aprRes.approvals.forEach(a => {
+            try {
+              APPROVALS.push({
+                id: a.id || 'no-id', status: a.status || 'pending',
+                title: 'Vidéo · ' + String(a.script || a.generation_id || a.id || '').slice(0, 40),
+                brief: a.script ? String(a.script).slice(0, 80) + '…' : 'Brief en cours',
+                cap: a.caption || '(pas de caption)',
+                duration: '—', emoji: '🎬', attempt: a.attempt || 1,
+                music: { title: 'À suggérer par MusicCurator', trending: 'TBD', emotion: '' }
+              });
+            } catch (mapErr) { console.warn('approval map err', mapErr); }
+          });
           renderApprovals();
         }
+        // Si vide ou non-tableau : on GARDE le mock data initial (3 vidéos)
       } catch (e) { console.warn('Approvals load failed', e); }
 
-      // Inbox TikTok
+      // Inbox TikTok — defensive : remplace mock seulement si données réelles
       try {
         const inboxRes = await api('inbox');
-        if (inboxRes.inbox !== undefined) {
+        if (Array.isArray(inboxRes?.inbox) && inboxRes.inbox.length > 0) {
           TT_HELPER.length = 0;
-          inboxRes.inbox.forEach(t => TT_HELPER.push({
-            id: t.id,
-            title: 'Vidéo · ' + (t.render_id || t.id || '').slice(0, 30),
-            publishId: t.publish_id,
-            pushedAt: fmtTime(t.created_at),
-            videoUrl: t.video_url,
-            cap: t.caption || '',
-            emoji: '📱',
-            music: { title: 'À suggérer', trending: 'TBD', emotion: '' }
-          }));
+          inboxRes.inbox.forEach(t => {
+            try {
+              TT_HELPER.push({
+                id: t.id || 'no-id',
+                title: 'Vidéo · ' + String(t.render_id || t.id || '').slice(0, 30),
+                publishId: t.publish_id || '',
+                pushedAt: fmtTime(t.created_at),
+                videoUrl: t.video_url || '#',
+                cap: t.caption || '',
+                emoji: '📱',
+                music: { title: 'À suggérer', trending: 'TBD', emotion: '' }
+              });
+            } catch (mapErr) { console.warn('inbox map err', mapErr); }
+          });
           renderHelper();
-          // Update banner count
           const banner = $('.view[data-view="tt-helper"] .tt-banner-title');
           if (banner) banner.textContent = `${TT_HELPER.length} vidéo${TT_HELPER.length > 1 ? 's' : ''} en attente dans ton inbox TikTok`;
         }
       } catch (e) { console.warn('Inbox load failed', e); }
 
-      // Feed (posts publiés)
+      // Feed (posts publiés) — defensive
       try {
         const feedRes = await api('feed');
-        if (feedRes.feed !== undefined) {
+        if (Array.isArray(feedRes?.feed) && feedRes.feed.length > 0) {
           FEED.length = 0;
-          feedRes.feed.forEach(f => FEED.push({
-            id: f.id,
-            title: 'Post · ' + (f.post_id || f.tiktok_publish_id || f.id).slice(0, 30),
-            date: new Date(f.heure_publication || f.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }),
-            platform: f.platform || 'TikTok',
-            emoji: '🎬',
-            url: f.platform === 'tiktok' && f.post_id ? `https://www.tiktok.com/@kadoizi/video/${f.post_id}` : (f.video_url || '#'),
-            views: f.vues ?? '—', likes: f.likes ?? '—', comments: f.commentaires ?? '—'
-          }));
+          feedRes.feed.forEach(f => {
+            try {
+              FEED.push({
+                id: f.id || 'no-id',
+                title: 'Post · ' + String(f.post_id || f.tiktok_publish_id || f.id || '').slice(0, 30),
+                date: f.heure_publication || f.created_at ? new Date(f.heure_publication || f.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) : 'récent',
+                platform: f.platform || 'TikTok',
+                emoji: '🎬',
+                url: f.platform === 'tiktok' && f.post_id ? `https://www.tiktok.com/@kadoizi/video/${f.post_id}` : (f.video_url || '#'),
+                views: f.vues ?? '—', likes: f.likes ?? '—', comments: f.commentaires ?? '—'
+              });
+            } catch (mapErr) { console.warn('feed map err', mapErr); }
+          });
           // Re-render feed
           $('#feed-grid').innerHTML = FEED.map(f =>
             `<div class="feed-card" onclick="window.open('${f.url}','_blank')">
@@ -2363,7 +2364,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v4-2026-06-01-n8n-chat';
+    const APP_VERSION = 'v5-2026-06-01-defensive';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
