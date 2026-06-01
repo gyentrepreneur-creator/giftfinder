@@ -1671,10 +1671,10 @@
       <p class="view-subtitle">Mur de tes posts live · clique pour ouvrir</p>
 
       <div class="feed-stats">
-        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">🎬</div><div class="kpi-label">Posts publiés</div></div><div class="kpi-value">1</div><div class="kpi-delta up">↑ 1 ce mois</div></div>
-        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">👁</div><div class="kpi-label">Vues totales</div></div><div class="kpi-value">—</div><div class="kpi-delta flat">phase 2 · scope analytics</div></div>
-        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">❤️</div><div class="kpi-label">Likes totaux</div></div><div class="kpi-value">—</div><div class="kpi-delta flat">phase 2</div></div>
-        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">💬</div><div class="kpi-label">Commentaires</div></div><div class="kpi-value">—</div><div class="kpi-delta flat">phase 2</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">🎬</div><div class="kpi-label">Posts publiés</div></div><div class="kpi-value" id="kpi-feed-posts">—</div><div class="kpi-delta flat" id="kpi-feed-posts-delta">live</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">👁</div><div class="kpi-label">Vues totales</div></div><div class="kpi-value" id="kpi-feed-views">—</div><div class="kpi-delta flat">scope video.list TikTok requis</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">❤️</div><div class="kpi-label">Likes totaux</div></div><div class="kpi-value" id="kpi-feed-likes">—</div><div class="kpi-delta flat">scope video.list TikTok</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">💬</div><div class="kpi-label">Commentaires</div></div><div class="kpi-value" id="kpi-feed-comments">—</div><div class="kpi-delta flat">scope video.list TikTok</div></div>
       </div>
 
       <div class="feed-grid" id="feed-grid"></div>
@@ -2037,38 +2037,39 @@
         }
       } catch (e) { console.warn('Inbox load failed', e); }
 
-      // Feed (posts publiés)
+      // Feed (posts publiés) — données réelles uniquement
       try {
         const feedRes = await api('feed');
-        if (feedRes.feed !== undefined) {
+        if (Array.isArray(feedRes?.feed)) {
           FEED.length = 0;
-          feedRes.feed.forEach(f => FEED.push({
-            id: f.id,
-            title: 'Post · ' + (f.post_id || f.tiktok_publish_id || f.id).slice(0, 30),
-            date: new Date(f.heure_publication || f.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }),
-            platform: f.platform || 'TikTok',
-            emoji: '🎬',
-            url: f.platform === 'tiktok' && f.post_id ? `https://www.tiktok.com/@kadoizi/video/${f.post_id}` : (f.video_url || '#'),
-            views: f.vues ?? '—', likes: f.likes ?? '—', comments: f.commentaires ?? '—'
-          }));
-          // Re-render feed
-          $('#feed-grid').innerHTML = FEED.map(f =>
-            `<div class="feed-card" onclick="window.open('${f.url}','_blank')">
-              <div class="feed-thumb">
-                <span class="feed-platform-tag">${f.platform}</span>
-                ${f.emoji}
-              </div>
-              <div class="feed-body">
-                <div class="feed-title">${f.title}</div>
-                <div class="feed-date">${f.date}</div>
-                <div class="feed-metrics">
-                  <span class="feed-metric"><span class="m-icon">👁</span>${f.views}</span>
-                  <span class="feed-metric"><span class="m-icon">❤️</span>${f.likes}</span>
-                  <span class="feed-metric"><span class="m-icon">💬</span>${f.comments}</span>
-                </div>
-              </div>
-            </div>`
-          ).join('');
+          let totalViews = 0, totalLikes = 0, totalComments = 0, hasMetrics = false;
+          feedRes.feed.forEach(f => {
+            try {
+              if (typeof f.vues === 'number' && f.vues > 0) hasMetrics = true;
+              totalViews += (f.vues || 0);
+              totalLikes += (f.likes || 0);
+              totalComments += (f.commentaires || 0);
+              FEED.push({
+                id: f.id || 'no-id',
+                title: 'Post · ' + String(f.post_id || f.tiktok_publish_id || f.id || '').slice(0, 30),
+                date: f.heure_publication || f.created_at ? new Date(f.heure_publication || f.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) : 'récent',
+                platform: f.platform || 'TikTok',
+                emoji: '🎬',
+                url: f.platform === 'tiktok' && f.post_id ? `https://www.tiktok.com/@kadoizi/video/${f.post_id}` : (f.video_url || '#'),
+                views: typeof f.vues === 'number' && f.vues > 0 ? f.vues.toLocaleString('fr-FR') : '—',
+                likes: typeof f.likes === 'number' && f.likes > 0 ? f.likes.toLocaleString('fr-FR') : '—',
+                comments: typeof f.commentaires === 'number' && f.commentaires > 0 ? f.commentaires.toLocaleString('fr-FR') : '—'
+              });
+            } catch (mapErr) { console.warn('feed map err', mapErr); }
+          });
+          renderFeed();
+          // Populer KPIs Feed
+          const setKpi = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+          setKpi('kpi-feed-posts', FEED.length);
+          setKpi('kpi-feed-posts-delta', FEED.length > 0 ? 'live · ' + FEED.length + ' ce mois' : 'aucun post');
+          setKpi('kpi-feed-views', hasMetrics ? totalViews.toLocaleString('fr-FR') : '—');
+          setKpi('kpi-feed-likes', hasMetrics ? totalLikes.toLocaleString('fr-FR') : '—');
+          setKpi('kpi-feed-comments', hasMetrics ? totalComments.toLocaleString('fr-FR') : '—');
         }
       } catch (e) { console.warn('Feed load failed', e); }
     }
@@ -2331,7 +2332,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v14-2026-06-01-helper-music-desc';
+    const APP_VERSION = 'v15-2026-06-01-feed-real';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
@@ -2364,17 +2365,8 @@
     // TT_HELPER = données réelles uniquement (chargées via api/inbox)
     const TT_HELPER = [];
 
-    const FEED = [
-      {
-        id: 'feed1',
-        title: 'V2 "Ha ouais ?!" Fête des Mères',
-        date: '31 mai 2026 · 23h00',
-        platform: 'TikTok',
-        emoji: '🎁',
-        url: 'https://www.tiktok.com/@kadoizi/video/7646169364957465889',
-        views: '—', likes: '—', comments: '—'
-      }
-    ];
+    // FEED = données réelles uniquement (chargées via api/feed)
+    const FEED = [];
 
     const REPORTS = [
       {
@@ -2641,23 +2633,30 @@
     };
 
     // ─── RENDER FEED ───
-    $('#feed-grid').innerHTML = FEED.map(f =>
-      `<div class="feed-card" onclick="window.open('${f.url}','_blank')">
-        <div class="feed-thumb">
-          <span class="feed-platform-tag">${f.platform}</span>
-          ${f.emoji}
-        </div>
-        <div class="feed-body">
-          <div class="feed-title">${f.title}</div>
-          <div class="feed-date">${f.date}</div>
-          <div class="feed-metrics">
-            <span class="feed-metric"><span class="m-icon">👁</span>${f.views}</span>
-            <span class="feed-metric"><span class="m-icon">❤️</span>${f.likes}</span>
-            <span class="feed-metric"><span class="m-icon">💬</span>${f.comments}</span>
+    function renderFeed() {
+      if (FEED.length === 0) {
+        $('#feed-grid').innerHTML = `<div class="empty" style="grid-column:1/-1;text-align:center;padding:var(--space-6) var(--space-3);color:var(--text-muted)"><div class="empty-emoji" style="font-size:48px;margin-bottom:var(--space-3)">📭</div><div>Aucun post publié pour l'instant</div><div style="font-size:11px;margin-top:6px;opacity:.7">Les posts apparaitront ici une fois publiés sur TikTok (cron auto-détection toutes les 30 min)</div></div>`;
+        return;
+      }
+      $('#feed-grid').innerHTML = FEED.map(f =>
+        `<div class="feed-card" onclick="window.open('${f.url}','_blank')">
+          <div class="feed-thumb">
+            <span class="feed-platform-tag">${f.platform}</span>
+            ${f.emoji}
           </div>
-        </div>
-      </div>`
-    ).join('');
+          <div class="feed-body">
+            <div class="feed-title">${f.title}</div>
+            <div class="feed-date">${f.date}</div>
+            <div class="feed-metrics">
+              <span class="feed-metric"><span class="m-icon">👁</span>${f.views}</span>
+              <span class="feed-metric"><span class="m-icon">❤️</span>${f.likes}</span>
+              <span class="feed-metric"><span class="m-icon">💬</span>${f.comments}</span>
+            </div>
+          </div>
+        </div>`
+      ).join('');
+    }
+    renderFeed();
 
     // ─── RENDER ANALYTICS REPORTS ───
     let reportsFilter = 'all';
