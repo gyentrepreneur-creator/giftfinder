@@ -1805,14 +1805,8 @@
         lastRun: 'il y a 3 min · 0 stuck', execs7d: 1008 },
     ];
 
-    const HEALTH = [
-      { name: 'n8n', meta: '13 workflows · NAS', state: 'ok', pct: 100, icon: '🔄' },
-      { name: 'Supabase', meta: '< 50 ms · FREE', state: 'ok', pct: 14, icon: '🗄️' },
-      { name: 'TikTok API', meta: 'token 8h · sandbox', state: 'ok', pct: 100, icon: '🎵' },
-      { name: 'fal.ai', meta: '~$8.20 restants', state: 'warn', pct: 70, icon: '🎨' },
-      { name: 'Resend', meta: '12 / 100 du jour', state: 'ok', pct: 12, icon: '📧' },
-      { name: 'ElevenLabs', meta: '2700 / 10k chars', state: 'ok', pct: 27, icon: '🎙️' },
-    ];
+    // HEALTH = données réelles uniquement (chargées via api/health)
+    const HEALTH = [];
 
     // ALERTS = données réelles uniquement (chargées via api/pulse)
     const ALERTS = [];
@@ -1914,6 +1908,16 @@
           renderIdeas();
         }
       } catch (e) { console.warn('Ideas load failed', e); }
+
+      // Santé Services — vraies mesures live
+      try {
+        const healthRes = await api('health');
+        if (Array.isArray(healthRes?.services)) {
+          HEALTH.length = 0;
+          healthRes.services.forEach(s => HEALTH.push(s));
+          renderHealth();
+        }
+      } catch (e) { console.warn('Health load failed', e); }
 
       // Pulse alerts + KPIs Vidéos
       try {
@@ -2195,17 +2199,24 @@
     }
     renderWorkflows();
 
-    // Health
-    $('#health-list').innerHTML = HEALTH.map(h =>
-      `<div class="health-row ${h.state}">
-        <div class="health-icon ${h.state}">${h.icon}</div>
-        <div class="health-body">
-          <div class="health-name">${h.name}</div>
-          <div class="health-meta">${h.meta}</div>
-        </div>
-        <div class="health-bar"><div style="width:${h.pct}%"></div></div>
-      </div>`
-    ).join('');
+    // Health — render function (called at init + after API load)
+    function renderHealth() {
+      if (HEALTH.length === 0) {
+        $('#health-list').innerHTML = `<div class="health-row info" style="opacity:.6"><div class="health-icon">⏳</div><div class="health-body"><div class="health-name">Chargement...</div><div class="health-meta">Mesures en cours</div></div></div>`;
+        return;
+      }
+      $('#health-list').innerHTML = HEALTH.map(h =>
+        `<div class="health-row ${h.state}">
+          <div class="health-icon ${h.state}">${h.icon}</div>
+          <div class="health-body">
+            <div class="health-name">${h.name}</div>
+            <div class="health-meta">${h.meta}</div>
+          </div>
+          <div class="health-bar"><div style="width:${h.pct}%"></div></div>
+        </div>`
+      ).join('');
+    }
+    renderHealth();
 
     // "Tout effacer" button handler (Notifications)
     document.getElementById('alerts-clear-all')?.addEventListener('click', async () => {
@@ -2351,7 +2362,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v20-2026-06-02-clear-all-confirm';
+    const APP_VERSION = 'v21-2026-06-02-health-live';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
