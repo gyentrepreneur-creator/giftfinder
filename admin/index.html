@@ -2072,24 +2072,7 @@
               });
             } catch (mapErr) { console.warn('feed map err', mapErr); }
           });
-          // Re-render feed
-          $('#feed-grid').innerHTML = FEED.map(f =>
-            `<div class="feed-card" onclick="window.open('${f.url}','_blank')">
-              <div class="feed-thumb">
-                <span class="feed-platform-tag">${f.platform}</span>
-                ${f.emoji}
-              </div>
-              <div class="feed-body">
-                <div class="feed-title">${f.title}</div>
-                <div class="feed-date">${f.date}</div>
-                <div class="feed-metrics">
-                  <span class="feed-metric"><span class="m-icon">👁</span>${f.views}</span>
-                  <span class="feed-metric"><span class="m-icon">❤️</span>${f.likes}</span>
-                  <span class="feed-metric"><span class="m-icon">💬</span>${f.comments}</span>
-                </div>
-              </div>
-            </div>`
-          ).join('');
+          if (typeof renderFeed === 'function') renderFeed();
         }
       } catch (e) { console.warn('Feed load failed', e); }
     }
@@ -2400,7 +2383,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v6-2026-06-01-debug';
+    const APP_VERSION = 'v7-2026-06-01-render-debug';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
@@ -2594,8 +2577,10 @@
     let aprFilter = 'all';
     function renderApprovals() {
       const list = aprFilter === 'all' ? APPROVALS : APPROVALS.filter(a => a.status === aprFilter);
+      if (window.__dlog) __dlog('renderApprovals: ' + list.length + ' items, filter=' + aprFilter, 'info');
       if (list.length === 0) {
         $('#approval-grid').innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-emoji">📭</div>Aucune vidéo dans cette catégorie</div>`;
+        if (window.__dlog) setTimeout(() => __dlog('approval-grid h=' + $('#approval-grid').offsetHeight + ' children=' + $('#approval-grid').childElementCount, 'info'), 100);
         return;
       }
       const statusLabels = { pending: '⏳ Pending', approved: '✅ Approved', rejected: '✕ Rejected' };
@@ -2626,6 +2611,7 @@
           </div>
         </div>`
       ).join('');
+      if (window.__dlog) setTimeout(() => __dlog('approval-grid h=' + $('#approval-grid').offsetHeight + ' children=' + $('#approval-grid').childElementCount + ' html=' + $('#approval-grid').innerHTML.length + ' chars', 'info'), 100);
     }
     renderApprovals();
     // Filter tabs Supervision
@@ -2665,6 +2651,7 @@
           </div>
         </div>`
       ).join('');
+      if (window.__dlog) setTimeout(() => __dlog('tt-helper-list h=' + $('#tt-helper-list').offsetHeight + ' children=' + $('#tt-helper-list').childElementCount + ' items=' + TT_HELPER.length, 'info'), 100);
     }
     renderHelper();
 
@@ -2695,23 +2682,27 @@
     };
 
     // ─── RENDER FEED ───
-    $('#feed-grid').innerHTML = FEED.map(f =>
-      `<div class="feed-card" onclick="window.open('${f.url}','_blank')">
-        <div class="feed-thumb">
-          <span class="feed-platform-tag">${f.platform}</span>
-          ${f.emoji}
-        </div>
-        <div class="feed-body">
-          <div class="feed-title">${f.title}</div>
-          <div class="feed-date">${f.date}</div>
-          <div class="feed-metrics">
-            <span class="feed-metric"><span class="m-icon">👁</span>${f.views}</span>
-            <span class="feed-metric"><span class="m-icon">❤️</span>${f.likes}</span>
-            <span class="feed-metric"><span class="m-icon">💬</span>${f.comments}</span>
+    function renderFeed() {
+      $('#feed-grid').innerHTML = FEED.map(f =>
+        `<div class="feed-card" onclick="window.open('${f.url}','_blank')">
+          <div class="feed-thumb">
+            <span class="feed-platform-tag">${f.platform}</span>
+            ${f.emoji}
           </div>
-        </div>
-      </div>`
-    ).join('');
+          <div class="feed-body">
+            <div class="feed-title">${f.title}</div>
+            <div class="feed-date">${f.date}</div>
+            <div class="feed-metrics">
+              <span class="feed-metric"><span class="m-icon">👁</span>${f.views}</span>
+              <span class="feed-metric"><span class="m-icon">❤️</span>${f.likes}</span>
+              <span class="feed-metric"><span class="m-icon">💬</span>${f.comments}</span>
+            </div>
+          </div>
+        </div>`
+      ).join('');
+      if (window.__dlog) setTimeout(() => __dlog('feed-grid h=' + $('#feed-grid').offsetHeight + ' children=' + $('#feed-grid').childElementCount + ' items=' + FEED.length, 'info'), 100);
+    }
+    renderFeed();
 
     // ─── RENDER ANALYTICS REPORTS ───
     let reportsFilter = 'all';
