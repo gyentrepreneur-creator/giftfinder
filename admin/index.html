@@ -1763,47 +1763,8 @@
       { view: 'links', icon: '🔗', label: 'Raccourcis', badge: null },
     ];
 
-    const WORKFLOWS = [
-      { name: '01_BigBoss_Orchestrateur_v2', short: 'BIGBOSS', emoji: '🧠', state: 'ok', meta: 'webhook · cron',
-        role: "Orchestrateur central du projet. Reçoit tes commandes (chat ou webhook) et délègue aux sub-agents appropriés (Marketing, SEO, Analytics, etc.). Garde la mémoire des contextes via Supabase.",
-        lastRun: 'il y a 2h · success', execs7d: 47 },
-      { name: '02_Agent_Marketing', short: 'MARKET', emoji: '🎬', state: 'ok', meta: 'cron 2j · 9h',
-        role: "Génère les briefs vidéos TikTok à partir des tendances. Coordonne Scriptwriter, Director, CaptionWriter, MusicCurator, puis pousse dans render_queue. Schedule auto tous les 2 jours à 9h.",
-        lastRun: 'demain 9h · scheduled', execs7d: 3 },
-      { name: '04_Agent_Analytics_v2', short: 'ANALY', emoji: '📊', state: 'ok', meta: 'cron + chat',
-        role: "Analyse posts_performance, calcule les KPIs (vues, engagement, taux de conversion) et génère un rapport hebdomadaire. Peut être interrogé via chat BigBoss.",
-        lastRun: 'il y a 14h · success', execs7d: 8 },
-      { name: '05_Render_Monitor', short: 'RENDER', emoji: '🎞️', state: 'ok', meta: 'poll render_queue',
-        role: "Surveille en temps réel la table render_queue. Quand un render passe à 'awaiting_approval', notifie via email Resend pour validation manuelle.",
-        lastRun: 'live · poll continu', execs7d: 36 },
-      { name: '06_Approval_Handler', short: 'APPROV', emoji: '✅', state: 'ok', meta: 'webhook approve/reject',
-        role: "Reçoit les webhooks d'approval (clic sur le bouton 'Approve' dans l'email) et déclenche le push TikTok Inbox via Edge Function tiktok-upload-inbox.",
-        lastRun: 'il y a 1h · success', execs7d: 12 },
-      { name: 'Agent_Cadeaux_v2', short: 'CADEAU', emoji: '🎁', state: 'ok', meta: 'webhook quiz site',
-        role: "Agent du quiz cadeau sur kadoizi.com. Reçoit les réponses du quiz, génère 9 idées via Claude Haiku 4.5 avec affiliation Amazon, retourne au site.",
-        lastRun: 'il y a 28 min · success', execs7d: 53 },
-      { name: 'Agent_Concurrence', short: 'CONCUR', emoji: '🕵️', state: 'ok', meta: 'cron veille',
-        role: "Veille concurrentielle : scrape idee-cadeau.fr, gifts.com, cadeaux.com, etc. Détecte les nouveautés, prix, USP et logge dans table intel_concurrence.",
-        lastRun: 'il y a 5h · success', execs7d: 7 },
-      { name: 'Agent_Intel', short: 'INTEL', emoji: '📡', state: 'ok', meta: 'cron veille intel',
-        role: "Collecte signals marketplace (Amazon trending, Etsy, etc.) + Google Trends FR + sons TikTok viraux. Enrichit la base intel pour informer les vidéos Marketing.",
-        lastRun: 'il y a 6h · success', execs7d: 4 },
-      { name: 'Agent_SEO', short: 'SEO', emoji: '🔍', state: 'ok', meta: 'cron 1er du mois',
-        role: "Génère 1 article SEO par mois (le 1er à 9h) ciblant un mot-clé saisonnier. Edge Function publish-seo-article met à jour blog/index + sitemap + brand voice auto-fix.",
-        lastRun: 'le 1er mai · success', execs7d: 0 },
-      { name: 'Welcome_Email_New_Signup', short: 'WELCOM', emoji: '💌', state: 'ok', meta: 'cron 1 min',
-        role: "Poll Supabase auth.users toutes les 1 min. Envoie un welcome email via Resend aux nouveaux signups détectés. Anti-spam : filtre @example.com / +test+ / audit_test_*.",
-        lastRun: 'il y a 1 min · idle (0 nouveaux)', execs7d: 1440 },
-      { name: 'TikTok_Publish_Detect', short: 'TT-DETECT', emoji: '📱', state: 'ok', meta: 'cron 30 min',
-        role: "Poll TikTok Content Posting Status API toutes les 30 min pour les pushes inbox 'sent'. Quand PUBLISH_COMPLETE détecté, marque published + remplit posts_performance.",
-        lastRun: 'il y a 12 min · 1 détectée', execs7d: 14 },
-      { name: 'Workflow_Failure_Monitor', short: 'MONITOR', emoji: '🚨', state: 'ok', meta: 'cron 30 min',
-        role: "Toutes les 30 min, query n8n executions avec status=error. Insère dans system_alerts avec severity. Anti-doublon : 1 alerte/workflow/jour. Zéro email (économie Resend).",
-        lastRun: 'il y a 8 min · 0 errors', execs7d: 336 },
-      { name: 'Cleanup_Stuck_Routine_Jobs', short: 'CLEANUP', emoji: '🧹', state: 'ok', meta: 'cron 10 min',
-        role: "Toutes les 10 min, reset les jobs render_queue stuck en 'processing' depuis >2h. Évite que les renders plantés bloquent la queue indéfiniment.",
-        lastRun: 'il y a 3 min · 0 stuck', execs7d: 1008 },
-    ];
+    // WORKFLOWS = données réelles uniquement (chargées via api/workflows)
+    const WORKFLOWS = [];
 
     // HEALTH = données réelles uniquement (chargées via api/health)
     const HEALTH = [];
@@ -2362,7 +2323,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v21-2026-06-02-health-live';
+    const APP_VERSION = 'v22-2026-06-02-workflows-real';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
