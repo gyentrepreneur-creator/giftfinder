@@ -1,0 +1,2090 @@
+<!DOCTYPE html>
+<html lang="fr" translate="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#3C3489">
+  <title>Kadoizi Admin</title>
+  <link rel="icon" href="logo.jpg">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="logo.jpg">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Kadoizi">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* ───────────── DESIGN TOKENS ───────────── */
+    :root {
+      --primary: #3C3489;
+      --primary-soft: #5046b0;
+      --primary-tint: #EEEDFE;
+      --ink: #1a1935;
+      --ink-soft: #26215C;
+      --muted: #6b6783;
+      --muted-soft: #9a9aa8;
+
+      --cream: #FAF3E3;
+      --bordeaux: #8B2C24;
+      --orange: #F58A2C;
+      --coral: #E94560;
+      --success: #1D9E75;
+      --pink-soft: #FBEAF0;
+      --mint-soft: #E1F5EE;
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-6: 24px;
+      --space-8: 32px;
+
+      --r-sm: 8px;
+      --r-md: 12px;
+      --r-lg: 16px;
+      --r-xl: 22px;
+      --r-pill: 999px;
+
+      --sh-sm: 0 1px 3px rgba(38,33,92,.06), 0 1px 2px rgba(38,33,92,.04);
+      --sh-md: 0 4px 16px rgba(38,33,92,.08), 0 2px 6px rgba(38,33,92,.04);
+      --sh-lg: 0 12px 32px rgba(38,33,92,.12), 0 4px 12px rgba(38,33,92,.06);
+      --sh-glow: 0 0 0 1px rgba(60,52,137,.08), 0 8px 28px rgba(60,52,137,.16);
+
+      --ease-out: cubic-bezier(.16,1,.3,1);
+      --t-fast: .15s;
+      --t-base: .22s;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background:
+        radial-gradient(at 0% 0%, rgba(60,52,137,.08) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(233,69,96,.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(245,138,44,.06) 0px, transparent 50%),
+        linear-gradient(135deg, #f7f5fe 0%, #fbf3f6 50%, #f3faf6 100%);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      letter-spacing: -.005em;
+      user-select: none;
+    }
+    button, input, textarea { font-family: inherit; font-size: inherit; color: inherit; }
+    h1, h2, h3 { letter-spacing: -.015em; margin: 0; }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(60,52,137,.18); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(60,52,137,.3); }
+
+    /* ─────────────────── HEADER ─────────────────── */
+    .app-header {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 60px;
+      background: rgba(255,255,255,.72);
+      backdrop-filter: saturate(180%) blur(14px);
+      -webkit-backdrop-filter: saturate(180%) blur(14px);
+      border-bottom: 1px solid rgba(60,52,137,.08);
+      display: flex; align-items: center; gap: var(--space-3);
+      padding: 0 var(--space-4);
+      z-index: 100;
+      padding-top: env(safe-area-inset-top, 0);
+    }
+    .menu-btn {
+      background: transparent; border: none; cursor: pointer;
+      font-size: 20px; color: var(--primary);
+      width: 38px; height: 38px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background var(--t-fast), transform var(--t-fast);
+    }
+    .menu-btn:hover { background: var(--primary-tint); }
+    .menu-btn:active { transform: scale(.94); }
+    .app-brand {
+      font-weight: 700; font-size: 15px;
+      color: var(--ink-soft);
+      display: flex; align-items: center; gap: 8px;
+      flex: 1; letter-spacing: -.02em;
+    }
+    .app-brand-logo {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--sh-sm);
+      flex-shrink: 0;
+    }
+    .app-brand-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .header-mini {
+      display: flex; gap: 6px; align-items: center;
+      padding: 6px 10px;
+      background: rgba(255,255,255,.5);
+      border-radius: var(--r-pill);
+      font-size: 11px; font-weight: 600;
+      color: var(--muted);
+    }
+    .header-mini .mini-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 0 rgba(29,158,117,.4);
+      animation: live 2s var(--ease-out) infinite;
+    }
+    @keyframes live {
+      0%,100% { box-shadow: 0 0 0 0 rgba(29,158,117,.5); }
+      50% { box-shadow: 0 0 0 6px rgba(29,158,117,0); }
+    }
+
+    /* ───────────────── DRAWER ───────────────── */
+    .drawer-overlay {
+      position: fixed; inset: 0;
+      background: rgba(20,18,42,.5);
+      backdrop-filter: blur(4px);
+      opacity: 0; pointer-events: none;
+      transition: opacity var(--t-base);
+      z-index: 200;
+    }
+    .drawer-overlay.open { opacity: 1; pointer-events: auto; }
+    .drawer {
+      position: fixed; top: 0; left: 0; bottom: 0;
+      width: 88%; max-width: 320px;
+      background: #fff;
+      transform: translateX(-100%);
+      transition: transform var(--t-base) var(--ease-out);
+      z-index: 201;
+      display: flex; flex-direction: column;
+      box-shadow: var(--sh-lg);
+      padding-top: env(safe-area-inset-top, 0);
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-soft) 50%, var(--coral) 130%);
+      color: #fff;
+      padding: 28px 22px 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .drawer-header::before {
+      content: ''; position: absolute; top: -40px; right: -30px;
+      width: 160px; height: 160px;
+      background: radial-gradient(circle, rgba(255,255,255,.18) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .drawer-user { font-size: 12px; opacity: .8; font-weight: 500; }
+    .drawer-email { font-size: 15px; font-weight: 700; margin-top: 2px; }
+    .drawer-nav { flex: 1; overflow-y: auto; padding: 8px 0; }
+    .drawer-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 22px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 500;
+      border-left: 3px solid transparent;
+      transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
+    }
+    .drawer-item:hover { background: var(--primary-tint); color: var(--ink-soft); }
+    .drawer-item.active {
+      background: var(--primary-tint);
+      border-left-color: var(--primary);
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .drawer-item .icon { font-size: 17px; width: 22px; text-align: center; }
+    .drawer-item .badge {
+      margin-left: auto;
+      background: var(--coral); color: #fff;
+      font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 999px;
+      min-width: 18px; text-align: center; line-height: 1.4;
+    }
+    .drawer-divider { height: 1px; background: rgba(60,52,137,.08); margin: 8px 16px; }
+    .drawer-foot { padding: 14px 22px; font-size: 10px; color: var(--muted-soft); }
+
+    /* ─────────────────── MAIN ─────────────────── */
+    .main {
+      position: fixed;
+      top: 60px; left: 0; right: 0; bottom: 0;
+      overflow-y: auto;
+      padding: var(--space-4);
+      padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom, 0));
+      -webkit-overflow-scrolling: touch;
+    }
+    .view { display: none; animation: fade .25s var(--ease-out); }
+    .view.active { display: block; }
+    @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    .view-title {
+      font-size: 22px; font-weight: 700; color: var(--ink-soft);
+      margin: 0 0 4px;
+    }
+    .view-subtitle {
+      font-size: 13px; color: var(--muted);
+      margin: 0 0 var(--space-4);
+    }
+
+    /* ════════════════════════════════════════════════
+       ★ PULSE LAYOUT — NEW COCKPIT DESIGN ★
+       ════════════════════════════════════════════════ */
+    .pulse-page {
+      display: grid;
+      gap: var(--space-3);
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "workflows"
+        "health"
+        "alerts"
+        "chat";
+    }
+    @media (min-width: 820px) {
+      .pulse-page {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+          "workflows workflows"
+          "health alerts"
+          "chat chat";
+        gap: var(--space-4);
+      }
+    }
+
+    /* Zone card base */
+    .zone {
+      background: rgba(255,255,255,.72);
+      backdrop-filter: saturate(180%) blur(12px);
+      -webkit-backdrop-filter: saturate(180%) blur(12px);
+      border: 1px solid rgba(60,52,137,.06);
+      border-radius: var(--r-lg);
+      padding: var(--space-4);
+      box-shadow: var(--sh-sm);
+      transition: box-shadow var(--t-base);
+    }
+    .zone:hover { box-shadow: var(--sh-md); }
+
+    .zone-head {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: var(--space-3);
+    }
+    .zone-title {
+      font-size: 13px; font-weight: 700;
+      color: var(--ink-soft);
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .zone-meta {
+      margin-left: auto;
+      font-size: 11px; color: var(--muted-soft);
+      font-weight: 600;
+    }
+    .zone-action {
+      background: transparent; border: none; cursor: pointer;
+      color: var(--primary); font-size: 11px; font-weight: 600;
+      padding: 4px 8px; border-radius: 6px;
+      transition: background var(--t-fast);
+    }
+    .zone-action:hover { background: var(--primary-tint); }
+
+    /* ─── WORKFLOWS BUBBLES ─── */
+    .wf-zone { grid-area: workflows; }
+    .wf-bubbles {
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+      flex-wrap: nowrap;
+      width: 100%;
+    }
+    .wf-bubbles.row-6 { justify-content: space-around; padding: 0 6%; }
+    .wf-bubbles-rows {
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .wf-bubble {
+      position: relative;
+      width: 78px; height: 78px;
+      flex-shrink: 0;
+      background: #fff;
+      border-radius: 50%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: transform var(--t-fast) var(--ease-out), box-shadow var(--t-base);
+      box-shadow: var(--sh-sm);
+      border: 1.5px solid transparent;
+      overflow: visible;
+    }
+    .wf-bubble:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--sh-glow);
+      border-color: rgba(60,52,137,.15);
+    }
+    .wf-bubble:active { transform: scale(.96); }
+    .wf-bubble.ok { border-color: rgba(29,158,117,.25); }
+    .wf-bubble.warn { border-color: rgba(245,138,44,.3); }
+    .wf-bubble.err { border-color: rgba(233,69,96,.35); }
+    .wf-bubble.off { opacity: .55; border-color: rgba(155,155,168,.2); }
+
+    .wf-bubble .wf-emoji {
+      font-size: 22px;
+      line-height: 1;
+      margin-bottom: 3px;
+    }
+    .wf-bubble .wf-short {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      max-width: 70px;
+      text-align: center;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .wf-bubble .wf-status-dot {
+      position: absolute;
+      top: 6px; right: 6px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px #fff;
+    }
+    .wf-bubble.ok .wf-status-dot { background: var(--success); animation: live 2s infinite; }
+    .wf-bubble.warn .wf-status-dot { background: var(--orange); }
+    .wf-bubble.err .wf-status-dot { background: var(--coral); animation: live 1s infinite; }
+    .wf-bubble.off .wf-status-dot { background: var(--muted-soft); }
+
+    /* Tooltip on hover */
+    .wf-bubble::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      background: var(--ink-soft);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: -.005em;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--t-base), transform var(--t-base);
+      z-index: 10;
+    }
+    .wf-bubble:hover::after {
+      opacity: 1; transform: translateX(-50%) translateY(0);
+    }
+
+    /* Adapt bubbles size on mobile */
+    @media (max-width: 720px) {
+      .wf-bubbles { gap: 8px; }
+      .wf-bubble { width: 54px; height: 54px; }
+      .wf-bubble .wf-emoji { font-size: 16px; margin-bottom: 1px; }
+      .wf-bubble .wf-short { font-size: 7px; max-width: 50px; }
+      .wf-bubble .wf-status-dot { width: 8px; height: 8px; top: 4px; right: 4px; }
+    }
+    @media (max-width: 420px) {
+      .wf-bubbles { gap: 4px; }
+      .wf-bubble { width: 46px; height: 46px; }
+      .wf-bubble .wf-emoji { font-size: 14px; }
+      .wf-bubble .wf-short { font-size: 6px; }
+    }
+
+    /* ─── HEALTH PULSE ─── */
+    .health-zone { grid-area: health; }
+    .health-list {
+      display: flex; flex-direction: column;
+      gap: var(--space-2);
+    }
+    .health-row {
+      display: flex; align-items: center; gap: var(--space-3);
+      padding: 10px var(--space-3);
+      background: rgba(255,255,255,.5);
+      border-radius: var(--r-md);
+      border: 1px solid rgba(60,52,137,.04);
+      transition: background var(--t-fast);
+    }
+    .health-row:hover { background: rgba(60,52,137,.05); }
+    .health-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--primary-tint) 0%, #fff 100%);
+    }
+    .health-icon.ok { background: linear-gradient(135deg, #d4f4e8 0%, #fff 100%); color: var(--success); }
+    .health-icon.warn { background: linear-gradient(135deg, #ffe5cc 0%, #fff 100%); color: var(--orange); }
+    .health-icon.err { background: linear-gradient(135deg, #fdd9e0 0%, #fff 100%); color: var(--coral); }
+    .health-body { flex: 1; min-width: 0; }
+    .health-name { font-size: 13px; font-weight: 600; color: var(--ink-soft); }
+    .health-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .health-bar {
+      width: 50px; height: 4px;
+      background: rgba(60,52,137,.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .health-bar > div {
+      height: 100%;
+      border-radius: 999px;
+      transition: width .4s var(--ease-out);
+    }
+    .health-row.ok .health-bar > div { background: var(--success); }
+    .health-row.warn .health-bar > div { background: var(--orange); }
+    .health-row.err .health-bar > div { background: var(--coral); }
+
+    /* ─── ALERTS ─── */
+    .alerts-zone { grid-area: alerts; }
+    .alert-list {
+      display: flex; flex-direction: column;
+      gap: var(--space-2);
+      max-height: 320px;
+      overflow-y: auto;
+    }
+    .alert-row {
+      display: flex; gap: var(--space-3);
+      padding: 10px var(--space-3);
+      background: rgba(255,255,255,.5);
+      border-radius: var(--r-md);
+      border: 1px solid rgba(60,52,137,.04);
+      border-left-width: 3px;
+      cursor: pointer;
+      transition: background var(--t-fast), transform var(--t-fast);
+    }
+    .alert-row:hover { background: rgba(60,52,137,.05); transform: translateX(2px); }
+    .alert-row.critical { border-left-color: var(--coral); }
+    .alert-row.warning { border-left-color: var(--orange); }
+    .alert-row.info { border-left-color: var(--primary); }
+    .alert-row.success { border-left-color: var(--success); }
+    .alert-emoji { font-size: 18px; flex-shrink: 0; }
+    .alert-body { flex: 1; min-width: 0; }
+    .alert-title { font-size: 12px; font-weight: 600; color: var(--ink-soft); line-height: 1.3; }
+    .alert-msg { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+    .alert-time { font-size: 10px; color: var(--muted-soft); margin-top: 4px; font-weight: 500; }
+    .alert-dismiss {
+      background: transparent; border: none; cursor: pointer;
+      color: var(--muted-soft); font-size: 14px;
+      width: 24px; height: 24px; border-radius: 50%;
+      transition: background var(--t-fast), color var(--t-fast);
+      flex-shrink: 0;
+      align-self: flex-start;
+    }
+    .alert-dismiss:hover { background: rgba(0,0,0,.06); color: var(--ink); }
+
+    .empty {
+      text-align: center; padding: var(--space-6) var(--space-3);
+      color: var(--muted-soft);
+      font-size: 12px;
+    }
+    .empty .empty-emoji { font-size: 32px; margin-bottom: 8px; opacity: .6; }
+
+    /* ─── CHAT BIGBOSS ─── */
+    .chat-zone {
+      grid-area: chat;
+      display: flex; flex-direction: column;
+      min-height: 380px;
+    }
+    .chat-quick-strip {
+      display: flex; gap: 6px;
+      overflow-x: auto;
+      padding-bottom: var(--space-2);
+      margin-bottom: var(--space-3);
+      scrollbar-width: none;
+    }
+    .chat-quick-strip::-webkit-scrollbar { display: none; }
+    .quick-chip {
+      flex-shrink: 0;
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 7px 12px;
+      background: rgba(60,52,137,.06);
+      color: var(--primary);
+      border: none;
+      border-radius: var(--r-pill);
+      font-size: 12px; font-weight: 600;
+      cursor: pointer;
+      transition: background var(--t-fast), transform var(--t-fast);
+      white-space: nowrap;
+    }
+    .quick-chip:hover { background: rgba(60,52,137,.12); }
+    .quick-chip:active { transform: scale(.95); }
+    .quick-chip.primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-soft) 100%);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(60,52,137,.25);
+    }
+
+    .chat-window {
+      flex: 1;
+      display: flex; flex-direction: column;
+      background: rgba(255,255,255,.55);
+      border: 1px solid rgba(60,52,137,.06);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      min-height: 240px;
+    }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-3);
+      display: flex; flex-direction: column;
+      gap: var(--space-2);
+    }
+    .msg {
+      max-width: 78%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+      word-wrap: break-word;
+      animation: msg-in .25s var(--ease-out);
+    }
+    @keyframes msg-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .msg.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-soft) 100%);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 4px 12px rgba(60,52,137,.18);
+    }
+    .msg.bot {
+      align-self: flex-start;
+      background: #fff;
+      color: var(--ink);
+      border-bottom-left-radius: 4px;
+      box-shadow: var(--sh-sm);
+    }
+    .msg.bot .msg-author {
+      font-size: 10px; font-weight: 700;
+      color: var(--primary);
+      letter-spacing: .04em; text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .chat-input {
+      display: flex; gap: 8px;
+      padding: var(--space-3);
+      border-top: 1px solid rgba(60,52,137,.06);
+      background: rgba(255,255,255,.65);
+    }
+    .chat-input input {
+      flex: 1;
+      padding: 10px 14px;
+      background: #fff;
+      border: 1.5px solid rgba(60,52,137,.1);
+      border-radius: var(--r-pill);
+      font-size: 14px;
+      outline: none;
+      transition: border-color var(--t-fast), box-shadow var(--t-fast);
+    }
+    .chat-input input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(60,52,137,.1);
+    }
+    .chat-send {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--coral) 130%);
+      color: #fff;
+      border: none; cursor: pointer;
+      font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--sh-md);
+      transition: transform var(--t-fast);
+    }
+    .chat-send:hover { transform: scale(1.06); }
+    .chat-send:active { transform: scale(.94); }
+
+    /* ════════════════════════════════════════════════
+       ★ COMMON GRID & CARDS
+       ════════════════════════════════════════════════ */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3); }
+    @media (max-width: 720px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+    @media (min-width: 721px) and (max-width: 1100px) {
+      .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
+    }
+
+    .kpi {
+      background: rgba(255,255,255,.72);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(60,52,137,.06);
+      border-radius: var(--r-lg);
+      padding: var(--space-4);
+      box-shadow: var(--sh-sm);
+      transition: transform var(--t-fast), box-shadow var(--t-base);
+    }
+    .kpi:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+    .kpi-head { display: flex; align-items: center; gap: 8px; margin-bottom: var(--space-2); }
+    .kpi-emoji {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      background: var(--primary-tint);
+    }
+    .kpi-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+    .kpi-value { font-size: 28px; font-weight: 800; color: var(--ink-soft); letter-spacing: -.02em; line-height: 1.1; }
+    .kpi-delta { font-size: 11px; font-weight: 600; margin-top: 4px; display: inline-flex; align-items: center; gap: 3px; }
+    .kpi-delta.up { color: var(--success); }
+    .kpi-delta.down { color: var(--coral); }
+    .kpi-delta.flat { color: var(--muted); }
+
+    /* Filter tabs */
+    .filter-tabs {
+      display: flex; gap: 4px;
+      background: rgba(60,52,137,.06);
+      padding: 4px;
+      border-radius: var(--r-pill);
+      margin-bottom: var(--space-4);
+      width: fit-content;
+    }
+    .filter-tab {
+      padding: 6px 14px;
+      border-radius: var(--r-pill);
+      font-size: 12px; font-weight: 600;
+      color: var(--muted);
+      background: transparent;
+      border: none; cursor: pointer;
+      transition: background var(--t-fast), color var(--t-fast);
+    }
+    .filter-tab.active { background: #fff; color: var(--primary); box-shadow: var(--sh-sm); }
+    .filter-tab:hover:not(.active) { color: var(--ink-soft); }
+
+    /* ─── SUPERVISION & APPROBATION ─── */
+    .vid-card {
+      background: rgba(255,255,255,.78);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(60,52,137,.06);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      box-shadow: var(--sh-sm);
+      transition: box-shadow var(--t-base), transform var(--t-fast);
+      display: flex;
+      flex-direction: column;
+    }
+    .vid-card:hover { box-shadow: var(--sh-md); transform: translateY(-2px); }
+    .vid-card-thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      max-height: 260px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--coral) 100%);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 38px;
+      overflow: hidden;
+    }
+    .vid-card-thumb video { width: 100%; height: 100%; object-fit: cover; }
+    .vid-card-tag {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(255,255,255,.92);
+      padding: 4px 10px;
+      border-radius: var(--r-pill);
+      font-size: 11px; font-weight: 700;
+      color: var(--orange);
+      letter-spacing: .03em;
+    }
+    .vid-card-tag.published { color: var(--success); }
+    .vid-card-tag.rejected { color: var(--coral); }
+    .vid-card-duration {
+      position: absolute; bottom: 10px; right: 10px;
+      background: rgba(20,18,42,.75);
+      color: #fff;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 10px; font-weight: 600;
+    }
+    .vid-card-body {
+      padding: var(--space-3);
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .vid-card-title { font-size: 14px; font-weight: 700; color: var(--ink-soft); margin: 0 0 4px; line-height: 1.3; }
+    .vid-card-meta { font-size: 11px; color: var(--muted); margin-bottom: var(--space-2); }
+    .vid-card-cap {
+      font-size: 12px; color: var(--ink); line-height: 1.5;
+      max-height: 3em; overflow: hidden;
+      position: relative;
+      margin-bottom: var(--space-2);
+    }
+    .vid-card-cap::after {
+      content: ''; position: absolute; bottom: 0; right: 0;
+      width: 60px; height: 1.5em;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,.85));
+    }
+    .vid-card-music {
+      background: linear-gradient(135deg, rgba(245,138,44,.08) 0%, rgba(233,69,96,.06) 100%);
+      border: 1px solid rgba(245,138,44,.18);
+      border-radius: var(--r-md);
+      padding: 8px 10px;
+      margin-bottom: var(--space-3);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .vid-card-music-icon { font-size: 16px; flex-shrink: 0; }
+    .vid-card-music-text { flex: 1; min-width: 0; font-size: 11px; line-height: 1.3; }
+    .vid-card-music-label { font-weight: 700; color: var(--orange); font-size: 10px; text-transform: uppercase; letter-spacing: .04em; }
+    .vid-card-music-name { font-weight: 600; color: var(--ink-soft); margin-top: 1px; word-wrap: break-word; }
+    .vid-card-actions {
+      display: flex; gap: 6px;
+      padding: 0 var(--space-3) var(--space-3);
+      margin-top: auto;
+    }
+    .btn-mini {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 12px; font-weight: 600;
+      cursor: pointer; border: none;
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+      transition: transform var(--t-fast);
+    }
+    .btn-mini:active { transform: scale(.96); }
+    .btn-approve { background: var(--success); color: #fff; }
+    .btn-approve:hover { background: #178862; }
+    .btn-reject { background: #fff; color: var(--coral); border: 1.5px solid var(--coral); }
+    .btn-reject:hover { background: var(--coral); color: #fff; }
+    .btn-preview { background: var(--primary-tint); color: var(--primary); }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: #2f2773; }
+
+    /* ─── HELPER TIKTOK ─── */
+    .tt-banner {
+      background: linear-gradient(135deg, var(--coral) 0%, var(--orange) 100%);
+      color: #fff;
+      border-radius: var(--r-lg);
+      padding: var(--space-3) var(--space-4);
+      margin-bottom: var(--space-3);
+      display: flex; align-items: center; gap: var(--space-3);
+      box-shadow: 0 8px 24px rgba(233,69,96,.2);
+    }
+    .tt-banner-emoji { font-size: 32px; }
+    .tt-banner-text { flex: 1; }
+    .tt-banner-title { font-size: 14px; font-weight: 700; letter-spacing: -.005em; }
+    .tt-banner-sub { font-size: 12px; opacity: .9; margin-top: 2px; }
+
+    .tt-helper-card {
+      background: rgba(255,255,255,.78);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(60,52,137,.06);
+      border-radius: var(--r-lg);
+      padding: var(--space-4);
+      margin-bottom: var(--space-3);
+      box-shadow: var(--sh-sm);
+    }
+    .tt-helper-head { display: flex; align-items: flex-start; gap: var(--space-3); margin-bottom: var(--space-3); }
+    .tt-helper-thumb {
+      width: 80px; aspect-ratio: 9/16;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--coral) 100%);
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      color: #fff;
+      overflow: hidden;
+    }
+    .tt-helper-info { flex: 1; min-width: 0; }
+    .tt-helper-title { font-size: 14px; font-weight: 700; color: var(--ink-soft); margin: 0 0 4px; }
+    .tt-helper-meta { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+    .tt-helper-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(245,138,44,.12);
+      color: var(--orange);
+      padding: 3px 8px;
+      border-radius: var(--r-pill);
+      font-size: 10px; font-weight: 700;
+    }
+    .tt-caption-box {
+      background: #fff;
+      border: 1.5px dashed rgba(60,52,137,.15);
+      border-radius: var(--r-md);
+      padding: var(--space-3);
+      font-size: 12px; line-height: 1.6;
+      color: var(--ink);
+      max-height: 160px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      margin-bottom: var(--space-3);
+    }
+    .tt-helper-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tt-helper-actions .btn-mini { flex: 1 1 0; min-width: 110px; padding: 11px 12px; font-size: 12px; }
+
+    /* ─── FEED PUBLIÉ ─── */
+    .feed-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3); margin-bottom: var(--space-4); }
+    @media (max-width: 720px) { .feed-stats { grid-template-columns: 1fr 1fr; } }
+    .feed-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: var(--space-3);
+    }
+    .feed-card {
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(60,52,137,.06);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform var(--t-fast), box-shadow var(--t-base);
+      box-shadow: var(--sh-sm);
+    }
+    .feed-card:hover { transform: translateY(-3px); box-shadow: var(--sh-md); }
+    .feed-thumb {
+      position: relative;
+      aspect-ratio: 9/16;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--coral) 100%);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 38px;
+      overflow: hidden;
+    }
+    .feed-platform-tag {
+      position: absolute; top: 8px; left: 8px;
+      background: rgba(0,0,0,.5);
+      backdrop-filter: blur(6px);
+      color: #fff;
+      padding: 3px 8px;
+      border-radius: var(--r-pill);
+      font-size: 10px; font-weight: 700;
+    }
+    .feed-body { padding: 10px var(--space-3) var(--space-3); }
+    .feed-title { font-size: 13px; font-weight: 700; color: var(--ink-soft); margin: 0 0 4px; }
+    .feed-date { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+    .feed-metrics { display: flex; gap: 10px; font-size: 11px; font-weight: 600; color: var(--ink); }
+    .feed-metric { display: inline-flex; align-items: center; gap: 3px; }
+    .feed-metric .m-icon { color: var(--muted); }
+
+    /* ─── ANALYTICS ─── */
+    .analytics-insight {
+      background: linear-gradient(135deg, var(--primary-tint) 0%, #fff 100%);
+      border-left: 4px solid var(--primary);
+      border-radius: var(--r-md);
+      padding: var(--space-3) var(--space-4);
+      margin-top: var(--space-3);
+    }
+    .insight-label { font-size: 10px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+    .insight-text { font-size: 13px; color: var(--ink); line-height: 1.6; }
+
+    /* ─── COSTS ─── */
+    .cost-card {
+      background: rgba(255,255,255,.78);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(60,52,137,.06);
+      border-radius: var(--r-lg);
+      padding: var(--space-4);
+      margin-bottom: var(--space-3);
+      box-shadow: var(--sh-sm);
+    }
+    .cost-row { display: flex; align-items: center; gap: var(--space-3); margin-bottom: 10px; }
+    .cost-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+      background: var(--primary-tint);
+    }
+    .cost-info { flex: 1; min-width: 0; }
+    .cost-name { font-size: 14px; font-weight: 700; color: var(--ink-soft); }
+    .cost-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .cost-value { font-size: 18px; font-weight: 800; color: var(--ink-soft); letter-spacing: -.01em; }
+    .cost-bar {
+      height: 8px;
+      background: rgba(60,52,137,.06);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: var(--space-2);
+    }
+    .cost-bar > div {
+      height: 100%; border-radius: 999px;
+      transition: width .5s var(--ease-out);
+      background: var(--success);
+    }
+    .cost-bar.warn > div { background: var(--orange); }
+    .cost-bar.err > div { background: var(--coral); }
+
+    /* ─── IDEAS ─── */
+    .idea-card {
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(60,52,137,.06);
+      border-radius: var(--r-md);
+      padding: var(--space-3) var(--space-4);
+      margin-bottom: 10px;
+      box-shadow: var(--sh-sm);
+      cursor: pointer;
+      transition: transform var(--t-fast), box-shadow var(--t-base);
+    }
+    .idea-card:hover { transform: translateY(-1px); box-shadow: var(--sh-md); }
+    .idea-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .idea-title { font-size: 13px; font-weight: 700; color: var(--ink-soft); flex: 1; }
+    .idea-status {
+      font-size: 10px; font-weight: 700;
+      padding: 3px 8px; border-radius: var(--r-pill);
+      letter-spacing: .03em;
+    }
+    .idea-status.idea { background: var(--primary-tint); color: var(--primary); }
+    .idea-status.wip { background: rgba(245,138,44,.15); color: var(--orange); }
+    .idea-status.done { background: rgba(29,158,117,.12); color: var(--success); }
+    .idea-desc { font-size: 12px; color: var(--ink); line-height: 1.5; margin-bottom: 6px; }
+    .idea-foot { font-size: 10px; color: var(--muted-soft); }
+
+    /* ─── LINKS ─── */
+    .link-section { margin-bottom: var(--space-4); }
+    .link-section-title {
+      font-size: 11px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .06em;
+      margin-bottom: var(--space-2);
+      padding-left: 4px;
+    }
+    .link-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+    }
+    .link-card {
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(60,52,137,.06);
+      border-radius: var(--r-md);
+      padding: var(--space-3);
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none;
+      color: var(--ink);
+      box-shadow: var(--sh-sm);
+      transition: transform var(--t-fast), box-shadow var(--t-base);
+    }
+    .link-card:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+    .link-icon-box {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: var(--primary-tint);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .link-name { font-size: 12px; font-weight: 700; color: var(--ink-soft); line-height: 1.2; }
+    .link-url { font-size: 10px; color: var(--muted); }
+
+    /* ─── MODAL POPUP ─── */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(20,18,42,.55);
+      backdrop-filter: blur(6px);
+      opacity: 0; pointer-events: none;
+      transition: opacity var(--t-base);
+      z-index: 400;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+    .modal-card {
+      background: #fff;
+      border-radius: var(--r-xl);
+      padding: 24px;
+      max-width: 480px; width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: var(--sh-lg);
+      transform: scale(.95) translateY(10px);
+      transition: transform var(--t-base) var(--ease-out);
+    }
+    .modal-backdrop.open .modal-card { transform: scale(1) translateY(0); }
+    .modal-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+    .modal-emoji {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; flex-shrink: 0;
+      background: var(--primary-tint);
+    }
+    .modal-emoji.ok { background: linear-gradient(135deg, #d4f4e8 0%, #fff 100%); color: var(--success); }
+    .modal-emoji.warn { background: linear-gradient(135deg, #ffe5cc 0%, #fff 100%); color: var(--orange); }
+    .modal-emoji.err { background: linear-gradient(135deg, #fdd9e0 0%, #fff 100%); color: var(--coral); }
+    .modal-emoji.info { background: linear-gradient(135deg, var(--primary-tint) 0%, #fff 100%); color: var(--primary); }
+    .modal-title-zone { flex: 1; min-width: 0; }
+    .modal-title { font-size: 17px; font-weight: 700; color: var(--ink-soft); margin: 0 0 2px; }
+    .modal-meta { font-size: 12px; color: var(--muted); }
+    .modal-close {
+      background: rgba(0,0,0,.04); border: none; cursor: pointer;
+      width: 32px; height: 32px; border-radius: 50%;
+      font-size: 14px; color: var(--muted);
+      transition: background var(--t-fast);
+    }
+    .modal-close:hover { background: rgba(0,0,0,.1); }
+    .modal-body {
+      font-size: 13px; color: var(--ink); line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .modal-section { margin-top: 16px; }
+    .modal-section-title {
+      font-size: 11px; font-weight: 700;
+      color: var(--muted); text-transform: uppercase; letter-spacing: .05em;
+      margin-bottom: 6px;
+    }
+    .modal-kv {
+      display: grid; grid-template-columns: 100px 1fr;
+      gap: 6px 12px;
+      font-size: 12px;
+    }
+    .modal-kv .k { color: var(--muted); font-weight: 600; }
+    .modal-kv .v { color: var(--ink); word-break: break-word; }
+    .modal-actions { display: flex; gap: 8px; margin-top: 18px; }
+    .modal-btn {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: var(--r-pill);
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; border: none;
+      transition: transform var(--t-fast);
+    }
+    .modal-btn:active { transform: scale(.97); }
+    .modal-btn.primary { background: var(--primary); color: #fff; }
+    .modal-btn.outline { background: #fff; color: var(--primary); border: 1.5px solid var(--primary); }
+
+    /* ─── LOGIN ─── */
+    .login-screen {
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(at 30% 20%, rgba(60,52,137,.12) 0px, transparent 50%),
+        radial-gradient(at 70% 80%, rgba(233,69,96,.1) 0px, transparent 50%),
+        linear-gradient(135deg, #f7f5fe 0%, #fbf3f6 50%, #f3faf6 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: var(--space-6);
+      z-index: 500;
+    }
+    .login-card {
+      background: rgba(255,255,255,.85);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border: 1px solid rgba(60,52,137,.08);
+      border-radius: var(--r-xl);
+      padding: 36px 28px;
+      width: 100%; max-width: 380px;
+      box-shadow: var(--sh-lg);
+    }
+    .login-logo {
+      width: 80px; height: 80px;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 0 auto var(--space-4);
+      box-shadow: 0 12px 32px rgba(60,52,137,.3);
+    }
+    .login-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .login-title {
+      font-size: 24px; font-weight: 800; color: var(--ink-soft);
+      text-align: center;
+      margin-bottom: 4px;
+      letter-spacing: -.025em;
+    }
+    .login-sub {
+      font-size: 13px; color: var(--muted);
+      text-align: center;
+      margin-bottom: var(--space-6);
+    }
+    .login-field { margin-bottom: var(--space-3); }
+    .login-field label {
+      display: block;
+      font-size: 11px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .05em;
+      margin-bottom: 6px;
+    }
+    .login-field input {
+      width: 100%;
+      padding: 12px 16px;
+      background: #fff;
+      border: 1.5px solid rgba(60,52,137,.12);
+      border-radius: var(--r-md);
+      font-size: 14px;
+      outline: none;
+      transition: border-color var(--t-fast), box-shadow var(--t-fast);
+    }
+    .login-field input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(60,52,137,.08);
+    }
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-soft) 100%);
+      color: #fff;
+      border: none; border-radius: var(--r-pill);
+      font-size: 15px; font-weight: 700;
+      cursor: pointer;
+      margin-top: var(--space-2);
+      box-shadow: 0 8px 24px rgba(60,52,137,.3);
+      transition: transform var(--t-fast), box-shadow var(--t-fast);
+    }
+    .login-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(60,52,137,.35); }
+    .login-btn:active { transform: scale(.98); }
+    .login-foot {
+      font-size: 11px; color: var(--muted-soft);
+      text-align: center;
+      margin-top: var(--space-4);
+      letter-spacing: .02em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ───────────── LOGIN ───────────── -->
+  <div class="login-screen" id="login-screen">
+    <div class="login-card">
+      <div class="login-logo"><img src="logo.jpg" alt="Kadoizi"></div>
+      <h1 class="login-title">Kadoizi Admin</h1>
+      <p class="login-sub">Cockpit privé · accès restreint</p>
+      <form id="login-form">
+        <div class="login-field">
+          <label>Email</label>
+          <input type="email" id="login-email" placeholder="ton@email.com" required>
+        </div>
+        <div class="login-field">
+          <label>Mot de passe</label>
+          <input type="password" id="login-pwd" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="login-btn">Connexion →</button>
+      </form>
+      <p class="login-foot">🔒 Tentatives loggées · IP rate-limited · noindex</p>
+    </div>
+  </div>
+
+  <!-- ───────────── MODAL POPUP ───────────── -->
+  <div class="modal-backdrop" id="modal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div class="modal-emoji" id="modal-emoji">📌</div>
+        <div class="modal-title-zone">
+          <h3 class="modal-title" id="modal-title">Titre</h3>
+          <div class="modal-meta" id="modal-meta"></div>
+        </div>
+        <button class="modal-close" id="modal-close" aria-label="Fermer">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-section" id="modal-extras" style="display:none">
+        <div class="modal-section-title">Détails techniques</div>
+        <div class="modal-kv" id="modal-kv"></div>
+      </div>
+      <div class="modal-actions" id="modal-actions"></div>
+    </div>
+  </div>
+
+  <!-- ───────────── HEADER ───────────── -->
+  <header class="app-header" id="app-header" style="display:none">
+    <button class="menu-btn" id="menu-btn" aria-label="Menu">☰</button>
+    <span class="app-brand">
+      <span class="app-brand-logo"><img src="logo.jpg" alt="K"></span>
+      <span>Kadoizi Cockpit</span>
+    </span>
+    <div class="header-mini"><span class="mini-dot"></span><span>LIVE</span></div>
+  </header>
+
+  <!-- ───────────── DRAWER ───────────── -->
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+  <nav class="drawer" id="drawer">
+    <div class="drawer-header">
+      <div class="drawer-user">Connecté en tant que</div>
+      <div class="drawer-email" id="drawer-email">gyentrepreneur@gmail.com</div>
+    </div>
+    <div class="drawer-nav" id="drawer-nav"></div>
+    <div class="drawer-divider"></div>
+    <div class="drawer-item" data-view="logout">
+      <span class="icon">🚪</span><span>Déconnexion</span>
+    </div>
+    <div class="drawer-foot">Kadoizi Admin · v0.2 prototype · 01/06/2026</div>
+  </nav>
+
+  <!-- ───────────── MAIN ───────────── -->
+  <main class="main" id="main" style="display:none">
+
+    <!-- ═══ VUE PULSE ═══ -->
+    <section class="view active" data-view="pulse">
+      <div class="pulse-page">
+
+        <!-- WORKFLOWS BUBBLES -->
+        <div class="zone wf-zone">
+          <div class="zone-head">
+            <span class="zone-title">⚙️ Workflows n8n</span>
+            <span class="zone-meta" id="wf-meta">— actifs</span>
+            <button class="zone-action">Voir tout →</button>
+          </div>
+          <div class="wf-bubbles-rows">
+            <div class="wf-bubbles row-7" id="wf-row-1"></div>
+            <div class="wf-bubbles row-6" id="wf-row-2"></div>
+          </div>
+        </div>
+
+        <!-- HEALTH PULSE -->
+        <div class="zone health-zone">
+          <div class="zone-head">
+            <span class="zone-title">💚 Santé services</span>
+            <span class="zone-meta">refresh 30s</span>
+          </div>
+          <div class="health-list" id="health-list"></div>
+        </div>
+
+        <!-- ALERTS -->
+        <div class="zone alerts-zone">
+          <div class="zone-head">
+            <span class="zone-title">🚨 Notifications</span>
+            <span class="zone-meta" id="alerts-meta">— non lues</span>
+            <button class="zone-action">Tout effacer</button>
+          </div>
+          <div class="alert-list" id="alert-list"></div>
+        </div>
+
+        <!-- CHAT BIGBOSS -->
+        <div class="zone chat-zone">
+          <div class="zone-head">
+            <span class="zone-title">🤖 BigBoss</span>
+            <span class="zone-meta">orchestrateur live</span>
+          </div>
+
+          <!-- Quick actions chips -->
+          <div class="chat-quick-strip">
+            <button class="quick-chip primary" data-prefill="Génère une vidéo TikTok Fête des Pères 2026">🎬 Vidéo Fête des Pères</button>
+            <button class="quick-chip" data-prefill="Lance un article SEO ce mois">📝 Article SEO</button>
+            <button class="quick-chip" data-prefill="Nettoie mon inbox TikTok">🧹 Nettoyer inbox</button>
+            <button class="quick-chip" data-prefill="Force poll publish-detect maintenant">🔄 Poll publish</button>
+            <button class="quick-chip" data-prefill="Donne-moi le rapport analytics du jour">📊 Rapport jour</button>
+            <button class="quick-chip" data-prefill="Quelles sont les vidéos en attente d'approval ?">🎬 Pending</button>
+            <button class="quick-chip" data-prefill="État des coûts cette semaine">💸 Coûts semaine</button>
+          </div>
+
+          <div class="chat-window">
+            <div class="chat-messages" id="chat-messages">
+              <div class="msg bot">
+                <div class="msg-author">BigBoss</div>
+                Salut Gylan 👋 Que veux-tu faire ? Tu peux utiliser une des actions rapides ci-dessus ou me parler directement.
+              </div>
+            </div>
+            <form class="chat-input" id="chat-form">
+              <input type="text" id="chat-input" placeholder="Demande quelque chose à BigBoss…" autocomplete="off">
+              <button type="submit" class="chat-send" aria-label="Envoyer">➤</button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══ SUPERVISION & APPROBATION ═══ -->
+    <section class="view" data-view="supervise">
+      <h1 class="view-title">🎬 Supervision & Approbation</h1>
+      <p class="view-subtitle">Valide les vidéos avant qu'elles partent vers TikTok</p>
+
+      <div class="grid-4" style="margin-bottom:var(--space-4)">
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">⏳</div><div class="kpi-label">En attente</div></div><div class="kpi-value">2</div><div class="kpi-delta flat">awaiting approval</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">✅</div><div class="kpi-label">Approuvées 7j</div></div><div class="kpi-value">1</div><div class="kpi-delta up">↑ V2 Fête des Mères</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">✕</div><div class="kpi-label">Rejetées 7j</div></div><div class="kpi-value">0</div><div class="kpi-delta flat">stable</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">🎞️</div><div class="kpi-label">En render</div></div><div class="kpi-value">0</div><div class="kpi-delta flat">idle</div></div>
+      </div>
+
+      <div class="filter-tabs">
+        <button class="filter-tab active">Toutes (2)</button>
+        <button class="filter-tab">⏳ Pending (2)</button>
+        <button class="filter-tab">✅ Approved</button>
+        <button class="filter-tab">✕ Rejected</button>
+      </div>
+
+      <div class="grid-3" id="approval-grid"></div>
+    </section>
+
+    <!-- ═══ HELPER TIKTOK ═══ -->
+    <section class="view" data-view="tt-helper">
+      <h1 class="view-title">📱 Helper TikTok</h1>
+      <p class="view-subtitle">Tes vidéos prêtes à finaliser sur le tel</p>
+
+      <div class="tt-banner">
+        <div class="tt-banner-emoji">📱</div>
+        <div class="tt-banner-text">
+          <div class="tt-banner-title">1 vidéo en attente dans ton inbox TikTok</div>
+          <div class="tt-banner-sub">Ouvre TikTok mobile · ajoute un son trending · colle la caption · publie</div>
+        </div>
+      </div>
+
+      <div id="tt-helper-list"></div>
+    </section>
+
+    <!-- ═══ FEED PUBLIÉ ═══ -->
+    <section class="view" data-view="feed">
+      <h1 class="view-title">📊 Feed publié</h1>
+      <p class="view-subtitle">Mur de tes posts live · clique pour ouvrir</p>
+
+      <div class="feed-stats">
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">🎬</div><div class="kpi-label">Posts publiés</div></div><div class="kpi-value">1</div><div class="kpi-delta up">↑ 1 ce mois</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">👁</div><div class="kpi-label">Vues totales</div></div><div class="kpi-value">—</div><div class="kpi-delta flat">phase 2 · scope analytics</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">❤️</div><div class="kpi-label">Likes totaux</div></div><div class="kpi-value">—</div><div class="kpi-delta flat">phase 2</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">💬</div><div class="kpi-label">Commentaires</div></div><div class="kpi-value">—</div><div class="kpi-delta flat">phase 2</div></div>
+      </div>
+
+      <div class="feed-grid" id="feed-grid"></div>
+    </section>
+
+    <!-- ═══ ANALYTICS ═══ -->
+    <section class="view" data-view="analytics">
+      <h1 class="view-title">📈 Compte rendu Analytics</h1>
+      <p class="view-subtitle">Historique des rapports générés par <strong>04_Agent_Analytics_v2</strong></p>
+
+      <div class="grid-4" style="margin-bottom:var(--space-4)">
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">📊</div><div class="kpi-label">Rapports 30j</div></div><div class="kpi-value">12</div><div class="kpi-delta up">↑ 3 cette semaine</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">🎬</div><div class="kpi-label">Vidéos suivies</div></div><div class="kpi-value">3</div><div class="kpi-delta up">↑ 1 publiée</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">🎁</div><div class="kpi-label">Quiz cadeaux</div></div><div class="kpi-value">53</div><div class="kpi-delta up">↑ 18%</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">👤</div><div class="kpi-label">Nouveaux users</div></div><div class="kpi-value">12</div><div class="kpi-delta up">↑ 4 cette semaine</div></div>
+      </div>
+
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-rep="all">Tous</button>
+        <button class="filter-tab" data-rep="daily">📅 Quotidiens</button>
+        <button class="filter-tab" data-rep="weekly">📆 Hebdo</button>
+        <button class="filter-tab" data-rep="alert">🚨 Alertes</button>
+      </div>
+
+      <div id="reports-list"></div>
+    </section>
+
+    <!-- ═══ COSTS ═══ -->
+    <section class="view" data-view="costs">
+      <h1 class="view-title">💸 Coûts & quotas</h1>
+      <p class="view-subtitle">État live de tes crédits / quotas par service</p>
+      <div id="costs-list"></div>
+    </section>
+
+    <!-- ═══ IDEAS ═══ -->
+    <section class="view" data-view="ideas">
+      <h1 class="view-title">💡 Idées d'amélioration</h1>
+      <p class="view-subtitle">Backlog · ce que toi ou les agents proposent</p>
+
+      <div class="filter-tabs">
+        <button class="filter-tab active">Toutes</button>
+        <button class="filter-tab">💡 Idée</button>
+        <button class="filter-tab">⚙️ En cours</button>
+        <button class="filter-tab">✓ Fait</button>
+      </div>
+
+      <div id="ideas-list"></div>
+      <button class="btn-mini btn-primary" style="margin-top:var(--space-3); width:100%; padding:12px">+ Nouvelle idée</button>
+    </section>
+
+    <!-- ═══ LINKS ═══ -->
+    <section class="view" data-view="links">
+      <h1 class="view-title">🔗 Raccourcis externes</h1>
+      <p class="view-subtitle">Tes outils, à portée d'un clic</p>
+      <div id="links-content"></div>
+    </section>
+
+  </main>
+
+  <script>
+    // ════════ SUPABASE CLIENT + AUTH ════════
+    const SB_URL = 'https://dzlyrswuyafxjswuxdcu.supabase.co';
+    const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6bHlyc3d1eWFmeGpzd3V4ZGN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwOTQxOTQsImV4cCI6MjA4OTY3MDE5NH0.e2y0_xX4XF4BOoRnP85DVdyn-x7M8hvjhNPBkEMWvJU';
+    const sbClient = supabase.createClient(SB_URL, SB_ANON);
+    let currentSession = null;
+
+    async function api(route, opts = {}) {
+      const headers = { 'content-type': 'application/json' };
+      if (currentSession?.access_token) headers['Authorization'] = 'Bearer ' + currentSession.access_token;
+      const url = `${SB_URL}/functions/v1/admin-api?route=${route}`;
+      const res = await fetch(url, { method: opts.method || 'GET', headers, body: opts.body ? JSON.stringify(opts.body) : undefined });
+      return res.json();
+    }
+
+    // ════════ MOCK DATA ════════
+    const DRAWER_ITEMS = [
+      { view: 'pulse', icon: '🟢', label: 'Pulse système', badge: null },
+      { view: 'supervise', icon: '🎬', label: 'Supervision', badge: '2' },
+      { view: 'tt-helper', icon: '📱', label: 'Helper TikTok', badge: '1' },
+      { view: 'feed', icon: '📊', label: 'Feed publié', badge: null },
+      { view: 'analytics', icon: '📈', label: 'Analytics', badge: null },
+      { view: 'costs', icon: '💸', label: 'Coûts & quotas', badge: null },
+      { view: 'ideas', icon: '💡', label: 'Idées', badge: null },
+      { view: 'links', icon: '🔗', label: 'Raccourcis', badge: null },
+    ];
+
+    const WORKFLOWS = [
+      { name: '01_BigBoss_Orchestrateur_v2', short: 'BIGBOSS', emoji: '🧠', state: 'ok', meta: 'webhook · cron',
+        role: "Orchestrateur central du projet. Reçoit tes commandes (chat ou webhook) et délègue aux sub-agents appropriés (Marketing, SEO, Analytics, etc.). Garde la mémoire des contextes via Supabase.",
+        lastRun: 'il y a 2h · success', execs7d: 47 },
+      { name: '02_Agent_Marketing', short: 'MARKET', emoji: '🎬', state: 'ok', meta: 'cron 2j · 9h',
+        role: "Génère les briefs vidéos TikTok à partir des tendances. Coordonne Scriptwriter, Director, CaptionWriter, MusicCurator, puis pousse dans render_queue. Schedule auto tous les 2 jours à 9h.",
+        lastRun: 'demain 9h · scheduled', execs7d: 3 },
+      { name: '04_Agent_Analytics_v2', short: 'ANALY', emoji: '📊', state: 'ok', meta: 'cron + chat',
+        role: "Analyse posts_performance, calcule les KPIs (vues, engagement, taux de conversion) et génère un rapport hebdomadaire. Peut être interrogé via chat BigBoss.",
+        lastRun: 'il y a 14h · success', execs7d: 8 },
+      { name: '05_Render_Monitor', short: 'RENDER', emoji: '🎞️', state: 'ok', meta: 'poll render_queue',
+        role: "Surveille en temps réel la table render_queue. Quand un render passe à 'awaiting_approval', notifie via email Resend pour validation manuelle.",
+        lastRun: 'live · poll continu', execs7d: 36 },
+      { name: '06_Approval_Handler', short: 'APPROV', emoji: '✅', state: 'ok', meta: 'webhook approve/reject',
+        role: "Reçoit les webhooks d'approval (clic sur le bouton 'Approve' dans l'email) et déclenche le push TikTok Inbox via Edge Function tiktok-upload-inbox.",
+        lastRun: 'il y a 1h · success', execs7d: 12 },
+      { name: 'Agent_Cadeaux_v2', short: 'CADEAU', emoji: '🎁', state: 'ok', meta: 'webhook quiz site',
+        role: "Agent du quiz cadeau sur kadoizi.com. Reçoit les réponses du quiz, génère 9 idées via Claude Haiku 4.5 avec affiliation Amazon, retourne au site.",
+        lastRun: 'il y a 28 min · success', execs7d: 53 },
+      { name: 'Agent_Concurrence', short: 'CONCUR', emoji: '🕵️', state: 'ok', meta: 'cron veille',
+        role: "Veille concurrentielle : scrape idee-cadeau.fr, gifts.com, cadeaux.com, etc. Détecte les nouveautés, prix, USP et logge dans table intel_concurrence.",
+        lastRun: 'il y a 5h · success', execs7d: 7 },
+      { name: 'Agent_Intel', short: 'INTEL', emoji: '📡', state: 'ok', meta: 'cron veille intel',
+        role: "Collecte signals marketplace (Amazon trending, Etsy, etc.) + Google Trends FR + sons TikTok viraux. Enrichit la base intel pour informer les vidéos Marketing.",
+        lastRun: 'il y a 6h · success', execs7d: 4 },
+      { name: 'Agent_SEO', short: 'SEO', emoji: '🔍', state: 'ok', meta: 'cron 1er du mois',
+        role: "Génère 1 article SEO par mois (le 1er à 9h) ciblant un mot-clé saisonnier. Edge Function publish-seo-article met à jour blog/index + sitemap + brand voice auto-fix.",
+        lastRun: 'le 1er mai · success', execs7d: 0 },
+      { name: 'Welcome_Email_New_Signup', short: 'WELCOM', emoji: '💌', state: 'ok', meta: 'cron 1 min',
+        role: "Poll Supabase auth.users toutes les 1 min. Envoie un welcome email via Resend aux nouveaux signups détectés. Anti-spam : filtre @example.com / +test+ / audit_test_*.",
+        lastRun: 'il y a 1 min · idle (0 nouveaux)', execs7d: 1440 },
+      { name: 'TikTok_Publish_Detect', short: 'TT-DETECT', emoji: '📱', state: 'ok', meta: 'cron 30 min',
+        role: "Poll TikTok Content Posting Status API toutes les 30 min pour les pushes inbox 'sent'. Quand PUBLISH_COMPLETE détecté, marque published + remplit posts_performance.",
+        lastRun: 'il y a 12 min · 1 détectée', execs7d: 14 },
+      { name: 'Workflow_Failure_Monitor', short: 'MONITOR', emoji: '🚨', state: 'ok', meta: 'cron 30 min',
+        role: "Toutes les 30 min, query n8n executions avec status=error. Insère dans system_alerts avec severity. Anti-doublon : 1 alerte/workflow/jour. Zéro email (économie Resend).",
+        lastRun: 'il y a 8 min · 0 errors', execs7d: 336 },
+      { name: 'Cleanup_Stuck_Routine_Jobs', short: 'CLEANUP', emoji: '🧹', state: 'ok', meta: 'cron 10 min',
+        role: "Toutes les 10 min, reset les jobs render_queue stuck en 'processing' depuis >2h. Évite que les renders plantés bloquent la queue indéfiniment.",
+        lastRun: 'il y a 3 min · 0 stuck', execs7d: 1008 },
+    ];
+
+    const HEALTH = [
+      { name: 'n8n', meta: '13 workflows · NAS', state: 'ok', pct: 100, icon: '🔄' },
+      { name: 'Supabase', meta: '< 50 ms · FREE', state: 'ok', pct: 14, icon: '🗄️' },
+      { name: 'TikTok API', meta: 'token 8h · sandbox', state: 'ok', pct: 100, icon: '🎵' },
+      { name: 'fal.ai', meta: '~$8.20 restants', state: 'warn', pct: 70, icon: '🎨' },
+      { name: 'Resend', meta: '12 / 100 du jour', state: 'ok', pct: 12, icon: '📧' },
+      { name: 'ElevenLabs', meta: '2700 / 10k chars', state: 'ok', pct: 27, icon: '🎙️' },
+    ];
+
+    const ALERTS = [
+      { sev: 'success', emoji: '🎉', title: 'V2 Fête des Mères publiée', msg: 'Detection auto via TikTok Status API · post_id 7646169364957465889', time: 'il y a 1h' },
+      { sev: 'warning', emoji: '⚠️', title: 'fal.ai balance faible', msg: 'Il reste ~$8.20 de crédits. Recharge avant V3 Fête des Pères.', time: 'il y a 2h' },
+      { sev: 'info', emoji: 'ℹ️', title: 'Cron TikTok_Publish_Detect OK', msg: 'Premier run réussi · 1 publication détectée', time: 'il y a 1h' },
+      { sev: 'info', emoji: '👤', title: '0 nouveaux signups', msg: 'Welcome_Email idle depuis 12 min', time: 'il y a 12 min' },
+      { sev: 'success', emoji: '✅', title: 'Pipeline TikTok câblé bout-en-bout', msg: 'Approve → Edge Function → Inbox → Detect = OK', time: 'il y a 3h' },
+    ];
+
+    // ════════ INIT ════════
+    const $ = s => document.querySelector(s);
+    const $$ = s => document.querySelectorAll(s);
+
+    async function showApp(session) {
+      currentSession = session;
+      $('#drawer-email').textContent = session.user.email;
+      $('#login-screen').style.display = 'none';
+      $('#app-header').style.display = 'flex';
+      $('#main').style.display = 'block';
+      // Charge les ideas live
+      try {
+        const ideasRes = await api('ideas');
+        if (ideasRes.ideas?.length) {
+          IDEAS.length = 0;
+          ideasRes.ideas.forEach(i => IDEAS.push({
+            id: i.id, title: i.title, desc: i.description || '', status: i.status,
+            date: new Date(i.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) + ' · ' + (i.author || 'admin')
+          }));
+          renderIdeas();
+        }
+      } catch (e) { console.warn('Ideas load failed', e); }
+    }
+
+    $('#login-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = $('#login-email').value;
+      const pwd = $('#login-pwd').value;
+      const btn = e.target.querySelector('button[type="submit"]');
+      const orig = btn.innerHTML;
+      btn.innerHTML = '⏳ Connexion...';
+      btn.disabled = true;
+      try {
+        const { data, error } = await sbClient.auth.signInWithPassword({ email, password: pwd });
+        if (error) throw error;
+        // Verify is admin via API
+        const health = await api('pulse');
+        if (health.error === 'Not an admin') throw new Error('Compte non autorisé. Contacte un admin.');
+        await showApp(data.session);
+      } catch (err) {
+        alert('Erreur connexion : ' + (err.message || err));
+        btn.innerHTML = orig;
+        btn.disabled = false;
+      }
+    });
+
+    // Auto-restore session if exists
+    sbClient.auth.getSession().then(({ data }) => {
+      if (data?.session) showApp(data.session);
+    });
+
+    // Drawer
+    function renderDrawer() {
+      $('#drawer-nav').innerHTML = DRAWER_ITEMS.map(d =>
+        `<div class="drawer-item ${d.view === 'pulse' ? 'active' : ''}" data-view="${d.view}">
+          <span class="icon">${d.icon}</span><span>${d.label}</span>
+          ${d.badge ? `<span class="badge">${d.badge}</span>` : ''}
+        </div>`
+      ).join('');
+      $$('.drawer-item').forEach(item => item.addEventListener('click', async () => {
+        const v = item.dataset.view;
+        if (v === 'logout') {
+          await sbClient.auth.signOut();
+          currentSession = null;
+          $('#login-screen').style.display = 'flex';
+          $('#app-header').style.display = 'none';
+          $('#main').style.display = 'none';
+          $('#login-email').value = ''; $('#login-pwd').value = '';
+          closeDrawer(); return;
+        }
+        $$('.drawer-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        $$('.view').forEach(s => s.classList.remove('active'));
+        $(`.view[data-view="${v}"]`)?.classList.add('active');
+        closeDrawer();
+        $('#main').scrollTop = 0;
+      }));
+    }
+    const openDrawer = () => { $('#drawer').classList.add('open'); $('#drawer-overlay').classList.add('open'); };
+    const closeDrawer = () => { $('#drawer').classList.remove('open'); $('#drawer-overlay').classList.remove('open'); };
+    $('#menu-btn').addEventListener('click', openDrawer);
+    $('#drawer-overlay').addEventListener('click', closeDrawer);
+
+    // ── MODAL ──
+    function openModal({ emoji, emojiKind = 'info', title, meta, body, kv, actions }) {
+      $('#modal-emoji').textContent = emoji;
+      $('#modal-emoji').className = 'modal-emoji ' + emojiKind;
+      $('#modal-title').textContent = title;
+      $('#modal-meta').textContent = meta || '';
+      $('#modal-body').textContent = body || '';
+      if (kv && Object.keys(kv).length) {
+        $('#modal-extras').style.display = 'block';
+        $('#modal-kv').innerHTML = Object.entries(kv).map(([k,v]) => `<div class="k">${k}</div><div class="v">${v}</div>`).join('');
+      } else {
+        $('#modal-extras').style.display = 'none';
+      }
+      $('#modal-actions').innerHTML = (actions || []).map((a, i) =>
+        `<button class="modal-btn ${a.style||'outline'}" data-action="${i}">${a.label}</button>`
+      ).join('');
+      $$('#modal-actions .modal-btn').forEach(btn => btn.addEventListener('click', () => {
+        const a = actions[+btn.dataset.action];
+        if (a.fn) a.fn();
+        closeModal();
+      }));
+      $('#modal').classList.add('open');
+    }
+    function closeModal() { $('#modal').classList.remove('open'); }
+    $('#modal-close').addEventListener('click', closeModal);
+    $('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // Workflows bubbles
+    function renderWorkflows() {
+      const row1 = WORKFLOWS.slice(0, 7);
+      const row2 = WORKFLOWS.slice(7, 13);
+      const makeBubble = (w, idx) => `
+        <div class="wf-bubble ${w.state}" data-tooltip="${w.short}" data-wf-idx="${idx}">
+          <span class="wf-emoji">${w.emoji}</span>
+          <span class="wf-short">${w.short}</span>
+          <span class="wf-status-dot"></span>
+        </div>`;
+      $('#wf-row-1').innerHTML = row1.map((w, i) => makeBubble(w, i)).join('');
+      $('#wf-row-2').innerHTML = row2.map((w, i) => makeBubble(w, 7 + i)).join('');
+      const okCount = WORKFLOWS.filter(w => w.state === 'ok').length;
+      $('#wf-meta').textContent = `${okCount}/${WORKFLOWS.length} actifs`;
+      // Click → modal
+      $$('.wf-bubble').forEach(b => b.addEventListener('click', () => {
+        const w = WORKFLOWS[+b.dataset.wfIdx];
+        openModal({
+          emoji: w.emoji,
+          emojiKind: w.state,
+          title: w.name,
+          meta: w.meta,
+          body: w.role,
+          kv: {
+            'État': w.state === 'ok' ? '🟢 Actif & sain' : w.state === 'warn' ? '🟠 Warning' : '🔴 Erreur',
+            'Dernière exec': w.lastRun,
+            'Exec 7j': w.execs7d,
+            'Trigger': w.meta,
+          },
+          actions: [
+            { label: 'Ouvrir dans n8n', style: 'outline', fn: () => window.open('http://192.168.1.105:8080', '_blank') },
+            { label: 'Voir les exécutions', style: 'primary', fn: () => alert('Phase 2 : connexion à n8n executions API') },
+          ]
+        });
+      }));
+    }
+    renderWorkflows();
+
+    // Health
+    $('#health-list').innerHTML = HEALTH.map(h =>
+      `<div class="health-row ${h.state}">
+        <div class="health-icon ${h.state}">${h.icon}</div>
+        <div class="health-body">
+          <div class="health-name">${h.name}</div>
+          <div class="health-meta">${h.meta}</div>
+        </div>
+        <div class="health-bar"><div style="width:${h.pct}%"></div></div>
+      </div>`
+    ).join('');
+
+    // Alerts
+    $('#alerts-meta').textContent = `${ALERTS.length} actives`;
+    $('#alert-list').innerHTML = ALERTS.map((a, i) =>
+      `<div class="alert-row ${a.sev}" data-idx="${i}">
+        <div class="alert-emoji">${a.emoji}</div>
+        <div class="alert-body">
+          <div class="alert-title">${a.title}</div>
+          <div class="alert-msg">${a.msg}</div>
+          <div class="alert-time">${a.time}</div>
+        </div>
+        <button class="alert-dismiss" data-dismiss="${i}" aria-label="Dismiss">✕</button>
+      </div>`
+    ).join('');
+    // Dismiss buttons (stop event propagation)
+    $$('.alert-dismiss').forEach(btn => btn.addEventListener('click', e => {
+      e.stopPropagation();
+      btn.closest('.alert-row').style.display = 'none';
+    }));
+    // Click on alert row → modal with full details
+    $$('.alert-row').forEach(row => row.addEventListener('click', () => {
+      const a = ALERTS[+row.dataset.idx];
+      const sevLabel = { critical: '🔴 Critique', warning: '🟠 Warning', info: 'ℹ️ Info', success: '✅ Succès' }[a.sev] || a.sev;
+      openModal({
+        emoji: a.emoji,
+        emojiKind: a.sev === 'critical' ? 'err' : a.sev === 'warning' ? 'warn' : a.sev === 'success' ? 'ok' : 'info',
+        title: a.title,
+        meta: a.time + ' · ' + sevLabel,
+        body: a.msg,
+        kv: {
+          'Sévérité': sevLabel,
+          'Reçu': a.time,
+          'Source': 'system_alerts',
+        },
+        actions: [
+          { label: 'Ignorer', style: 'outline', fn: () => row.style.display = 'none' },
+          { label: 'OK, compris', style: 'primary', fn: () => row.style.display = 'none' },
+        ]
+      });
+    }));
+
+    // Chat quick actions
+    $$('.quick-chip').forEach(chip => chip.addEventListener('click', () => {
+      const txt = chip.dataset.prefill;
+      $('#chat-input').value = txt;
+      $('#chat-input').focus();
+    }));
+
+    // Chat send
+    $('#chat-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const txt = $('#chat-input').value.trim();
+      if (!txt) return;
+      const msgs = $('#chat-messages');
+      msgs.insertAdjacentHTML('beforeend', `<div class="msg user">${txt}</div>`);
+      $('#chat-input').value = '';
+      msgs.scrollTop = msgs.scrollHeight;
+      setTimeout(() => {
+        msgs.insertAdjacentHTML('beforeend',
+          `<div class="msg bot"><div class="msg-author">BigBoss</div>Reçu : "${txt.replace(/</g,'&lt;')}". Une fois connecté au webhook n8n /webhook/bigboss-chat je traiterai ça pour de vrai. Là je suis encore en mock 🔮</div>`);
+        msgs.scrollTop = msgs.scrollHeight;
+      }, 700);
+    });
+
+    renderDrawer();
+
+    // ════════ PWA Service Worker (prod uniquement) ════════
+    if ('serviceWorker' in navigator && location.protocol === 'https:') {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
+          .then(reg => console.log('SW ready:', reg.scope))
+          .catch(err => console.warn('SW register failed:', err));
+      });
+    }
+
+    // ════════ DATA POUR AUTRES SECTIONS ════════
+    const APPROVALS = [
+      {
+        id: 'apr1',
+        title: 'V3 — Fête des Pères 2026',
+        brief: 'Hook taquin "Vraiment papa ?"',
+        cap: "Vraiment papa ? Tu lui as encore offert des chaussettes ?\n\nKadoizi te trouve 9 idées qui vont le scotcher en 30 secondes 🎁\n👉 https://www.kadoizi.com\n\n#fetedesperes #cadeaupapa #cadeauoriginal #fyp #pourtoi #kadoizi",
+        duration: '24s', emoji: '👨', attempt: 1,
+        music: { title: "Magnetic - ILLIT (sped up)", trending: '+187% · 24h', emotion: 'guilt-trip humour' }
+      },
+      {
+        id: 'apr2',
+        title: 'V4 — Anniversaire 30 ans',
+        brief: 'Crémaillère / 30 ans / mariage',
+        cap: "Crémaillère, 30 ans, mariage de pote...\n\nKadoizi te sauve à chaque fois. 9 idées qui tapent juste en 30 secondes 🎁\n👉 https://www.kadoizi.com\n\n#cadeau #anniversaire30ans #ideecadeau #fyp #kadoizi",
+        duration: '22s', emoji: '🎂', attempt: 1,
+        music: { title: "Espresso - Sabrina Carpenter", trending: '+62% · 7j', emotion: 'fun party' }
+      },
+    ];
+
+    const TT_HELPER = [
+      {
+        id: 'tt1',
+        title: 'V2 Fête des Mères (2e push test)',
+        publishId: 'v_inbox_url~v2.7646169433387616278',
+        pushedAt: 'il y a 3h',
+        videoUrl: 'https://dzlyrswuyafxjswuxdcu.supabase.co/storage/v1/object/public/kadoizi-videos/preview-v2-tempo.mp4',
+        cap: "Ha ouais ?! 😱 Dimanche 31 mai, t'as toujours rien offert pour la Fête des Mères ?\n\nKadoizi = 9 idées qui tapent juste en 30 secondes 🎁\n👉 https://www.kadoizi.com\n\n#fetedesmeres #cadeau #cadeaumaman #ideecadeau #cadeauoriginal #fyp #pourtoi #kadoizi",
+        emoji: '😱',
+        music: { title: 'Magnetic - ILLIT (sped up)', trending: '+187% en 24h', emotion: 'guilt-trip humour' }
+      }
+    ];
+
+    const FEED = [
+      {
+        id: 'feed1',
+        title: 'V2 "Ha ouais ?!" Fête des Mères',
+        date: '31 mai 2026 · 23h00',
+        platform: 'TikTok',
+        emoji: '🎁',
+        url: 'https://www.tiktok.com/@kadoizi/video/7646169364957465889',
+        views: '—', likes: '—', comments: '—'
+      }
+    ];
+
+    const REPORTS = [
+      {
+        id: 'rep1', type: 'daily', emoji: '📊', title: 'Rapport quotidien · 01 juin 2026',
+        date: 'aujourd\'hui · 09h00 · Agent_Analytics_v2',
+        summary: 'V2 Fête des Mères publiée à 23h — première vidéo en production. Surveillance engagement J+1.',
+        sections: {
+          'Trafic site': '53 quiz lancés ces 7 jours (+18% vs sem précédente). 12 nouveaux signups dont 4 cette semaine. CTR depuis la home stable à 14.2%.',
+          'Pipeline vidéo': '3 vidéos générées en mai. 1 publiée (V2). 2 en awaiting_approval (V3 Père, V4 Anniv). fal.ai consommation : ~$0.54 sur 3 renders.',
+          'Performance V2': 'post_id 7646169364957465889 · publié 31/05 23h Paris · stats live indisponibles (scope video.list non encore demandé). Caption inclut #fetedesmeres + 7 hashtags. Son TikTok choisi : à confirmer.',
+          'Recommendations': '1) Préparer V3 Fête des Pères dès cette semaine (J-21). 2) Demander le scope video.list à TikTok pour débloquer les stats live. 3) Recharger fal.ai avant 14 juin (au rythme actuel ~45 vidéos restantes).',
+          'Alertes': '⚠️ fal.ai $8.20 restants (seuil ~$10 atteint). ℹ️ Cron TikTok_Publish_Detect tourne nominal. ✅ Aucune erreur n8n dans les 24h.'
+        }
+      },
+      {
+        id: 'rep2', type: 'weekly', emoji: '📆', title: 'Rapport hebdo · semaine 22 (26 mai - 01 juin)',
+        date: 'dimanche · 23h59 · Agent_Analytics_v2',
+        summary: 'Semaine pivot : première vidéo TikTok live, pipeline API câblé bout-en-bout, cockpit admin lancé.',
+        sections: {
+          'Highlights': '• 31/05 23h : V2 "Ha ouais ?!" publiée (1ère vidéo Kadoizi sur TikTok @kadoizi).\n• Pipeline complet validé : Agent_Marketing → approval → Edge Function → TikTok inbox → publish detect.\n• Helper TikTok via API (mode UPLOAD/INBOX) câblé en production via tiktok-upload-inbox + tiktok-publish-detect (cron 30 min).',
+          'KPIs semaine': 'Quiz site : 53 (+18%) · Nouveaux users : 12 (+4 vs S-1) · Vidéos produites : 3 · Vidéos publiées : 1 · Articles SEO : 11 live sur blog · Posts ouverts : 0 (réseaux non connectés pour stats avant cette semaine).',
+          'Workflows n8n': '13/13 actifs sans erreur critique. Nouveau workflow ajouté : TikTok_Publish_Detect (cron 30 min). Sub_Buffer_Stats désactivé (devenu obsolète pour TikTok, à supprimer une fois Meta API en place).',
+          'Coûts cumulés': 'fal.ai : $8.20 restants après 3 vidéos · Resend : 12/100 du jour · ElevenLabs : 2700/10k chars du mois · Vercel : 12% · Supabase : 14% FREE.',
+          'Next week': '1) Vidéo 3 (Fête des Pères 21 juin) — brief + render avant vendredi 5 juin. 2) Intégration Meta/Instagram API pour Reels (équivalent TikTok Helper). 3) Demande scope video.list TikTok pour stats live. 4) Connexion live des données du cockpit admin (Edge Function admin-api).'
+        }
+      },
+      {
+        id: 'rep3', type: 'alert', emoji: '🚨', title: 'Alerte budget · fal.ai sous $10',
+        date: 'il y a 6h · Agent_Analytics_v2',
+        summary: 'Balance fal.ai descend sous le seuil warning. ~45 vidéos restantes au rythme actuel.',
+        sections: {
+          'Situation': 'fal.ai balance : $8.20 (était $20 le 12/05 après recharge Gylan). Consommation moyenne : ~$0.18/vidéo Veo 3.1 Lite (6s clip). 3 vidéos rendues en mai = $0.54 consommés directement. Le reste est lié aux tests + FLUX schnell sur les compositions sans Veo.',
+          'Projection': 'Au rythme planning (1 vidéo / 7-10j sur calendrier saisonnier), tenue jusqu\'à fin juillet. Mais en cas de re-renders multiples (rejected → regen), épuisement possible mi-juin.',
+          'Recommandations': '1) Recharger $20-30 sur fal.ai cette semaine pour sécuriser. 2) Activer un seuil d\'alerte Resend à $5. 3) Optimiser Veo : utiliser moins de clips Veo et plus de screencasts/FLUX statiques pour les vidéos moins narratives.'
+        }
+      },
+      {
+        id: 'rep4', type: 'daily', emoji: '📊', title: 'Rapport quotidien · 31 mai 2026',
+        date: 'il y a 1 jour · 09h00 · Agent_Analytics_v2',
+        summary: 'V2 prête à publier · pipeline TikTok inbox en test final · helper mobile validé.',
+        sections: {
+          'Production V2': 'Render V2 "Ha ouais ?!" Fête des Mères validé par Gylan le 31/05 à 19h. Composition KadoiziDynamic 786 frames @ 30fps · 20.2 MB · voice Lily expressive · screencast démo quiz inclus.',
+          'Pipeline API': 'TikTok Content Posting API câblée. App Developer + Sandbox créés. URL prefix verifications OK pour callback + storage. Push V2 sur @kadoizi a réussi (publish_id v_inbox_url~v2.7646135859365840918).',
+          'Workflow n8n': '06_Approval_Handler refacto : suppression du node Buffer (API obsolète), ajout du node TikTok Inbox Push. Test end-to-end passé.',
+          'Issue & fix': 'Bug initial : trace FK render_id incompatible avec UUID generation_id. Fix : relax du FK + ajout colonne approval_id séparée.'
+        }
+      },
+      {
+        id: 'rep5', type: 'weekly', emoji: '📆', title: 'Rapport hebdo · semaine 21 (19-25 mai)',
+        date: 'il y a 1 sem · Agent_Analytics_v2',
+        summary: 'Semaine setup : security audit complète + agent UserEmails / UserSupport activés.',
+        sections: {
+          'Sécurité': '11/14 failles fixées : RLS searches, Edge Functions auth X-API-Key, CORS restreint kadoizi.com, REVOKE RPC sensibles, sitemap fix, rate limits Supabase Auth durcis (30→10). Leaked Password Protection skippé (Pro $25/mois requis, pas urgent).',
+          'Workflows activés': 'Agent_UserEmails (id 01PXrZnmZY2Khana) et Agent_UserSupport (id QsYZ8vrVxK0mpN2R) activés. Bugs splitInBatches + anon→service_role fixés en cours.',
+          'Workflows désactivés': 'Système Multi-Agent Autonome (legacy), 03 Alerte leads (legacy), TEMP Resend Domains (utilitaire ponctuel) — candidats à suppression.',
+          'KPIs': '0 vidéos publiées cette semaine (préparation V2). 47 quiz lancés. 8 signups. 1 article SEO publié (Fête des Pères 2026).'
+        }
+      },
+    ];
+
+    const COSTS = [
+      { name: 'fal.ai', detail: '~$0.18 par vidéo Veo · ~45 vidéos restantes', value: '$8.20', pct: 70, state: 'warn', icon: '🎨' },
+      { name: 'Resend (jour)', detail: 'Reset à minuit · welcome emails + delete confirmations', value: '12 / 100', pct: 12, state: 'ok', icon: '📧' },
+      { name: 'ElevenLabs (mois)', detail: 'Reset le 14 chaque mois · ~200 chars/vidéo', value: '2700 / 10k', pct: 27, state: 'ok', icon: '🎙️' },
+      { name: 'Anthropic API', detail: 'Pay-as-you-go · ~$0.02/vidéo (Haiku 4.5)', value: '~$12 ce mois', pct: 0, state: 'ok', icon: '🧠' },
+      { name: 'Vercel', detail: 'Pro $20/an · 8% bandwidth, 12% builds', value: '12%', pct: 12, state: 'ok', icon: '▲' },
+      { name: 'Supabase', detail: 'FREE tier · 14% DB, 6% storage, 29 tables', value: '14%', pct: 14, state: 'ok', icon: '🗄️' },
+      { name: 'TikTok API', detail: 'Sandbox · access_token refresh auto · 365j refresh_token', value: 'GRATUIT', pct: 0, state: 'ok', icon: '🎵' },
+    ];
+
+    const IDEAS = [
+      { title: 'Push auto Buffer Instagram après approval', status: 'wip', desc: 'Câbler 06_Approval_Handler pour notifier Buffer Insta en parallèle de TikTok inbox. Utile jusqu\'à la migration vers Meta Content Publishing API.', date: 'il y a 2h · Gylan' },
+      { title: 'Détection automatique sons trending TikTok', status: 'idea', desc: 'Scraper TikTok Creative Center toutes les 12h → table sounds_trending. L\'agent Marketing suggère le son à utiliser dans la caption avant push.', date: 'il y a 3h · Agent_Intel' },
+      { title: 'Mini Quality Checker (Veo morphing)', status: 'idea', desc: 'Sub-agent qui inspecte chaque clip Veo via vision (Claude Haiku) et flag les morphings/doublons/mains déformées pour re-rendering auto.', date: 'il y a 1 jour · Gylan' },
+      { title: 'Boucle fermée TikTok publish detect', status: 'done', desc: 'Cron 30 min poll TikTok Status API + remplit posts_performance avec post_id réel.', date: '01/06 · Claude + Gylan' },
+      { title: 'PWA mobile installable', status: 'wip', desc: 'Ajouter manifest.json + service worker pour que le cockpit s\'installe comme une vraie app sur iOS/Android home screen.', date: 'aujourd\'hui · Claude' },
+      { title: 'Meta/Instagram Content Publishing API', status: 'idea', desc: 'Équivalent TikTok pour Instagram Reels via Meta Graph API. Plus complexe (Business verification + Facebook Page + scopes).', date: 'il y a 12h · Gylan' },
+      { title: 'Page caption bookmark mobile', status: 'idea', desc: 'Page mobile-friendly kadoizi.com/c/<render_id> qui affiche la caption avec bouton "Copier". Bookmark sur iPhone pour copy en 5 sec.', date: 'il y a 8h · Gylan' },
+    ];
+
+    const LINKS = [
+      { section: 'Réseaux sociaux', items: [
+        { name: '@kadoizi TikTok', url: 'https://www.tiktok.com/@kadoizi', preview: 'tiktok.com', icon: '🎵' },
+        { name: '@kadoizi Insta', url: 'https://www.instagram.com/kadoizi', preview: 'instagram.com', icon: '📷' },
+        { name: 'TikTok Studio', url: 'https://www.tiktok.com/tiktokstudio/content', preview: 'inbox + drafts', icon: '🎬' },
+        { name: 'TikTok Analytics', url: 'https://www.tiktok.com/tiktokstudio/analytics', preview: 'stats live', icon: '📊' },
+        { name: 'Creative Center', url: 'https://www.tiktok.com/business/creativecenter', preview: 'sons trending', icon: '🎶' },
+        { name: 'Buffer', url: 'https://publish.buffer.com', preview: 'buffer.com', icon: '📋' },
+      ]},
+      { section: 'Site & déploiement', items: [
+        { name: 'kadoizi.com', url: 'https://www.kadoizi.com', preview: 'site live', icon: '🌐' },
+        { name: 'Blog Kadoizi', url: 'https://www.kadoizi.com/blog', preview: '11 articles SEO', icon: '📰' },
+        { name: 'Vercel dashboard', url: 'https://vercel.com/dashboard', preview: 'deploy + logs', icon: '▲' },
+        { name: 'GitHub repo', url: 'https://github.com/gyentrepreneur-creator/giftfinder', preview: 'source code', icon: '🐙' },
+        { name: 'Status page', url: 'https://www.kadoizi.com', preview: 'uptime monitor', icon: '📡' },
+      ]},
+      { section: 'Infra & data', items: [
+        { name: 'Supabase', url: 'https://supabase.com/dashboard/project/dzlyrswuyafxjswuxdcu', preview: 'DB + Edge Fn', icon: '🗄️' },
+        { name: 'n8n NAS', url: 'http://192.168.1.105:8080', preview: '13 workflows', icon: '🔄' },
+        { name: 'Resend', url: 'https://resend.com/emails', preview: 'email logs', icon: '📧' },
+        { name: 'Edge Functions', url: 'https://supabase.com/dashboard/project/dzlyrswuyafxjswuxdcu/functions', preview: '6 actives', icon: '⚡' },
+        { name: 'Storage bucket', url: 'https://supabase.com/dashboard/project/dzlyrswuyafxjswuxdcu/storage/buckets/kadoizi-videos', preview: 'videos MP4', icon: '🎞️' },
+      ]},
+      { section: 'APIs externes', items: [
+        { name: 'fal.ai dashboard', url: 'https://fal.ai/dashboard', preview: 'Veo + FLUX · billing', icon: '🎨' },
+        { name: 'ElevenLabs', url: 'https://elevenlabs.io/app/voice-library', preview: 'voix Lily', icon: '🎙️' },
+        { name: 'Anthropic console', url: 'https://console.anthropic.com', preview: 'Claude API · usage', icon: '🧠' },
+        { name: 'TikTok Developer', url: 'https://developers.tiktok.com/apps', preview: 'Kadoizi Auto-Post', icon: '🔧' },
+        { name: 'Meta Developer', url: 'https://developers.facebook.com/apps', preview: 'Instagram API (à venir)', icon: '🟦' },
+      ]},
+    ];
+
+    // ─── RENDER APPROVALS ───
+    function renderApprovals() {
+      $('#approval-grid').innerHTML = APPROVALS.map(a =>
+        `<div class="vid-card">
+          <div class="vid-card-thumb">
+            <span>${a.emoji}</span>
+            <span class="vid-card-tag">⏳ Pending</span>
+            <span class="vid-card-duration">${a.duration}</span>
+          </div>
+          <div class="vid-card-body">
+            <h3 class="vid-card-title">${a.title}</h3>
+            <div class="vid-card-meta">Brief : ${a.brief} · Attempt #${a.attempt}</div>
+            <div class="vid-card-cap">${a.cap}</div>
+            <div class="vid-card-music">
+              <div class="vid-card-music-icon">🎵</div>
+              <div class="vid-card-music-text">
+                <div class="vid-card-music-label">Son suggéré · ${a.music.trending}</div>
+                <div class="vid-card-music-name">${a.music.title}</div>
+              </div>
+            </div>
+          </div>
+          <div class="vid-card-actions">
+            <button class="btn-mini btn-preview" data-preview="${a.id}">👁 Aperçu</button>
+            <button class="btn-mini btn-reject" data-reject="${a.id}">✕ Reject</button>
+            <button class="btn-mini btn-approve" data-approve="${a.id}">✓ Approve</button>
+          </div>
+        </div>`
+      ).join('');
+    }
+    renderApprovals();
+
+    // ─── RENDER TIKTOK HELPER ───
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    function renderHelper() {
+      $('#tt-helper-list').innerHTML = TT_HELPER.map(t =>
+        `<div class="tt-helper-card">
+          <div class="tt-helper-head">
+            <div class="tt-helper-thumb">${t.emoji}</div>
+            <div class="tt-helper-info">
+              <h3 class="tt-helper-title">${t.title}</h3>
+              <div class="tt-helper-meta">Push ${t.pushedAt} · ${t.publishId}</div>
+              <span class="tt-helper-tag">📱 SEND_TO_USER_INBOX</span>
+            </div>
+          </div>
+          <div class="vid-card-music" style="margin-bottom:var(--space-3)">
+            <div class="vid-card-music-icon">🎵</div>
+            <div class="vid-card-music-text">
+              <div class="vid-card-music-label">Son suggéré · ${t.music.trending}</div>
+              <div class="vid-card-music-name">${t.music.title} · ${t.music.emotion}</div>
+            </div>
+            <button class="btn-mini btn-preview" style="padding:5px 9px;font-size:10px;flex:0" onclick="copyCap(this, '${t.music.title}')">📋</button>
+          </div>
+          <div class="tt-caption-box">${t.cap}</div>
+          <div class="tt-helper-actions">
+            <button class="btn-mini btn-preview" onclick="window.open('${t.videoUrl}','_blank')">👁 Aperçu vidéo</button>
+            <button class="btn-mini btn-preview" onclick="copyCap(this, \`${t.cap.replace(/`/g, '\\`')}\`)">📋 Copier caption</button>
+            <button class="btn-mini btn-primary" onclick="openTikTok()">${isMobile ? '📱 Ouvrir TikTok' : '🖥️ Ouvrir TikTok web'}</button>
+          </div>
+        </div>`
+      ).join('');
+    }
+    renderHelper();
+
+    window.openTikTok = function() {
+      if (isMobile) {
+        // tente le deep link puis fallback web
+        const start = Date.now();
+        window.location.href = 'tiktok://';
+        setTimeout(() => {
+          if (Date.now() - start < 1500) {
+            window.open('https://www.tiktok.com/upload?lang=fr', '_blank');
+          }
+        }, 800);
+      } else {
+        // PC : ouvre directement TikTok Studio upload (où la vidéo apparaît dans l'inbox)
+        window.open('https://www.tiktok.com/tiktokstudio/content', '_blank');
+      }
+    };
+
+    window.copyCap = function(btn, txt) {
+      navigator.clipboard.writeText(txt).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✓ Copié !';
+        btn.style.background = 'rgba(29,158,117,.15)';
+        btn.style.color = 'var(--success)';
+        setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; btn.style.color = ''; }, 1800);
+      });
+    };
+
+    // ─── RENDER FEED ───
+    $('#feed-grid').innerHTML = FEED.map(f =>
+      `<div class="feed-card" onclick="window.open('${f.url}','_blank')">
+        <div class="feed-thumb">
+          <span class="feed-platform-tag">${f.platform}</span>
+          ${f.emoji}
+        </div>
+        <div class="feed-body">
+          <div class="feed-title">${f.title}</div>
+          <div class="feed-date">${f.date}</div>
+          <div class="feed-metrics">
+            <span class="feed-metric"><span class="m-icon">👁</span>${f.views}</span>
+            <span class="feed-metric"><span class="m-icon">❤️</span>${f.likes}</span>
+            <span class="feed-metric"><span class="m-icon">💬</span>${f.comments}</span>
+          </div>
+        </div>
+      </div>`
+    ).join('');
+
+    // ─── RENDER ANALYTICS REPORTS ───
+    let reportsFilter = 'all';
+    function renderReports() {
+      const filtered = reportsFilter === 'all' ? REPORTS : REPORTS.filter(r => r.type === reportsFilter);
+      $('#reports-list').innerHTML = filtered.map(r =>
+        `<div class="idea-card" data-rep-id="${r.id}">
+          <div class="idea-head">
+            <span style="font-size:18px">${r.emoji}</span>
+            <span class="idea-title">${r.title}</span>
+            <span class="idea-status ${r.type === 'alert' ? 'wip' : r.type === 'weekly' ? 'idea' : 'done'}">${r.type === 'alert' ? '🚨 Alerte' : r.type === 'weekly' ? '📆 Hebdo' : '📅 Quotidien'}</span>
+          </div>
+          <div class="idea-desc">${r.summary}</div>
+          <div class="idea-foot">${r.date}</div>
+        </div>`
+      ).join('');
+      $$('#reports-list .idea-card').forEach(card => card.addEventListener('click', () => {
+        const r = REPORTS.find(x => x.id === card.dataset.repId);
+        const body = Object.entries(r.sections).map(([k, v]) => `━━━ ${k} ━━━\n${v}`).join('\n\n');
+        openModal({
+          emoji: r.emoji,
+          emojiKind: r.type === 'alert' ? 'warn' : 'info',
+          title: r.title,
+          meta: r.date,
+          body: r.summary + '\n\n' + body,
+          actions: [{ label: 'Fermer', style: 'primary' }]
+        });
+      }));
+    }
+    renderReports();
+    // Filter tabs analytics
+    $$('.view[data-view="analytics"] .filter-tab').forEach(tab => tab.addEventListener('click', () => {
+      $$('.view[data-view="analytics"] .filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      reportsFilter = tab.dataset.rep;
+      renderReports();
+    }));
+
+    // ─── RENDER COSTS ───
+    $('#costs-list').innerHTML = COSTS.map(c =>
+      `<div class="cost-card">
+        <div class="cost-row">
+          <div class="cost-icon">${c.icon}</div>
+          <div class="cost-info">
+            <div class="cost-name">${c.name}</div>
+            <div class="cost-detail">${c.detail}</div>
+          </div>
+          <div class="cost-value">${c.value}</div>
+        </div>
+        <div class="cost-bar ${c.state}"><div style="width:${c.pct}%"></div></div>
+      </div>`
+    ).join('');
+
+    // ─── RENDER IDEAS ───
+    let ideasFilter = 'all';
+    function statusLabel(s) { return s === 'wip' ? '⚙️ En cours' : s === 'done' ? '✓ Fait' : '💡 Idée'; }
+    function renderIdeas() {
+      const filtered = ideasFilter === 'all' ? IDEAS : IDEAS.filter(i => i.status === ideasFilter);
+      $('#ideas-list').innerHTML = filtered.map((i, idx) =>
+        `<div class="idea-card" data-idea-idx="${IDEAS.indexOf(i)}">
+          <div class="idea-head">
+            <span class="idea-title">${i.title}</span>
+            <span class="idea-status ${i.status}">${statusLabel(i.status)}</span>
+          </div>
+          <div class="idea-desc">${i.desc}</div>
+          <div class="idea-foot">${i.date}</div>
+        </div>`
+      ).join('');
+      $$('#ideas-list .idea-card').forEach(card => card.addEventListener('click', () => {
+        const i = IDEAS[+card.dataset.ideaIdx];
+        const updateStatus = async (newStatus) => {
+          if (i.id) {
+            try { await api('update-idea-status', { method: 'POST', body: { idea_id: i.id, status: newStatus } }); } catch(e) { console.warn(e); }
+          }
+          i.status = newStatus;
+          renderIdeas();
+        };
+        openModal({
+          emoji: '💡',
+          emojiKind: i.status === 'done' ? 'ok' : i.status === 'wip' ? 'warn' : 'info',
+          title: i.title,
+          meta: i.date + ' · ' + statusLabel(i.status),
+          body: i.desc,
+          actions: [
+            { label: 'Marquer en cours', style: 'outline', fn: () => updateStatus('wip') },
+            { label: 'Marquer comme fait', style: 'primary', fn: () => updateStatus('done') },
+          ]
+        });
+      }));
+    }
+    renderIdeas();
+    // Filter tabs ideas
+    const ideaStatusMap = { 'Toutes': 'all', '💡 Idée': 'idea', '⚙️ En cours': 'wip', '✓ Fait': 'done' };
+    $$('.view[data-view="ideas"] .filter-tab').forEach(tab => tab.addEventListener('click', () => {
+      $$('.view[data-view="ideas"] .filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      ideasFilter = ideaStatusMap[tab.textContent.trim()] || 'all';
+      renderIdeas();
+    }));
+    // Nouvelle idée (persiste via API)
+    $$('.view[data-view="ideas"] .btn-primary').forEach(btn => btn.addEventListener('click', async () => {
+      const title = prompt('Titre de l\'idée :');
+      if (!title) return;
+      const desc = prompt('Description :') || '';
+      try {
+        const res = await api('new-idea', { method: 'POST', body: { title, description: desc, status: 'idea' } });
+        if (res.ok && res.idea) {
+          IDEAS.unshift({ id: res.idea.id, title: res.idea.title, desc: res.idea.description || '', status: res.idea.status, date: 'à l\'instant · ' + (res.idea.author || 'admin') });
+          renderIdeas();
+        } else {
+          alert('Erreur : ' + (res.error || 'inconnue'));
+        }
+      } catch (e) { alert('Erreur API : ' + e.message); }
+    }));
+
+    // ─── RENDER LINKS ───
+    $('#links-content').innerHTML = LINKS.map(sect =>
+      `<div class="link-section">
+        <div class="link-section-title">${sect.section}</div>
+        <div class="link-grid">
+          ${sect.items.map(i => `<a class="link-card" href="${i.url}" target="_blank" rel="noopener">
+            <div class="link-icon-box">${i.icon}</div>
+            <div><div class="link-name">${i.name}</div><div class="link-url">${i.preview}</div></div>
+          </a>`).join('')}
+        </div>
+      </div>`
+    ).join('');
+  </script>
+</body>
+</html>
