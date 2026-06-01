@@ -1,18 +1,18 @@
-// Kadoizi Cockpit Service Worker — v2 kill-switch (no fetch interception for now)
-// PWA installable mais sans cache fetch pour éviter les soucis iOS PWA + cross-origin
-const VERSION = 'v2-2026-06-01';
+// Kadoizi Cockpit Service Worker v3 — full purge + version notify
+const VERSION = 'v3-2026-06-01-15h';
 
-self.addEventListener('install', (e) => {
-  self.skipWaiting();
-});
+self.addEventListener('install', (e) => { self.skipWaiting(); });
 
 self.addEventListener('activate', (e) => {
-  // Nettoie tous les anciens caches
   e.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
+    caches.keys()
+      .then(keys => Promise.all(keys.map(k => caches.delete(k))))
       .then(() => self.clients.claim())
+      .then(() => self.clients.matchAll())
+      .then(clients => clients.forEach(c => c.postMessage({ type: 'SW_ACTIVATED', version: VERSION })))
   );
 });
 
-// Pas de listener fetch → toutes les requêtes passent au réseau normalement
-// (l'app reste "PWA installable" mais sans offline cache)
+self.addEventListener('message', (e) => {
+  if (e.data === 'GET_VERSION') e.source.postMessage({ type: 'VERSION', version: VERSION });
+});
