@@ -1546,8 +1546,8 @@
   <nav class="bottom-tabs" id="bottom-tabs" style="display:none">
     <div>
       <button class="bt-item active" data-view="pulse"><span class="bt-icon">🟢</span><span class="bt-label">Pulse</span></button>
-      <button class="bt-item" data-view="supervise"><span class="bt-icon">🎬</span><span class="bt-label">Vidéos</span><span class="bt-badge">2</span></button>
-      <button class="bt-item" data-view="tt-helper"><span class="bt-icon">📱</span><span class="bt-label">Helper</span><span class="bt-badge">1</span></button>
+      <button class="bt-item" data-view="supervise"><span class="bt-icon">🎬</span><span class="bt-label">Vidéos</span><span class="bt-badge" id="bt-badge-supervise" style="display:none">0</span></button>
+      <button class="bt-item" data-view="tt-helper"><span class="bt-icon">📱</span><span class="bt-label">Helper</span><span class="bt-badge" id="bt-badge-tt-helper" style="display:none">0</span></button>
       <button class="bt-item" data-view="feed"><span class="bt-icon">📊</span><span class="bt-label">Feed</span></button>
       <button class="bt-item" data-view="__more"><span class="bt-icon">☰</span><span class="bt-label">Plus</span></button>
     </div>
@@ -1930,6 +1930,15 @@
           set('kpi-approv-approved', c.approved_7d);
           set('kpi-approv-rejected', c.rejected_7d);
           set('kpi-render-active', c.render_active);
+          // Badge bottom nav : Vidéos = nb pending, Helper = nb inbox_sent
+          const badge = (id, n) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (n > 0) { el.textContent = String(n); el.style.display = ''; }
+            else { el.style.display = 'none'; }
+          };
+          badge('bt-badge-supervise', c.pending);
+          badge('bt-badge-tt-helper', c.inbox_sent);
         }
         if (pulseRes.alerts) {
           ALERTS.length = 0;
@@ -2322,7 +2331,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v11-2026-06-01-preview-fix';
+    const APP_VERSION = 'v12-2026-06-01-rejected-badges';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
