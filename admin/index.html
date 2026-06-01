@@ -425,7 +425,9 @@
       /* Forcer tous les grids à respecter l'écran */
       .grid-2 { grid-template-columns: 1fr !important; }
       .grid-3 { grid-template-columns: 1fr !important; }
-      .grid-4 { grid-template-columns: 1fr 1fr !important; }
+      .grid-4 { grid-template-columns: repeat(4, 1fr) !important; }
+      /* Feed-stats : 4 en ligne aussi */
+      .feed-stats { grid-template-columns: repeat(4, 1fr) !important; gap: 6px; }
 
       /* Modal full screen-friendly */
       .modal-backdrop { padding: 12px; }
@@ -462,13 +464,14 @@
       .view-title { font-size: 18px; }
       .view-subtitle { font-size: 12px; margin-bottom: var(--space-3); }
 
-      /* KPI : 2x2 sur mobile au lieu de 4 col */
-      .grid-4 { grid-template-columns: 1fr 1fr; gap: 8px; }
-      .kpi { padding: var(--space-3); }
-      .kpi-emoji { width: 30px; height: 30px; font-size: 14px; border-radius: 8px; }
-      .kpi-label { font-size: 9px; }
-      .kpi-value { font-size: 22px; }
-      .kpi-delta { font-size: 10px; }
+      /* KPI : 4 en ligne compacts sur mobile */
+      .grid-4 { grid-template-columns: repeat(4, 1fr) !important; gap: 6px; }
+      .kpi { padding: 8px 6px; text-align: center; }
+      .kpi-head { gap: 0; margin-bottom: 4px; flex-direction: column; align-items: center; }
+      .kpi-emoji { width: 28px; height: 28px; font-size: 13px; border-radius: 8px; margin-bottom: 4px; }
+      .kpi-label { font-size: 8px; line-height: 1.2; letter-spacing: 0; }
+      .kpi-value { font-size: 18px; line-height: 1; margin-top: 2px; }
+      .kpi-delta { font-size: 8px; line-height: 1.2; margin-top: 2px; }
 
       /* Pulse spacing */
       .pulse-page { gap: var(--space-2); }
@@ -542,8 +545,7 @@
       .link-name { font-size: 11px; }
       .link-url { font-size: 9px; }
 
-      /* Feed */
-      .feed-stats { grid-template-columns: 1fr 1fr; gap: 8px; }
+      /* Feed grid (les vidéos publiées en 2 col) */
       .feed-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
     }
 
@@ -1501,10 +1503,10 @@
       </div>
 
       <div class="filter-tabs">
-        <button class="filter-tab active">Toutes (2)</button>
-        <button class="filter-tab">⏳ Pending (2)</button>
-        <button class="filter-tab">✅ Approved</button>
-        <button class="filter-tab">✕ Rejected</button>
+        <button class="filter-tab active" data-aprfilter="all">Toutes</button>
+        <button class="filter-tab" data-aprfilter="pending">⏳ Pending</button>
+        <button class="filter-tab" data-aprfilter="approved">✅ Approved</button>
+        <button class="filter-tab" data-aprfilter="rejected">✕ Rejected</button>
       </div>
 
       <div class="grid-3" id="approval-grid"></div>
@@ -1957,7 +1959,7 @@
     // ════════ DATA POUR AUTRES SECTIONS ════════
     const APPROVALS = [
       {
-        id: 'apr1',
+        id: 'apr1', status: 'pending',
         title: 'V3 — Fête des Pères 2026',
         brief: 'Hook taquin "Vraiment papa ?"',
         cap: "Vraiment papa ? Tu lui as encore offert des chaussettes ?\n\nKadoizi te trouve 9 idées qui vont le scotcher en 30 secondes 🎁\n👉 https://www.kadoizi.com\n\n#fetedesperes #cadeaupapa #cadeauoriginal #fyp #pourtoi #kadoizi",
@@ -1965,12 +1967,20 @@
         music: { title: "Magnetic - ILLIT (sped up)", trending: '+187% · 24h', emotion: 'guilt-trip humour' }
       },
       {
-        id: 'apr2',
+        id: 'apr2', status: 'pending',
         title: 'V4 — Anniversaire 30 ans',
         brief: 'Crémaillère / 30 ans / mariage',
         cap: "Crémaillère, 30 ans, mariage de pote...\n\nKadoizi te sauve à chaque fois. 9 idées qui tapent juste en 30 secondes 🎁\n👉 https://www.kadoizi.com\n\n#cadeau #anniversaire30ans #ideecadeau #fyp #kadoizi",
         duration: '22s', emoji: '🎂', attempt: 1,
         music: { title: "Espresso - Sabrina Carpenter", trending: '+62% · 7j', emotion: 'fun party' }
+      },
+      {
+        id: 'apr0', status: 'approved',
+        title: 'V2 — Fête des Mères (publiée)',
+        brief: 'Concept "Ha ouais ?!"',
+        cap: "Ha ouais ?! 😱 Dimanche 31 mai, t'as toujours rien offert pour la Fête des Mères ?\n\nKadoizi = 9 idées qui tapent juste en 30 secondes 🎁",
+        duration: '24s', emoji: '🎁', attempt: 1,
+        music: { title: 'Magnetic - ILLIT (sped up)', trending: 'trending', emotion: 'guilt-trip' }
       },
     ];
 
@@ -2111,12 +2121,20 @@
     ];
 
     // ─── RENDER APPROVALS ───
+    let aprFilter = 'all';
     function renderApprovals() {
-      $('#approval-grid').innerHTML = APPROVALS.map(a =>
+      const list = aprFilter === 'all' ? APPROVALS : APPROVALS.filter(a => a.status === aprFilter);
+      if (list.length === 0) {
+        $('#approval-grid').innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-emoji">📭</div>Aucune vidéo dans cette catégorie</div>`;
+        return;
+      }
+      const statusLabels = { pending: '⏳ Pending', approved: '✅ Approved', rejected: '✕ Rejected' };
+      const statusClasses = { pending: '', approved: 'published', rejected: 'rejected' };
+      $('#approval-grid').innerHTML = list.map(a =>
         `<div class="vid-card">
           <div class="vid-card-thumb">
             <span>${a.emoji}</span>
-            <span class="vid-card-tag">⏳ Pending</span>
+            <span class="vid-card-tag ${statusClasses[a.status] || ''}">${statusLabels[a.status] || a.status}</span>
             <span class="vid-card-duration">${a.duration}</span>
           </div>
           <div class="vid-card-body">
@@ -2133,13 +2151,20 @@
           </div>
           <div class="vid-card-actions">
             <button class="btn-mini btn-preview" data-preview="${a.id}">👁 Aperçu</button>
-            <button class="btn-mini btn-reject" data-reject="${a.id}">✕ Reject</button>
-            <button class="btn-mini btn-approve" data-approve="${a.id}">✓ Approve</button>
+            ${a.status === 'pending' ? `<button class="btn-mini btn-reject" data-reject="${a.id}">✕ Reject</button>
+            <button class="btn-mini btn-approve" data-approve="${a.id}">✓ Approve</button>` : ''}
           </div>
         </div>`
       ).join('');
     }
     renderApprovals();
+    // Filter tabs Supervision
+    $$('.view[data-view="supervise"] .filter-tab').forEach(tab => tab.addEventListener('click', () => {
+      $$('.view[data-view="supervise"] .filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      aprFilter = tab.dataset.aprfilter || 'all';
+      renderApprovals();
+    }));
 
     // ─── RENDER TIKTOK HELPER ───
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
