@@ -2322,7 +2322,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v10-2026-06-01-render-approve';
+    const APP_VERSION = 'v11-2026-06-01-preview-fix';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
@@ -2525,6 +2525,18 @@
         </div>`
       ).join('');
       // Attach click handlers
+      $$('#approval-grid [data-preview]').forEach(btn => btn.addEventListener('click', () => {
+        const id = btn.dataset.preview;
+        const item = APPROVALS.find(a => a.id === id);
+        if (!item) return;
+        const url = item.videoUrl;
+        if (!url) {
+          alert('Aucune vidéo disponible pour cet item (preview/video_url null).');
+          return;
+        }
+        // Ouvre dans un nouvel onglet
+        window.open(url, '_blank', 'noopener');
+      }));
       $$('#approval-grid [data-approve]').forEach(btn => btn.addEventListener('click', async () => {
         if (!confirm('Approuver cette vidéo ? Elle sera poussée sur ton inbox TikTok pour publication.')) return;
         btn.disabled = true; btn.textContent = '⏳…';
