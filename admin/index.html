@@ -1980,7 +1980,7 @@
         }
       } catch (e) { console.warn('Pulse load failed', e); }
 
-      // Approvals — DONNÉES RÉELLES UNIQUEMENT
+      // Approvals — DONNÉES RÉELLES UNIQUEMENT (unifie render_queue + video_approvals)
       try {
         const aprRes = await api('approvals');
         if (Array.isArray(aprRes?.approvals)) {
@@ -1988,11 +1988,16 @@
           aprRes.approvals.forEach(a => {
             try {
               APPROVALS.push({
-                id: a.id || 'no-id', status: a.status || 'pending',
+                id: a.id || 'no-id',
+                source: a.source || 'video_approvals',
+                status: a.status || 'pending',
                 title: 'Vidéo · ' + String(a.script || a.generation_id || a.id || '').slice(0, 40),
                 brief: a.script ? String(a.script).slice(0, 80) + '…' : 'Brief en cours',
                 cap: a.caption || '(pas de caption)',
-                duration: '—', emoji: '🎬', attempt: a.attempt || 1,
+                duration: '—',
+                emoji: a.source === 'render_queue' ? '🎞️' : '🎬',
+                attempt: a.attempt || 1,
+                videoUrl: a.video_url || null,
                 music: { title: 'À suggérer par MusicCurator', trending: 'TBD', emotion: '' }
               });
             } catch (mapErr) { console.warn('approval map err', mapErr); }
@@ -2317,7 +2322,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v9-2026-06-01-real-videos';
+    const APP_VERSION = 'v10-2026-06-01-render-approve';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
@@ -2514,11 +2519,32 @@
           </div>
           <div class="vid-card-actions">
             <button class="btn-mini btn-preview" data-preview="${a.id}">👁 Aperçu</button>
-            ${a.status === 'pending' ? `<button class="btn-mini btn-reject" data-reject="${a.id}">✕ Reject</button>
-            <button class="btn-mini btn-approve" data-approve="${a.id}">✓ Approve</button>` : ''}
+            ${a.status === 'pending' ? `<button class="btn-mini btn-reject" data-reject="${a.id}" data-source="${a.source}">✕ Reject</button>
+            <button class="btn-mini btn-approve" data-approve="${a.id}" data-source="${a.source}">✓ Approve</button>` : ''}
           </div>
         </div>`
       ).join('');
+      // Attach click handlers
+      $$('#approval-grid [data-approve]').forEach(btn => btn.addEventListener('click', async () => {
+        if (!confirm('Approuver cette vidéo ? Elle sera poussée sur ton inbox TikTok pour publication.')) return;
+        btn.disabled = true; btn.textContent = '⏳…';
+        try {
+          const r = await api('approve-video', { method: 'POST', body: { approval_id: btn.dataset.approve, source: btn.dataset.source } });
+          if (r.error) { alert('Erreur : ' + r.error); btn.disabled = false; btn.textContent = '✓ Approve'; return; }
+          alert('✅ Approuvée. ' + (r.push?.message || 'Push TikTok lancé.'));
+          loadAllLiveData(); // refresh
+        } catch (e) { alert('Erreur réseau : ' + e.message); btn.disabled = false; btn.textContent = '✓ Approve'; }
+      }));
+      $$('#approval-grid [data-reject]').forEach(btn => btn.addEventListener('click', async () => {
+        const feedback = prompt('Pourquoi rejeter ? (optionnel)') || 'Rejected via cockpit';
+        btn.disabled = true; btn.textContent = '⏳…';
+        try {
+          const r = await api('reject-video', { method: 'POST', body: { approval_id: btn.dataset.reject, source: btn.dataset.source, feedback } });
+          if (r.error) { alert('Erreur : ' + r.error); btn.disabled = false; btn.textContent = '✕ Reject'; return; }
+          alert('✕ Rejetée.');
+          loadAllLiveData();
+        } catch (e) { alert('Erreur réseau : ' + e.message); btn.disabled = false; btn.textContent = '✕ Reject'; }
+      }));
     }
     renderApprovals();
     // Filter tabs Supervision
