@@ -1,5 +1,5 @@
 // Kadoizi Cockpit Service Worker v3 — full purge + version notify
-const VERSION = 'v15-2026-06-01-23h40-feed-tz-paris';
+const VERSION = 'v16-2026-06-02-phaseA-done-status';
 
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 
