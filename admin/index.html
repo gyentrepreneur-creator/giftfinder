@@ -2350,7 +2350,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v27-2026-06-02-bust-1780359473021';
+    const APP_VERSION = 'v28-2026-06-02-phaseA-done-status';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
@@ -2505,8 +2505,8 @@
         $('#approval-grid').innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-emoji">📭</div>Aucune vidéo dans cette catégorie</div>`;
         return;
       }
-      const statusLabels = { pending: '⏳ Pending', approved: '✅ Approved', rejected: '✕ Rejected' };
-      const statusClasses = { pending: '', approved: 'published', rejected: 'rejected' };
+      const statusLabels = { pending: '⏳ Pending', downloading: '⬇️ Downloading', rendering: '🎬 Rendering', approved: '✅ Approved', done: '📤 Prêt push TikTok', rejected: '✕ Rejected' };
+      const statusClasses = { pending: '', downloading: '', rendering: '', approved: 'published', done: 'published', rejected: 'rejected' };
       $('#approval-grid').innerHTML = list.map(a =>
         `<div class="vid-card">
           <div class="vid-card-thumb">
