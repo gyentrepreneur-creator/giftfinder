@@ -2351,7 +2351,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v29-2026-06-02-phaseA2-retry-push';
+    const APP_VERSION = 'v30-2026-06-03-reject-feedback';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
@@ -2565,12 +2565,18 @@
         } catch (e) { alert('Erreur réseau : ' + e.message); btn.disabled = false; btn.textContent = originalLabel; }
       }));
       $$('#approval-grid [data-reject]').forEach(btn => btn.addEventListener('click', async () => {
-        const feedback = prompt('Pourquoi rejeter ? (optionnel)') || 'Rejected via cockpit';
+        // Feedback loop #27 : on insiste sur le motif pour que l'agent apprenne
+        const rawFeedback = prompt('Pourquoi rejeter ?\n\n💡 Marketing lira ce motif et l\'utilisera pour améliorer la prochaine vidéo (variety, voice, hook, etc).\n\nSi tu laisses vide → aucun apprentissage, juste un rejet brut (coût $ perdu).');
+        if (rawFeedback === null) { return; /* user clicked Cancel */ }
+        const feedback = rawFeedback.trim();
+        if (!feedback) {
+          if (!confirm('⚠️ Pas de motif = Marketing n\'apprend rien.\n\nSi 2 rejets sans motif consécutifs, Marketing te demandera quoi changer.\n\nRejeter quand même sans motif ?')) return;
+        }
         btn.disabled = true; btn.textContent = '⏳…';
         try {
           const r = await api('reject-video', { method: 'POST', body: { approval_id: btn.dataset.reject, source: btn.dataset.source, feedback } });
           if (r.error) { alert('Erreur : ' + r.error); btn.disabled = false; btn.textContent = '✕ Reject'; return; }
-          alert('✕ Rejetée.');
+          alert(feedback ? '✕ Rejetée. Motif enregistré, Marketing s\'en servira.' : '✕ Rejetée sans motif.');
           loadAllLiveData();
         } catch (e) { alert('Erreur réseau : ' + e.message); btn.disabled = false; btn.textContent = '✕ Reject'; }
       }));
