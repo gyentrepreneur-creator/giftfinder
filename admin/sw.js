@@ -1,5 +1,5 @@
 // Kadoizi Cockpit Service Worker v3 — full purge + version notify
-const VERSION = 'v22-2026-06-03-helper-edit-caption';
+const VERSION = 'v23-2026-06-03-auto-caption';
 
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 
