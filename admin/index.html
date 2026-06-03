@@ -1479,16 +1479,16 @@
       <div class="login-logo"><img src="logo.jpg" alt="Kadoizi"></div>
       <h1 class="login-title">Kadoizi Admin</h1>
       <p class="login-sub">Cockpit privé · accès restreint</p>
-      <form id="login-form">
+      <form id="login-form" onsubmit="return false;" action="javascript:void(0);">
         <div class="login-field">
           <label>Email</label>
-          <input type="email" id="login-email" placeholder="ton@email.com" required>
+          <input type="email" id="login-email" placeholder="ton@email.com" required autocomplete="email">
         </div>
         <div class="login-field">
           <label>Mot de passe</label>
-          <input type="password" id="login-pwd" placeholder="••••••••" required>
+          <input type="password" id="login-pwd" placeholder="••••••••" required autocomplete="current-password">
         </div>
-        <button type="submit" class="login-btn">Connexion →</button>
+        <button type="button" id="login-submit-btn" class="login-btn">Connexion →</button>
       </form>
       <p class="login-foot">🔒 Tentatives loggées · IP rate-limited · noindex</p>
     </div>
@@ -1744,6 +1744,16 @@
 
   <script>
     // ════════ SUPABASE CLIENT + AUTH ════════
+    // === GLOBAL ERROR TRAP (debug login) — affiche TOUTES les erreurs JS visiblement ===
+    window.addEventListener('error', e => {
+      try {
+        const msg = `🐛 ERREUR JS\n\nMessage: ${e.message}\nFichier: ${e.filename}\nLigne: ${e.lineno}:${e.colno}\n\n${e.error ? (e.error.stack || '').slice(0, 400) : ''}`;
+        alert(msg);
+      } catch(_) {}
+    });
+    window.addEventListener('unhandledrejection', e => {
+      try { alert('🐛 PROMISE REJECT\n\n' + (e.reason?.message || e.reason || 'unknown').toString().slice(0, 500)); } catch(_) {}
+    });
     const SB_URL = 'https://dzlyrswuyafxjswuxdcu.supabase.co';
     const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6bHlyc3d1eWFmeGpzd3V4ZGN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwOTQxOTQsImV4cCI6MjA4OTY3MDE5NH0.e2y0_xX4XF4BOoRnP85DVdyn-x7M8hvjhNPBkEMWvJU';
     const sbClient = supabase.createClient(SB_URL, SB_ANON);
@@ -2150,11 +2160,11 @@
       } catch (e) { console.warn('Feed load failed', e); }
     }
 
-    $('#login-form').addEventListener('submit', async e => {
-      e.preventDefault();
+    async function doLogin(ev) {
+      if (ev) { try { ev.preventDefault(); ev.stopPropagation(); } catch(_) {} }
       const email = $('#login-email').value.trim();
       const pwd = $('#login-pwd').value;
-      const btn = e.target.querySelector('button[type="submit"]');
+      const btn = $('#login-submit-btn');
       const orig = btn.innerHTML;
       btn.innerHTML = '⏳ Connexion...';
       btn.disabled = true;
@@ -2179,7 +2189,22 @@
         btn.innerHTML = orig;
         btn.disabled = false;
       }
+    }
+    // Multiple bindings to ensure login fires no matter what
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('login-submit-btn');
+      if (btn) btn.addEventListener('click', doLogin);
+      const pwd = document.getElementById('login-pwd');
+      if (pwd) pwd.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(e); });
+      const form = document.getElementById('login-form');
+      if (form) form.addEventListener('submit', doLogin);
     });
+    // Also attach immediately in case DOMContentLoaded already fired
+    setTimeout(() => {
+      const btn = document.getElementById('login-submit-btn');
+      if (btn && !btn._wired) { btn._wired = true; btn.addEventListener('click', doLogin); }
+    }, 0);
+    window.doLogin = doLogin;
 
     // Auto-restore session if exists
     sbClient.auth.getSession().then(({ data }) => {
@@ -2467,7 +2492,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v35-2026-06-03-auto-caption';
+    const APP_VERSION = 'v36-2026-06-03-login-bulletproof';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
