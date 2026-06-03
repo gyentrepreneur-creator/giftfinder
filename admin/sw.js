@@ -1,5 +1,5 @@
 // Kadoizi Cockpit Service Worker v3 — full purge + version notify
-const VERSION = 'v23-2026-06-03-auto-caption';
+const VERSION = 'v24-2026-06-03-login-bulletproof';
 
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 
