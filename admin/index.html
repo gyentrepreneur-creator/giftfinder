@@ -2105,17 +2105,27 @@
         const inboxRes = await api('inbox');
         if (inboxRes.inbox !== undefined) {
           TT_HELPER.length = 0;
-          inboxRes.inbox.forEach(t => TT_HELPER.push({
-            id: t.id,
-            renderId: t.render_id,
-            title: 'Vidéo · ' + (t.render_id || t.id || '').slice(0, 30),
-            publishId: t.publish_id,
-            pushedAt: fmtTime(t.created_at),
-            videoUrl: t.video_url,
-            cap: t.caption || '',
-            emoji: '📱',
-            music: { title: 'À suggérer', trending: 'TBD', emotion: '' }
-          }));
+          inboxRes.inbox.forEach(t => {
+            const ss = t.suggested_sound || {};
+            const top = ss.top_match || {};
+            TT_HELPER.push({
+              id: t.id,
+              renderId: t.render_id,
+              title: 'Vidéo · ' + (t.render_id || t.id || '').slice(0, 30),
+              publishId: t.publish_id,
+              pushedAt: fmtTime(t.created_at),
+              videoUrl: t.video_url,
+              cap: t.caption || '',
+              emoji: '📱',
+              music: top.title ? {
+                title: top.title + ' / ' + (top.author || ''),
+                trending: 'TikTok ' + (top.category || top.mood || 'FR'),
+                emotion: top.mood || '',
+                whyMatches: top.why_matches || '',
+                alternatives: ss.alternatives || []
+              } : { title: '⏳ Suggestion en cours de génération...', trending: '', emotion: '' }
+            });
+          });
           renderHelper();
           // Update banner count
           const banner = $('.view[data-view="tt-helper"] .tt-banner-title');
@@ -2493,7 +2503,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v38-2026-06-04-fix-syntax-error';
+    const APP_VERSION = 'v39-2026-06-04-helper-sound-match';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
@@ -2764,10 +2774,11 @@
           <div class="vid-card-music" style="margin-bottom:var(--space-3)">
             <div class="vid-card-music-icon">🎵</div>
             <div class="vid-card-music-text">
-              <div class="vid-card-music-label">Son TikTok à utiliser</div>
-              <div class="vid-card-music-name" style="opacity:.7;font-style:italic">À choisir manuellement (MusicCurator à venir)</div>
+              <div class="vid-card-music-label">Son TikTok suggéré · ${t.music.trending || ''} ${t.music.emotion ? '· '+t.music.emotion : ''}</div>
+              <div class="vid-card-music-name" style="font-weight:600">${t.music.title}</div>
+              ${t.music.whyMatches ? `<div style="font-size:11px;opacity:.7;margin-top:4px;font-style:italic">${t.music.whyMatches}</div>` : ''}
             </div>
-            <button class="btn-mini btn-preview" style="padding:5px 9px;font-size:10px;flex:0" onclick="window.open('https://www.tiktok.com/business/creative-center/inspiration/popular/music/pc/fr','_blank')">🔥 Trending</button>
+            <button class="btn-mini btn-preview" style="padding:5px 9px;font-size:10px;flex:0" onclick="window.open('https://www.tiktok.com/search?q=${encodeURIComponent(t.music.title || 'trending')}','_blank')">🔍 Chercher</button>
           </div>
           <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px;letter-spacing:.04em">📝 DESCRIPTION À COLLER :</div>
           <div class="tt-caption-box" style="${(t.cap||'').trim() ? '' : 'background:#fef3c7;border:1px dashed #f59e0b;color:#92400e;font-style:italic;padding:10px;border-radius:8px'}">${(t.cap||'').trim() || '⏳ Caption en cours de génération automatique par l’agent... actualise dans quelques secondes.'}</div>
