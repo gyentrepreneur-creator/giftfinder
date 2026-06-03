@@ -1488,7 +1488,7 @@
           <label>Mot de passe</label>
           <input type="password" id="login-pwd" placeholder="••••••••" required autocomplete="current-password">
         </div>
-        <button type="button" id="login-submit-btn" class="login-btn">Connexion →</button>
+        <button type="button" id="login-submit-btn" class="login-btn" onclick="try{(window.doLogin||function(){alert('🐛 doLogin pas charge — JS pas execute')})(event)}catch(e){alert('🐛 Onclick error: '+e.message)}">Connexion →</button>
       </form>
       <p class="login-foot">🔒 Tentatives loggées · IP rate-limited · noindex</p>
     </div>
@@ -2161,10 +2161,13 @@
     }
 
     async function doLogin(ev) {
+      // DIAG : si tu vois ce popup, le click est bien capté
+      try { alert('🔍 DIAG : doLogin lancé. Si tu vois ce message, le bouton fonctionne. Clique OK pour continuer.'); } catch(_) {}
       if (ev) { try { ev.preventDefault(); ev.stopPropagation(); } catch(_) {} }
-      const email = $('#login-email').value.trim();
-      const pwd = $('#login-pwd').value;
-      const btn = $('#login-submit-btn');
+      const email = (document.getElementById('login-email')||{}).value || '';
+      const pwd = (document.getElementById('login-pwd')||{}).value || '';
+      const btn = document.getElementById('login-submit-btn');
+      if (!btn) { alert('🐛 Bouton introuvable dans DOM'); return; }
       const orig = btn.innerHTML;
       btn.innerHTML = '⏳ Connexion...';
       btn.disabled = true;
@@ -2492,7 +2495,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v36-2026-06-03-login-bulletproof';
+    const APP_VERSION = 'v37-2026-06-04-login-diag';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
