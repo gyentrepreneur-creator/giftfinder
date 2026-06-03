@@ -1,5 +1,5 @@
 // Kadoizi Cockpit Service Worker v3 — full purge + version notify
-const VERSION = 'v27-2026-06-04-helper-sound-match';
+const VERSION = 'v28-2026-06-04-approvals-sound-match';
 
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 
