@@ -1,5 +1,5 @@
 // Kadoizi Cockpit Service Worker v3 — full purge + version notify
-const VERSION = 'v25-2026-06-04-login-diag';
+const VERSION = 'v26-2026-06-04-fix-syntax-error';
 
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 
