@@ -2161,8 +2161,6 @@
     }
 
     async function doLogin(ev) {
-      // DIAG : si tu vois ce popup, le click est bien capté
-      try { alert('🔍 DIAG : doLogin lancé. Si tu vois ce message, le bouton fonctionne. Clique OK pour continuer.'); } catch(_) {}
       if (ev) { try { ev.preventDefault(); ev.stopPropagation(); } catch(_) {} }
       const email = (document.getElementById('login-email')||{}).value || '';
       const pwd = (document.getElementById('login-pwd')||{}).value || '';
@@ -2495,7 +2493,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v37-2026-06-04-login-diag';
+    const APP_VERSION = 'v38-2026-06-04-fix-syntax-error';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
@@ -2772,7 +2770,7 @@
             <button class="btn-mini btn-preview" style="padding:5px 9px;font-size:10px;flex:0" onclick="window.open('https://www.tiktok.com/business/creative-center/inspiration/popular/music/pc/fr','_blank')">🔥 Trending</button>
           </div>
           <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px;letter-spacing:.04em">📝 DESCRIPTION À COLLER :</div>
-          <div class="tt-caption-box" style="${(t.cap||'').trim() ? '' : 'background:#fef3c7;border:1px dashed #f59e0b;color:#92400e;font-style:italic;padding:10px;border-radius:8px'}">${(t.cap||'').trim() || '⏳ Caption en cours de génération automatique par l\\'agent... actualise dans quelques secondes.'}</div>
+          <div class="tt-caption-box" style="${(t.cap||'').trim() ? '' : 'background:#fef3c7;border:1px dashed #f59e0b;color:#92400e;font-style:italic;padding:10px;border-radius:8px'}">${(t.cap||'').trim() || '⏳ Caption en cours de génération automatique par l’agent... actualise dans quelques secondes.'}</div>
           <div class="tt-helper-actions">
             ${hasVideo ? `<button class="btn-mini btn-preview" onclick="window.open('${t.videoUrl}','_blank')">👁 Aperçu vidéo</button>` : `<button class="btn-mini btn-preview" disabled style="opacity:.5">👁 Vidéo locale</button>`}
             <button class="btn-mini btn-preview" ${(t.cap||'').trim() ? '' : 'disabled style="opacity:.5"'} onclick='copyCap(this, ${JSON.stringify(t.cap || '')})'>📋 Copier description</button>
