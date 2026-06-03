@@ -1815,17 +1815,41 @@
 
     let _autoRefreshTimer = null;
     let _lastRefreshAt = Date.now();
+    let _realtimeChannel = null;
+    let _realtimeDebounceTimer = null;
+    function debouncedReload(reason) {
+      // Realtime can fire many events in burst; debounce 800ms then reload all
+      clearTimeout(_realtimeDebounceTimer);
+      _realtimeDebounceTimer = setTimeout(() => {
+        _lastRefreshAt = Date.now();
+        loadAllLiveData();
+        showRefreshHint(reason);
+      }, 800);
+    }
+    function setupRealtime() {
+      if (_realtimeChannel) { try { sbClient.removeChannel(_realtimeChannel); } catch (_) {} }
+      _realtimeChannel = sbClient.channel('cockpit-live')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'render_queue' }, p => debouncedReload('🎬 vidéo'))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'tiktok_inbox_uploads' }, p => debouncedReload('📤 TikTok'))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'system_alerts' }, p => debouncedReload('🚨 alerte'))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'video_approvals' }, p => debouncedReload('✅ approval'))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'posts_performance' }, p => debouncedReload('📊 perf'))
+        .subscribe(status => {
+          if (status === 'SUBSCRIBED') console.log('[Realtime] connected');
+          else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') console.warn('[Realtime] error', status);
+        });
+    }
     function setupAutoRefresh() {
-      // Stop any previous timer
+      // Realtime = primary live source (push WebSocket)
+      setupRealtime();
+      // Polling = fallback (workflows/costs/health are HTTP, not in Realtime). Reduced to 60s since Realtime handles most events.
       if (_autoRefreshTimer) clearInterval(_autoRefreshTimer);
-      // Poll every 30 seconds when document is visible
       _autoRefreshTimer = setInterval(() => {
         if (document.visibilityState === 'visible') {
           _lastRefreshAt = Date.now();
           loadAllLiveData();
-          showRefreshHint();
         }
-      }, 30000);
+      }, 60000);
       // Refresh immediately when tab regains focus (after >10s away)
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible' && Date.now() - _lastRefreshAt > 10000) {
@@ -1845,11 +1869,12 @@
         }
       }, { passive: true });
     }
-    function showRefreshHint() {
+    function showRefreshHint(reason) {
       const el = document.getElementById('refresh-hint');
       if (!el) return;
+      el.textContent = reason ? `${reason} · mis à jour` : '✅ Actualisé';
       el.classList.add('show');
-      setTimeout(() => el.classList.remove('show'), 1400);
+      setTimeout(() => el.classList.remove('show'), 1600);
     }
 
     function fmtTime(iso) {
@@ -2395,7 +2420,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v31-2026-06-03-auto-refresh';
+    const APP_VERSION = 'v32-2026-06-03-realtime';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
