@@ -1521,8 +1521,11 @@
       <span class="app-brand-logo"><img src="logo.jpg" alt="K"></span>
       <span>Kadoizi Cockpit</span>
     </span>
+    <button id="manual-refresh-btn" aria-label="Actualiser" style="background:transparent;border:0;font-size:20px;cursor:pointer;padding:8px;margin-right:4px" onclick="window.loadAllLiveData && (loadAllLiveData(), showRefreshHint())">🔄</button>
     <div class="header-mini"><span class="mini-dot"></span><span>LIVE</span></div>
   </header>
+  <div id="refresh-hint" style="position:fixed;top:64px;left:50%;transform:translateX(-50%) translateY(-20px);background:#22c55e;color:#fff;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:600;opacity:0;transition:all .25s;z-index:9999;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.2)">✅ Actualisé</div>
+  <style>#refresh-hint.show{opacity:1;transform:translateX(-50%) translateY(0)}</style>
 
   <!-- ───────────── DRAWER ───────────── -->
   <div class="drawer-overlay" id="drawer-overlay"></div>
@@ -1806,6 +1809,47 @@
       $('#bottom-tabs').style.display = 'block';
       // Charge toutes les sections live en parallèle
       loadAllLiveData();
+      // === AUTO-REFRESH v30 : poll 30s + refresh on focus ===
+      setupAutoRefresh();
+    }
+
+    let _autoRefreshTimer = null;
+    let _lastRefreshAt = Date.now();
+    function setupAutoRefresh() {
+      // Stop any previous timer
+      if (_autoRefreshTimer) clearInterval(_autoRefreshTimer);
+      // Poll every 30 seconds when document is visible
+      _autoRefreshTimer = setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          _lastRefreshAt = Date.now();
+          loadAllLiveData();
+          showRefreshHint();
+        }
+      }, 30000);
+      // Refresh immediately when tab regains focus (after >10s away)
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && Date.now() - _lastRefreshAt > 10000) {
+          _lastRefreshAt = Date.now();
+          loadAllLiveData();
+          showRefreshHint();
+        }
+      });
+      // Pull-to-refresh : swipe down at top of page
+      let touchStartY = 0;
+      document.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
+      document.addEventListener('touchend', e => {
+        if (window.scrollY === 0 && e.changedTouches[0].clientY - touchStartY > 80) {
+          _lastRefreshAt = Date.now();
+          loadAllLiveData();
+          showRefreshHint();
+        }
+      }, { passive: true });
+    }
+    function showRefreshHint() {
+      const el = document.getElementById('refresh-hint');
+      if (!el) return;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 1400);
     }
 
     function fmtTime(iso) {
@@ -2351,7 +2395,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v30-2026-06-03-reject-feedback';
+    const APP_VERSION = 'v31-2026-06-03-auto-refresh';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
