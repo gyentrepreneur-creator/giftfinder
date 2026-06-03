@@ -2467,7 +2467,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v34-2026-06-03-helper-edit-caption';
+    const APP_VERSION = 'v35-2026-06-03-auto-caption';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
@@ -2668,29 +2668,14 @@
       $$('#approval-grid [data-approve]').forEach(btn => btn.addEventListener('click', async () => {
         const isRetry = btn.dataset.retry === '1';
         const originalLabel = isRetry ? '🔁 Retry push' : '✓ Approve';
-        // Check caption before push (TikTok requires it)
-        const item = APPROVALS.find(a => a.id === btn.dataset.approve);
-        let captionOverride = null;
-        const existingCaption = (item?.rawCaption || '').trim();
-        if (!existingCaption) {
-          const proposed = prompt('⚠️ Cette vidéo n\'a pas de caption TikTok.\n\nTape la caption maintenant (obligatoire pour push) :\n\n💡 Inclure hashtags : #ideecadeau #cadeau #kadoizi etc.');
-          if (proposed === null) return; // cancel
-          const clean = proposed.trim();
-          if (clean.length < 10) {
-            alert('❌ Caption trop courte (min 10 caractères). Annulé.');
-            return;
-          }
-          captionOverride = clean;
-        }
+        // Caption auto-générée par l'agent côté serveur si manquante — aucune saisie utilisateur
         const confirmMsg = isRetry
           ? 'Relancer le push TikTok pour cette vidéo ?'
           : 'Approuver cette vidéo ? Elle sera poussée sur ton inbox TikTok pour publication.';
         if (!confirm(confirmMsg)) return;
         btn.disabled = true; btn.textContent = '⏳…';
         try {
-          const body = { approval_id: btn.dataset.approve, source: btn.dataset.source };
-          if (captionOverride) body.caption_override = captionOverride;
-          const r = await api('approve-video', { method: 'POST', body });
+          const r = await api('approve-video', { method: 'POST', body: { approval_id: btn.dataset.approve, source: btn.dataset.source } });
           if (r.error) { alert('Erreur : ' + r.error); btn.disabled = false; btn.textContent = originalLabel; return; }
           alert((isRetry ? '🔁 Push relancé. ' : '✅ Approuvée. ') + (r.push?.message || 'Push TikTok envoyé.'));
           loadAllLiveData();
@@ -2759,12 +2744,11 @@
             <button class="btn-mini btn-preview" style="padding:5px 9px;font-size:10px;flex:0" onclick="window.open('https://www.tiktok.com/business/creative-center/inspiration/popular/music/pc/fr','_blank')">🔥 Trending</button>
           </div>
           <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px;letter-spacing:.04em">📝 DESCRIPTION À COLLER :</div>
-          <div class="tt-caption-box ${(t.cap||'').trim() ? '' : 'caption-empty'}" style="${(t.cap||'').trim() ? '' : 'background:#fef3c7;border:1px dashed #f59e0b;color:#92400e;font-style:italic'}">${(t.cap||'').trim() || '⚠️ Aucune caption sauvegardée — clique \"Éditer\" pour en saisir une'}</div>
+          <div class="tt-caption-box" style="${(t.cap||'').trim() ? '' : 'background:#fef3c7;border:1px dashed #f59e0b;color:#92400e;font-style:italic;padding:10px;border-radius:8px'}">${(t.cap||'').trim() || '⏳ Caption en cours de génération automatique par l\\'agent... actualise dans quelques secondes.'}</div>
           <div class="tt-helper-actions">
             ${hasVideo ? `<button class="btn-mini btn-preview" onclick="window.open('${t.videoUrl}','_blank')">👁 Aperçu vidéo</button>` : `<button class="btn-mini btn-preview" disabled style="opacity:.5">👁 Vidéo locale</button>`}
-            <button class="btn-mini btn-preview" onclick='editHelperCaption("${t.id}")'>✏️ Éditer</button>
-            <button class="btn-mini btn-preview" ${(t.cap||'').trim() ? '' : 'disabled style="opacity:.5"'} onclick='copyCap(this, ${JSON.stringify(t.cap || '')})'>📋 Copier</button>
-            <button class="btn-mini btn-primary" onclick="openTikTok()">${isMobile ? '📱 Ouvrir TikTok' : '🖥️ TikTok web'}</button>
+            <button class="btn-mini btn-preview" ${(t.cap||'').trim() ? '' : 'disabled style="opacity:.5"'} onclick='copyCap(this, ${JSON.stringify(t.cap || '')})'>📋 Copier description</button>
+            <button class="btn-mini btn-primary" onclick="openTikTok()">${isMobile ? '📱 Ouvrir TikTok' : '🖥️ Ouvrir TikTok'}</button>
           </div>
         </div>`;
       }).join('');
