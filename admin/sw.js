@@ -1,5 +1,5 @@
 // Kadoizi Cockpit Service Worker v3 — full purge + version notify
-const VERSION = 'v26-2026-06-04-fix-syntax-error';
+const VERSION = 'v27-2026-06-04-helper-sound-match';
 
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 
