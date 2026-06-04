@@ -1923,8 +1923,10 @@
       const btn = document.getElementById('manual-refresh-btn');
       if (btn) btn.classList.add('spinning');
       _lastRefreshAt = Date.now();
+      // v30 : ce bouton recharge toutes les data BDD (équivalent à fermer/rouvrir la page).
+      // Le cron tiktok_pull_stats tourne toutes les 5 min en arrière-plan donc les vues sont
+      // toujours à jour à <5 min près (limitation TikTok Display API).
       try { await loadAllLiveData(); } finally {
-        // Keep spinning at least 400ms so user sees the feedback
         setTimeout(() => { if (btn) btn.classList.remove('spinning'); showRefreshHint(); }, 400);
       }
     }
