@@ -2840,10 +2840,6 @@
         return;
       }
       $('#feed-grid').innerHTML = FEED.map(f => {
-        const scoreColor = f.score === null ? '#999' : f.score >= 70 ? '#0a7d3a' : f.score >= 50 ? '#d68a00' : '#c0392b';
-        const scoreBadge = f.score !== null
-          ? `<span style="background:${scoreColor};color:white;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600">${f.atteint?'✓':'•'} ${f.score}/100</span>`
-          : '';
         const analysisBlock = (f.analyseSucces || f.pointsAmelioration)
           ? `<details style="margin-top:8px;font-size:11px;color:var(--text-muted)" onclick="event.stopPropagation()">
               <summary style="cursor:pointer;font-weight:600;color:var(--text)">📊 Analyse IA</summary>
@@ -2857,17 +2853,13 @@
             ${f.emoji}
           </div>
           <div class="feed-body">
-            <div style="display:flex;justify-content:space-between;align-items:start;gap:8px">
-              <div class="feed-title" style="flex:1">${f.title}</div>
-              ${scoreBadge}
-            </div>
+            <div class="feed-title">${f.title}</div>
             <div class="feed-date">${f.date}</div>
             <div class="feed-metrics">
               <span class="feed-metric"><span class="m-icon">👁</span>${f.views}</span>
               <span class="feed-metric"><span class="m-icon">❤️</span>${f.likes}</span>
               <span class="feed-metric"><span class="m-icon">💬</span>${f.comments}</span>
               <span class="feed-metric"><span class="m-icon">🔁</span>${f.shares}</span>
-              <span class="feed-metric"><span class="m-icon">📈</span>${f.engagement}</span>
             </div>
             ${analysisBlock}
           </div>
