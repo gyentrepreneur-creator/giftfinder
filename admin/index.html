@@ -2161,7 +2161,14 @@
                 url: f.platform === 'tiktok' && f.post_id ? `https://www.tiktok.com/@kadoizi/video/${f.post_id}` : (f.video_url || '#'),
                 views: typeof f.vues === 'number' && f.vues > 0 ? f.vues.toLocaleString('fr-FR') : '—',
                 likes: typeof f.likes === 'number' && f.likes > 0 ? f.likes.toLocaleString('fr-FR') : '—',
-                comments: typeof f.commentaires === 'number' && f.commentaires > 0 ? f.commentaires.toLocaleString('fr-FR') : '—'
+                comments: typeof f.commentaires === 'number' && f.commentaires > 0 ? f.commentaires.toLocaleString('fr-FR') : '—',
+                shares: typeof f.partages === 'number' && f.partages > 0 ? f.partages.toLocaleString('fr-FR') : '—',
+                engagement: f.taux_engagement && parseFloat(f.taux_engagement) > 0 ? parseFloat(f.taux_engagement).toFixed(1) + '%' : '—',
+                score: typeof f.score_global === 'string' || typeof f.score_global === 'number' ? Math.round(parseFloat(f.score_global) || 0) : null,
+                atteint: f.objectif_atteint === true,
+                analyseSucces: f.analyse_succes || '',
+                pointsAmelioration: f.points_amelioration || '',
+                caption: f.caption || ''
               });
             } catch (mapErr) { console.warn('feed map err', mapErr); }
           });
@@ -2832,23 +2839,40 @@
         $('#feed-grid').innerHTML = `<div class="empty" style="grid-column:1/-1;text-align:center;padding:var(--space-6) var(--space-3);color:var(--text-muted)"><div class="empty-emoji" style="font-size:48px;margin-bottom:var(--space-3)">📭</div><div>Aucun post publié pour l'instant</div><div style="font-size:11px;margin-top:6px;opacity:.7">Les posts apparaitront ici une fois publiés sur TikTok (cron auto-détection toutes les 30 min)</div></div>`;
         return;
       }
-      $('#feed-grid').innerHTML = FEED.map(f =>
-        `<div class="feed-card" onclick="window.open('${f.url}','_blank')">
+      $('#feed-grid').innerHTML = FEED.map(f => {
+        const scoreColor = f.score === null ? '#999' : f.score >= 70 ? '#0a7d3a' : f.score >= 50 ? '#d68a00' : '#c0392b';
+        const scoreBadge = f.score !== null
+          ? `<span style="background:${scoreColor};color:white;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600">${f.atteint?'✓':'•'} ${f.score}/100</span>`
+          : '';
+        const analysisBlock = (f.analyseSucces || f.pointsAmelioration)
+          ? `<details style="margin-top:8px;font-size:11px;color:var(--text-muted)" onclick="event.stopPropagation()">
+              <summary style="cursor:pointer;font-weight:600;color:var(--text)">📊 Analyse IA</summary>
+              ${f.analyseSucces ? `<div style="margin-top:6px"><b>✅ Succès :</b> ${f.analyseSucces}</div>` : ''}
+              ${f.pointsAmelioration ? `<div style="margin-top:6px"><b>🚀 À améliorer :</b> ${f.pointsAmelioration}</div>` : ''}
+             </details>`
+          : '';
+        return `<div class="feed-card" onclick="window.open('${f.url}','_blank')">
           <div class="feed-thumb">
             <span class="feed-platform-tag">${f.platform}</span>
             ${f.emoji}
           </div>
           <div class="feed-body">
-            <div class="feed-title">${f.title}</div>
+            <div style="display:flex;justify-content:space-between;align-items:start;gap:8px">
+              <div class="feed-title" style="flex:1">${f.title}</div>
+              ${scoreBadge}
+            </div>
             <div class="feed-date">${f.date}</div>
             <div class="feed-metrics">
               <span class="feed-metric"><span class="m-icon">👁</span>${f.views}</span>
               <span class="feed-metric"><span class="m-icon">❤️</span>${f.likes}</span>
               <span class="feed-metric"><span class="m-icon">💬</span>${f.comments}</span>
+              <span class="feed-metric"><span class="m-icon">🔁</span>${f.shares}</span>
+              <span class="feed-metric"><span class="m-icon">📈</span>${f.engagement}</span>
             </div>
+            ${analysisBlock}
           </div>
-        </div>`
-      ).join('');
+        </div>`;
+      }).join('');
     }
     renderFeed();
 
