@@ -1,5 +1,5 @@
 // Kadoizi Cockpit Service Worker v3 — full purge + version notify
-const VERSION = 'v30-2026-06-04-feed-clean-metrics';
+const VERSION = 'v31-2026-06-06-fix-copy-caption';
 
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 
