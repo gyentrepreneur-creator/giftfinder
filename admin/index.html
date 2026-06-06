@@ -2801,7 +2801,7 @@
           <div class="tt-caption-box" style="${(t.cap||'').trim() ? '' : 'background:#fef3c7;border:1px dashed #f59e0b;color:#92400e;font-style:italic;padding:10px;border-radius:8px'}">${(t.cap||'').trim() || '⏳ Caption en cours de génération automatique par l’agent... actualise dans quelques secondes.'}</div>
           <div class="tt-helper-actions">
             ${hasVideo ? `<button class="btn-mini btn-preview" onclick="window.open('${t.videoUrl}','_blank')">👁 Aperçu vidéo</button>` : `<button class="btn-mini btn-preview" disabled style="opacity:.5">👁 Vidéo locale</button>`}
-            <button class="btn-mini btn-preview" ${(t.cap||'').trim() ? '' : 'disabled style="opacity:.5"'} onclick='copyCap(this, ${JSON.stringify(t.cap || '')})'>📋 Copier description</button>
+            <button class="btn-mini btn-preview" ${(t.cap||'').trim() ? '' : 'disabled style="opacity:.5"'} data-cap="${(t.cap||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}" onclick="copyCap(this, this.dataset.cap)">📋 Copier description</button>
             <button class="btn-mini btn-primary" onclick="openTikTok()">${isMobile ? '📱 Ouvrir TikTok' : '🖥️ Ouvrir TikTok'}</button>
           </div>
         </div>`;
