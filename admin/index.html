@@ -1691,12 +1691,7 @@
       <h1 class="view-title">📈 Compte rendu Analytics</h1>
       <p class="view-subtitle">Historique des rapports générés par <strong>04_Agent_Analytics_v2</strong></p>
 
-      <div class="grid-4" style="margin-bottom:var(--space-4)">
-        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">📊</div><div class="kpi-label">Rapports 30j</div></div><div class="kpi-value">12</div><div class="kpi-delta up">↑ 3 cette semaine</div></div>
-        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">🎬</div><div class="kpi-label">Vidéos suivies</div></div><div class="kpi-value">3</div><div class="kpi-delta up">↑ 1 publiée</div></div>
-        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">🎁</div><div class="kpi-label">Quiz cadeaux</div></div><div class="kpi-value">53</div><div class="kpi-delta up">↑ 18%</div></div>
-        <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">👤</div><div class="kpi-label">Nouveaux users</div></div><div class="kpi-value">12</div><div class="kpi-delta up">↑ 4 cette semaine</div></div>
-      </div>
+      <!-- v41 : KPIs hardcodés retirés (chiffres fictifs 12/3/53/12 qui violaient le principe "que du réel"). Le vrai contenu live = les rapports ci-dessous. -->
 
       <div class="filter-tabs">
         <button class="filter-tab active" data-rep="all">Tous</button>
@@ -1759,19 +1754,27 @@
     const sbClient = supabase.createClient(SB_URL, SB_ANON);
     let currentSession = null;
 
+    let _sessionExpiredNotified = false;
     async function api(route, opts = {}) {
       const headers = { 'content-type': 'application/json' };
       if (currentSession?.access_token) headers['Authorization'] = 'Bearer ' + currentSession.access_token;
       const url = `${SB_URL}/functions/v1/admin-api?route=${route}`;
       const res = await fetch(url, { method: opts.method || 'GET', headers, body: opts.body ? JSON.stringify(opts.body) : undefined });
-      return res.json();
+      // v41 : ne jamais throw sur réponse non-JSON (gateway 401/5xx) → on renvoie un objet erreur exploitable.
+      const data = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+      // v41 : session expirée → avant, le cockpit se vidait en silence. On le signale une fois.
+      if (res.status === 401 && !_sessionExpiredNotified) {
+        _sessionExpiredNotified = true;
+        alert('🔒 Session expirée — reconnecte-toi (menu → Déconnexion, puis login).');
+      }
+      return data;
     }
 
     // ════════ MOCK DATA ════════
     const DRAWER_ITEMS = [
       { view: 'pulse', icon: '🟢', label: 'Pulse système', badge: null },
-      { view: 'supervise', icon: '🎬', label: 'Supervision', badge: '2' },
-      { view: 'tt-helper', icon: '📱', label: 'Helper TikTok', badge: '1' },
+      { view: 'supervise', icon: '🎬', label: 'Supervision', badge: null },
+      { view: 'tt-helper', icon: '📱', label: 'Helper TikTok', badge: null },
       { view: 'feed', icon: '📊', label: 'Feed publié', badge: null },
       { view: 'analytics', icon: '📈', label: 'Analytics', badge: null },
       { view: 'costs', icon: '💸', label: 'Coûts & quotas', badge: null },
@@ -2519,7 +2522,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v40-2026-06-04-approvals-sound-match';
+    const APP_VERSION = 'v41-2026-06-09-cockpit-audit-fixes';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
@@ -2729,8 +2732,17 @@
         btn.disabled = true; btn.textContent = '⏳…';
         try {
           const r = await api('approve-video', { method: 'POST', body: { approval_id: btn.dataset.approve, source: btn.dataset.source } });
-          if (r.error) { alert('Erreur : ' + r.error); btn.disabled = false; btn.textContent = originalLabel; return; }
-          alert((isRetry ? '🔁 Push relancé. ' : '✅ Approuvée. ') + (r.push?.message || 'Push TikTok envoyé.'));
+          if (r.error) {
+            // Backend renvoie un message clair (ex PUSH_FAILED → status_after:'approved'). On l'affiche + refresh pour révéler Retry.
+            alert('⚠️ ' + (r.message || r.error));
+            btn.disabled = false; btn.textContent = originalLabel;
+            loadAllLiveData();
+            return;
+          }
+          // Distingue push réel (pushed_to_tiktok) vs rendu déclenché (render_triggered = MP4 pas encore prêt, RIEN n'est poussé)
+          alert(r.action === 'render_triggered'
+            ? '🎬 ' + (r.message || 'Validation reçue — le MP4 final se génère. Re-clique Approve dans 5-10 min.')
+            : (isRetry ? '🔁 Push relancé sur ton inbox TikTok.' : '✅ Poussée sur ton inbox TikTok, prête à publier.'));
           loadAllLiveData();
         } catch (e) { alert('Erreur réseau : ' + e.message); btn.disabled = false; btn.textContent = originalLabel; }
       }));
@@ -2979,6 +2991,17 @@
       `;
       const actions = [
         { label: 'Annuler', style: 'outline' },
+        // v41 : bouton Archiver pour idée existante (route delete-idea existait déjà côté backend, aucun bouton ne l'appelait)
+        ...((!isNew && existing?.id) ? [{ label: '🗑 Archiver', style: 'outline', fn: async () => {
+          if (!confirm('Archiver cette idée ? Elle disparaît de la liste (archivée, pas supprimée définitivement).')) return;
+          try {
+            const r = await api('delete-idea', { method: 'POST', body: { idea_id: existing.id } });
+            if (r && r.error) { alert('Erreur : ' + r.error); return; }
+            const idx = IDEAS.findIndex(x => x.id === existing.id);
+            if (idx >= 0) IDEAS.splice(idx, 1);
+            renderIdeas();
+          } catch (e) { alert('Erreur : ' + e.message); }
+        } }] : []),
         { label: isNew ? '+ Créer' : 'Enregistrer', style: 'primary', fn: async () => {
           const t = $('#idea-title-in').value.trim();
           const d = $('#idea-desc-in').value.trim();
