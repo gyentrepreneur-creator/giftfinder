@@ -1986,7 +1986,8 @@
         }
       } catch (e) { console.warn('Reports load failed', e); }
 
-      // Costs live (fal.ai + Resend + ElevenLabs réels)
+      // Costs live (fal.ai + Resend + ElevenLabs réels) — v42 : NON-BLOQUANT (appels externes lents) → ne retarde plus les approbations
+      (async () => {
       try {
         const costsRes = await api('costs');
         if (costsRes.costs?.length) {
@@ -2005,6 +2006,7 @@
           ).join('');
         }
       } catch (e) { console.warn('Costs load failed', e); }
+      })();
 
       // Ideas
       try {
@@ -2019,7 +2021,8 @@
         }
       } catch (e) { console.warn('Ideas load failed', e); }
 
-      // Santé Services — vraies mesures live
+      // Santé Services — vraies mesures live — v42 : NON-BLOQUANT (appels externes lents)
+      (async () => {
       try {
         const healthRes = await api('health');
         if (Array.isArray(healthRes?.services)) {
@@ -2028,6 +2031,7 @@
           renderHealth();
         }
       } catch (e) { console.warn('Health load failed', e); }
+      })();
 
       // Pulse alerts + KPIs Vidéos
       try {
@@ -2522,7 +2526,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v41-2026-06-09-cockpit-audit-fixes';
+    const APP_VERSION = 'v42-2026-06-12-refresh-non-bloquant';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
