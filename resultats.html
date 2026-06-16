@@ -317,6 +317,7 @@
     let pollInterval  = null;
     let pollCount     = 0;
     const MAX_POLLS   = 60;
+    const POLLING_INTERVAL = 3000;  // FIX: était référencé (setInterval/affichage) mais jamais déclaré → ReferenceError → polling jamais démarré → loader figé pour tous
     let _currentData  = null; // stocke les données pour handleShare
 
     (async function() {
