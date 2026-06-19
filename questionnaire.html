@@ -435,7 +435,7 @@
           const hintEl = document.getElementById('quota-hint');
           if (hintEl) {
             if (restantes === 0) {
-              hintEl.innerHTML = '<span style="color:#b91c1c;font-weight:600;">\u26A0\uFE0F Limite atteinte \u2014 revenez demain !</span>';
+              hintEl.innerHTML = '<span style="color:#b91c1c;font-weight:600;">\u26A0\uFE0F Limite atteinte \u2014 reviens demain !</span>';
               // Désactiver le bouton dès le chargement si quota épuisé
               var btn = document.getElementById('submitBtn');
               if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
@@ -566,10 +566,10 @@
 
       // Validation
       if (!destinataire)      { showError('Indique pour qui c'est le cadeau.'); return; }
-      if (!sel.occasion)      { showError('Veuillez s\u00E9lectionner une occasion.'); return; }
-      if (!sel.genre)         { showError('Veuillez s\u00E9lectionner un genre.'); return; }
-      if (!sel.centres.length){ showError("Veuillez s\u00E9lectionner au moins un centre d'int\u00E9r\u00EAt."); return; }
-      if (!sel.budget)        { showError('Veuillez s\u00E9lectionner un budget.'); return; }
+      if (!sel.occasion)      { showError('Choisis une occasion.'); return; }
+      if (!sel.genre)         { showError('Choisis un genre.'); return; }
+      if (!sel.centres.length){ showError("Choisis au moins un centre d'int\u00E9r\u00EAt."); return; }
+      if (!sel.budget)        { showError('Choisis un budget.'); return; }
 
       submitBtn.disabled    = true;
       submitBtn.textContent = 'Analyse en cours...';
