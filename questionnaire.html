@@ -201,15 +201,15 @@
   <div class="auth-overlay" id="authOverlay" style="display:none;">
     <div class="auth-card">
       <h2 id="authTitle">Cr&eacute;er un compte</h2>
-      <p class="auth-sub" id="authSub">Inscrivez-vous pour voir vos r&eacute;sultats</p>
+      <p class="auth-sub" id="authSub">Inscris-toi pour voir tes r&eacute;sultats</p>
       <div class="auth-error" id="authError"></div>
       <div class="form-group">
         <label for="authEmail">Adresse e-mail</label>
-        <input type="email" id="authEmail" placeholder="vous@exemple.com">
+        <input type="email" id="authEmail" placeholder="toi@exemple.com">
       </div>
       <div class="form-group" id="authPrenomGroup" style="display:none;">
         <label for="authPrenom">Pr&eacute;nom</label>
-        <input type="text" id="authPrenom" placeholder="Votre pr&eacute;nom">
+        <input type="text" id="authPrenom" placeholder="Ton pr&eacute;nom">
       </div>
       <div class="form-group">
         <label for="authPassword">Mot de passe</label>
@@ -236,7 +236,7 @@
       </div>
 
       <h2 class="q-title anim-fade-up anim-hero anim-delay-1">Trouvons le cadeau parfait</h2>
-      <p class="q-subtitle anim-fade-up anim-hero anim-delay-2">R&eacute;pondez &agrave; quelques questions &mdash; notre IA fait le reste.</p>
+      <p class="q-subtitle anim-fade-up anim-hero anim-delay-2">R&eacute;ponds &agrave; quelques questions &mdash; notre IA fait le reste.</p>
 
       <div class="q-error" id="formError"></div>
 
@@ -459,14 +459,14 @@
       if (successEl) successEl.style.display = 'none';
       if (mode === 'login') {
         document.getElementById('authTitle').textContent = 'Connexion';
-        document.getElementById('authSub').textContent = 'Connectez-vous pour voir vos résultats';
+        document.getElementById('authSub').textContent = 'Connecte-toi pour voir tes résultats';
         document.getElementById('authSubmitBtn').textContent = 'Se connecter';
         document.getElementById('authToggle').innerHTML = "Pas encore de compte ? <a onclick='toggleAuthMode()'>S'inscrire</a>";
         document.getElementById('authPrenomGroup').style.display = 'none';
         document.getElementById('forgotPasswordLink').style.display = 'block';
       } else {
         document.getElementById('authTitle').textContent = 'Créer un compte';
-        document.getElementById('authSub').textContent = 'Inscrivez-vous pour voir vos résultats';
+        document.getElementById('authSub').textContent = 'Inscris-toi pour voir tes résultats';
         document.getElementById('authSubmitBtn').textContent = "S'inscrire";
         document.getElementById('authToggle').innerHTML = "Déjà un compte ? <a onclick='toggleAuthMode()'>Se connecter</a>";
         document.getElementById('authPrenomGroup').style.display = 'block';
@@ -492,7 +492,7 @@
       errorEl.style.display = 'none';
       successEl.style.display = 'none';
       if (!email) {
-        errorEl.textContent = 'Veuillez saisir votre adresse e-mail.';
+        errorEl.textContent = 'Saisis ton adresse e-mail.';
         errorEl.style.display = 'block';
         return;
       }
@@ -515,7 +515,7 @@
       var errorEl  = document.getElementById('authError');
       errorEl.style.display = 'none';
       if (!email || !password) {
-        errorEl.textContent = 'Veuillez remplir tous les champs.';
+        errorEl.textContent = 'Remplis tous les champs.';
         errorEl.style.display = 'block';
         return;
       }
@@ -565,7 +565,7 @@
       const age          = ageRaw ? parseInt(ageRaw, 10) : null;
 
       // Validation
-      if (!destinataire)      { showError('Veuillez indiquer le destinataire du cadeau.'); return; }
+      if (!destinataire)      { showError('Indique pour qui c'est le cadeau.'); return; }
       if (!sel.occasion)      { showError('Veuillez s\u00E9lectionner une occasion.'); return; }
       if (!sel.genre)         { showError('Veuillez s\u00E9lectionner un genre.'); return; }
       if (!sel.centres.length){ showError("Veuillez s\u00E9lectionner au moins un centre d'int\u00E9r\u00EAt."); return; }
@@ -588,7 +588,7 @@
             .gte('created_at', today + 'T00:00:00.000Z')
             .lte('created_at', today + 'T23:59:59.999Z');
           if (count >= 10) {
-            showError('Vous avez atteint la limite de 10 recherches gratuites par jour. Revenez demain !');
+            showError('Tu as atteint la limite de 10 recherches gratuites par jour. Reviens demain !');
             submitBtn.disabled    = false;
             submitBtn.textContent = 'D\u00E9couvrir mes recommandations \u2728';
             return;
