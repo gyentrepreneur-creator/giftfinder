@@ -565,7 +565,7 @@
       const age          = ageRaw ? parseInt(ageRaw, 10) : null;
 
       // Validation
-      if (!destinataire)      { showError('Indique pour qui c'est le cadeau.'); return; }
+      if (!destinataire)      { showError('Indique le destinataire du cadeau.'); return; }
       if (!sel.occasion)      { showError('Choisis une occasion.'); return; }
       if (!sel.genre)         { showError('Choisis un genre.'); return; }
       if (!sel.centres.length){ showError("Choisis au moins un centre d'int\u00E9r\u00EAt."); return; }
