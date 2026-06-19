@@ -9,7 +9,7 @@
   <meta name="description" content="Kadoizi trouve 9 idées cadeaux personnalisées en 30 secondes grâce à l'IA. Saisissez l'âge, l'occasion et le budget — recevez des liens Amazon directs.">
   <meta name="keywords" content="idée cadeau, cadeau personnalisé, cadeau anniversaire, cadeau noël, cadeau homme, cadeau femme, idée cadeau IA">
   <meta name="robots" content="index, follow">
-  <meta name="theme-color" content="#3C3489">
+  <meta name="theme-color" content="#8B2C24">
   <link rel="canonical" href="https://www.kadoizi.com/">
   <link rel="manifest" href="/manifest.json">
 
@@ -114,7 +114,7 @@
       <span class="stars">★★★★★</span>
       <span class="rating-text">+1 000 cadeaux trouvés</span>
     </div>
-    <button class="btn-cta anim-fade-up anim-hero anim-delay-5" onclick="handleHeroCta()">Trouver un cadeau →</button>
+    <button class="btn-cta anim-fade-up anim-hero anim-delay-5" onclick="handleHeroCta()">Trouver mon cadeau →</button>
     <span class="cta-sub anim-fade-in anim-hero anim-delay-6">Gratuit · Sans carte bancaire</span>
   </section>
 
@@ -146,7 +146,7 @@
 
   <footer class="footer">
     <div class="footer-top">
-      <span id="footer-brand"></span> &mdash; <a href="#" onclick="handleHeroCta();return false;">Trouver un cadeau</a>
+      <span id="footer-brand"></span> &mdash; <a href="#" onclick="handleHeroCta();return false;">Trouver mon cadeau</a>
     </div>
     <div class="footer-links">
       <a href="blog/index.html">Blog</a>
@@ -339,8 +339,8 @@
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         document.getElementById('nav-right').innerHTML =
-          '<a href="profil.html" style="font-size:14px;color:#3C3489;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>' +
-          '<button class="btn-primary" onclick="window.location.href=\'questionnaire.html\'">Trouver un cadeau</button>';
+          '<a href="profil.html" style="font-size:14px;color:#8B2C24;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>' +
+          '<button class="btn-primary" onclick="window.location.href=\'questionnaire.html\'">Trouver mon cadeau</button>';
       }
     })();
 
