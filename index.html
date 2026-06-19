@@ -296,13 +296,8 @@
     })();
 
     function handleHeroCta() {
-      supabase.auth.getSession().then(function(r) {
-        if (r.data.session) {
-          window.location.href = 'questionnaire.html';
-        } else {
-          openAuth('signup');
-        }
-      });
+      // value-first : on va TOUJOURS au formulaire ; l'inscription se fait au submit
+      window.location.href = 'questionnaire.html';
     }
 
     async function handleAuth() {
