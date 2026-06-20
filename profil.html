@@ -4,21 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kadoizi &mdash; Mon profil</title>
-  <meta name="theme-color" content="#3C3489">
+  <meta name="theme-color" content="#E94560">
   <link rel="icon" href="/logo.png">
-  <link rel="stylesheet" href="css/style.css?v=202605312153">
+  <link rel="stylesheet" href="css/style.css?v=20260619kado">
   <style>
     body {
       margin: 0;
       min-height: 100vh;
-      background: linear-gradient(135deg, #EEEDFE 0%, #FBEAF0 50%, #E1F5EE 100%);
+      background: linear-gradient(135deg, #FAF3E3 0%, #FBEAF0 50%, #E1F5EE 100%);
       position: relative;
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
     }
     .deco { position: fixed; border-radius: 50%; opacity: 0.15; pointer-events: none; z-index: 0; }
-    .deco-violet { background: #7F77DD; width: 180px; height: 180px; top: -45px; left: -45px; }
+    .deco-violet { background: #F0997B; width: 180px; height: 180px; top: -45px; left: -45px; }
     .deco-rose   { background: #D4537E; width: 110px; height: 110px; top: 20px; right: -25px; }
     .deco-vert   { background: #1D9E75; width:  80px; height:  80px; bottom: 80px; right: 40px; }
     .deco-ambre  { background: #EF9F27; width:  60px; height:  60px; bottom: 60px; left: 40px; }
@@ -54,7 +54,7 @@
     .p-card {
       background: #fff;
       border-radius: 18px;
-      box-shadow: 0 2px 16px rgba(60,52,137,0.08), 0 1px 4px rgba(0,0,0,0.04);
+      box-shadow: 0 2px 16px rgba(233, 69, 96,0.08), 0 1px 4px rgba(0,0,0,0.04);
       padding: 24px;
       margin-bottom: 18px;
     }
@@ -81,7 +81,7 @@
       width: 100%;
       box-sizing: border-box;
       padding: 10px 14px;
-      border: 1.5px solid #e0ddf5;
+      border: 1.5px solid #F4C0D1;
       border-radius: 10px;
       font-size: 14px;
       font-family: inherit;
@@ -89,15 +89,15 @@
       outline: none;
       transition: border-color .15s;
     }
-    .p-field input:focus { border-color: #3C3489; }
+    .p-field input:focus { border-color: #E94560; }
     .p-field input:disabled { background: #f5f5f5; color: #999; cursor: not-allowed; }
 
     /* Buttons */
     .btn-save {
       width: 100%;
       padding: 11px 0;
-      background: #3C3489;
-      color: #EEEDFE;
+      background: #E94560;
+      color: #FAF3E3;
       border: none;
       border-radius: 999px;
       font-size: 14px;
@@ -107,7 +107,7 @@
       transition: background .15s;
       margin-top: 4px;
     }
-    .btn-save:hover { background: #2d2768; }
+    .btn-save:hover { background: #C42847; }
     .btn-save:disabled { background: #bbb; cursor: not-allowed; }
 
     /* Danger zone */
@@ -201,7 +201,7 @@
     }
     .p-msg.success { background: rgba(29,158,117,0.1); color: #1D9E75; }
     .p-msg.error   { background: rgba(198,40,40,0.08); color: #c62828; }
-    .p-msg.info    { background: rgba(60,52,137,0.08); color: #3C3489; }
+    .p-msg.info    { background: rgba(233, 69, 96,0.08); color: #E94560; }
 
     /* Historique recherches */
     .h-item {
@@ -209,7 +209,7 @@
       align-items: center;
       gap: 14px;
       padding: 12px 0;
-      border-bottom: 1px solid rgba(60,52,137,0.07);
+      border-bottom: 1px solid rgba(233, 69, 96,0.07);
       cursor: pointer;
       text-decoration: none;
       color: inherit;
@@ -220,7 +220,7 @@
       padding-right: 8px;
     }
     .h-item:last-child { border-bottom: none; }
-    .h-item:hover { background: rgba(60,52,137,0.04); }
+    .h-item:hover { background: rgba(233, 69, 96,0.04); }
     .h-emoji { font-size: 24px; flex-shrink: 0; width: 32px; text-align: center; }
     .h-info { flex: 1; min-width: 0; }
     .h-destinataire { font-size: 14px; font-weight: 700; color: #1a1935; }
@@ -230,7 +230,7 @@
       padding: 2px 8px; border-radius: 999px;
       background: rgba(29,158,117,0.12); color: #1D9E75;
     }
-    .h-badge.pending { background: rgba(60,52,137,0.1); color: #3C3489; }
+    .h-badge.pending { background: rgba(233, 69, 96,0.1); color: #E94560; }
     .h-date { font-size: 11px; color: #ccc; flex-shrink: 0; }
     .h-empty-msg { text-align: center; padding: 20px 0; color: #aaa; font-size: 13px; }
 
@@ -255,7 +255,7 @@
       border-radius: 50%;
       transition: .2s;
     }
-    .toggle-switch input:checked + .toggle-slider { background: #3C3489; }
+    .toggle-switch input:checked + .toggle-slider { background: #E94560; }
     .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
   </style>
 </head>
@@ -273,7 +273,7 @@
       <span class="brand" id="brand-name"></span>
     </div>
     <div class="navbar-right" id="nav-right">
-      <button class="btn-outline" style="border-color:#3C3489;color:#3C3489;"
+      <button class="btn-outline" style="border-color:#E94560;color:#E94560;"
               onclick="window.location.href='questionnaire.html'">&#127873; Recherche</button>
       <button class="btn-primary" id="btn-logout" onclick="handleLogout()">D&eacute;connexion</button>
     </div>
@@ -290,7 +290,7 @@
       <div class="p-card-title">&#128100; Informations personnelles</div>
       <div class="p-field">
         <label>Pr&eacute;nom</label>
-        <input type="text" id="input-prenom" placeholder="Votre pr&eacute;nom" autocomplete="given-name">
+        <input type="text" id="input-prenom" placeholder="Ton pr&eacute;nom" autocomplete="given-name">
       </div>
       <div class="p-field">
         <label>Adresse e-mail</label>
@@ -312,7 +312,7 @@
       <button class="btn-save" id="btn-email" onclick="changeEmail()" style="margin-bottom:20px;">Mettre &agrave; jour l&apos;e-mail</button>
       <div class="p-msg" id="msg-email"></div>
 
-      <hr style="border:none;border-top:1px solid rgba(60,52,137,0.08);margin:16px 0;">
+      <hr style="border:none;border-top:1px solid rgba(233, 69, 96,0.08);margin:16px 0;">
 
       <p style="font-size:12px;font-weight:600;color:#888;margin:0 0 10px;text-transform:uppercase;letter-spacing:.5px;">Changer le mot de passe</p>
       <div class="p-field">
@@ -345,7 +345,7 @@
         <div>
           <div style="font-size:14px;font-weight:600;color:#26215C;">Idée cadeau quotidienne</div>
           <div style="font-size:12px;color:#888;margin-top:3px;line-height:1.5;">
-            Recevez chaque matin une suggestion cadeau personnalis&eacute;e par IA, adapt&eacute;e &agrave; vos centres d&apos;int&eacute;r&ecirc;t habituels.
+            Re&ccedil;ois chaque matin une suggestion cadeau personnalis&eacute;e par IA, adapt&eacute;e &agrave; tes centres d&apos;int&eacute;r&ecirc;t habituels.
           </div>
         </div>
       </div>
@@ -356,7 +356,7 @@
     <div class="p-card danger">
       <div class="p-card-title">&#9888;&#65039; Zone de danger</div>
       <p style="font-size:13px;color:#666;margin:0 0 14px;line-height:1.6;">
-        La suppression de votre compte est <strong>irr&eacute;versible</strong>. Toutes vos recherches et donn&eacute;es seront d&eacute;finitivement supprim&eacute;es.
+        La suppression de ton compte est <strong>irr&eacute;versible</strong>. Toutes tes recherches et donn&eacute;es seront d&eacute;finitivement supprim&eacute;es.
       </p>
       <div class="p-field">
         <label>Tapez <strong>SUPPRIMER</strong> pour confirmer</label>
@@ -373,14 +373,14 @@
   <!-- Modal : raison suppression -->
   <div class="delete-modal-overlay" id="delete-modal-overlay">
     <div class="delete-modal">
-      <h3>&#128722; Pourquoi supprimez-vous votre compte ?</h3>
-      <p>Votre r&eacute;ponse nous aide &agrave; am&eacute;liorer Kadoizi.</p>
+      <h3>&#128722; Pourquoi supprimes-tu ton compte ?</h3>
+      <p>Ta r&eacute;ponse nous aide &agrave; am&eacute;liorer Kadoizi.</p>
       <label class="reason-opt"><input type="radio" name="del-reason" value="plus-utilise"> Je n&#39;utilise plus l&#39;application</label>
       <label class="reason-opt"><input type="radio" name="del-reason" value="pas-trouve"> Je n&#39;ai pas trouv&eacute; ce que je cherchais</label>
       <label class="reason-opt"><input type="radio" name="del-reason" value="quota"> Le quota de recherches est trop limit&eacute;</label>
       <label class="reason-opt"><input type="radio" name="del-reason" value="technique"> Probl&egrave;me technique</label>
       <label class="reason-opt"><input type="radio" name="del-reason" value="autre"> Autre raison</label>
-      <textarea id="del-reason-text" placeholder="Pr&eacute;cisez si vous le souhaitez&#8230;"></textarea>
+      <textarea id="del-reason-text" placeholder="Pr&eacute;cise si tu veux&#8230;"></textarea>
       <div class="delete-modal-actions">
         <button class="btn-modal-cancel" onclick="closeDeleteModal()">Annuler</button>
         <button class="btn-modal-confirm" id="btn-modal-confirm" disabled onclick="confirmDeleteWithReason()">Supprimer d&eacute;finitivement</button>
@@ -473,7 +473,7 @@
         loader.style.display = 'none';
 
         if (error || !data || data.length === 0) {
-          list.innerHTML = '<div class="h-empty-msg">Aucune recherche pour l&#8217;instant &#8212; <a href="questionnaire.html" style="color:#3C3489;">lancez-en une !</a></div>';
+          list.innerHTML = '<div class="h-empty-msg">Aucune recherche pour l&#8217;instant &#8212; <a href="questionnaire.html" style="color:#E94560;">lancez-en une !</a></div>';
           return;
         }
 
@@ -552,7 +552,7 @@
     async function changeEmail() {
       hideMsg('msg-email');
       var newEmail = document.getElementById('new-email').value.trim();
-      if (!newEmail) { showMsg('msg-email', 'Veuillez saisir un nouvel e-mail.', 'error'); return; }
+      if (!newEmail) { showMsg('msg-email', 'Saisis un nouvel e-mail.', 'error'); return; }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
         showMsg('msg-email', 'Adresse e-mail invalide.', 'error'); return;
       }
@@ -572,7 +572,7 @@
       hideMsg('msg-password');
       var pwd1 = document.getElementById('new-password').value;
       var pwd2 = document.getElementById('confirm-password').value;
-      if (!pwd1) { showMsg('msg-password', 'Veuillez saisir un nouveau mot de passe.', 'error'); return; }
+      if (!pwd1) { showMsg('msg-password', 'Saisis un nouveau mot de passe.', 'error'); return; }
       if (pwd1.length < 6) { showMsg('msg-password', 'Le mot de passe doit contenir au moins 6 caract\u00E8res.', 'error'); return; }
       if (pwd1 !== pwd2) { showMsg('msg-password', 'Les mots de passe ne correspondent pas.', 'error'); return; }
       setLoading('btn-password', true);
@@ -713,8 +713,8 @@
         if (error) throw error;
 
         msgEl.textContent = checked
-          ? '\u2705 Activ\u00E9 ! Vous recevrez une id\u00E9e cadeau chaque matin.'
-          : '\u2705 D\u00E9sactiv\u00E9. Vous ne recevrez plus d\u2019emails quotidiens.';
+          ? '\u2705 Activ\u00E9 ! Tu recevras une id\u00E9e cadeau chaque matin.'
+          : '\u2705 D\u00E9sactiv\u00E9. Tu ne recevras plus d\u2019emails quotidiens.';
         msgEl.className = 'p-msg success';
       } catch (err) {
         el.checked = !checked; // Revenir à l'état précédent
