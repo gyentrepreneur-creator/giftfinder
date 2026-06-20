@@ -318,7 +318,7 @@
       </div>
 
       <button class="q-submit" id="submitBtn" onclick="handleSubmit()">
-        D&eacute;couvrir mes recommandations &#10024;
+        Trouver mes id&eacute;es &#10024;
       </button>
       <p class="q-hint" id="quota-hint">R&eacute;sultats en moins de 30 secondes &middot; Gratuit &middot; 10 recherches/jour</p>
 
@@ -590,7 +590,7 @@
           if (count >= 10) {
             showError('Tu as atteint la limite de 10 recherches gratuites par jour. Reviens demain !');
             submitBtn.disabled    = false;
-            submitBtn.textContent = 'D\u00E9couvrir mes recommandations \u2728';
+            submitBtn.textContent = 'Trouver mes id\u00E9es \u2728';
             return;
           }
         }
@@ -646,7 +646,7 @@
       } catch (err) {
         showError(err.message || 'Une erreur est survenue. Veuillez reessayer.');
         submitBtn.disabled    = false;
-        submitBtn.textContent = 'D\u00E9couvrir mes recommandations \u2728';
+        submitBtn.textContent = 'Trouver mes id\u00E9es \u2728';
       }
     }
 
