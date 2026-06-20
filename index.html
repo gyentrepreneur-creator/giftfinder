@@ -6,7 +6,7 @@
   <title>Kadoizi — Trouvez le cadeau parfait</title>
 
   <!-- SEO -->
-  <meta name="description" content="Kadoizi trouve 9 idées cadeaux personnalisées en 30 secondes grâce à l'IA. Saisissez l'âge, l'occasion et le budget — recevez des liens Amazon directs.">
+  <meta name="description" content="Kadoizi trouve 9 idées cadeaux personnalisées en 30 secondes grâce à l'IA. Saisis l'âge, l'occasion et le budget — reçois des liens Amazon directs.">
   <meta name="keywords" content="idée cadeau, cadeau personnalisé, cadeau anniversaire, cadeau noël, cadeau homme, cadeau femme, idée cadeau IA">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#E94560">
@@ -170,15 +170,15 @@
   <div class="auth-overlay" id="authOverlay" style="display:none;">
     <div class="auth-card">
       <h2 id="authTitle">Connexion</h2>
-      <p class="auth-sub" id="authSub">Connectez-vous pour trouver le cadeau parfait</p>
+      <p class="auth-sub" id="authSub">Connecte-toi pour trouver le cadeau parfait</p>
       <div class="auth-error" id="authError"></div>
       <div class="form-group">
         <label for="authEmail">Adresse e-mail</label>
-        <input type="email" id="authEmail" placeholder="vous@exemple.com">
+        <input type="email" id="authEmail" placeholder="toi@exemple.com">
       </div>
       <div class="form-group" id="authPrenomGroup" style="display:none;">
         <label for="authPrenom">Prénom</label>
-        <input type="text" id="authPrenom" placeholder="Votre prénom">
+        <input type="text" id="authPrenom" placeholder="Ton prénom">
       </div>
       <div class="form-group">
         <label for="authPassword">Mot de passe</label>
@@ -199,7 +199,7 @@
   <div id="deletedToast" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
     background:#1a1935;color:#fff;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:500;
     z-index:200;box-shadow:0 4px 20px rgba(0,0,0,0.2);">
-    &#10003; Votre compte a &eacute;t&eacute; supprim&eacute; avec succ&egrave;s.
+    &#10003; Ton compte a &eacute;t&eacute; supprim&eacute; avec succ&egrave;s.
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -218,13 +218,13 @@
       document.getElementById('authError').style.display = 'none';
       if (mode === 'login') {
         document.getElementById('authTitle').textContent = 'Connexion';
-        document.getElementById('authSub').textContent = 'Connectez-vous pour trouver le cadeau parfait';
+        document.getElementById('authSub').textContent = 'Connecte-toi pour trouver le cadeau parfait';
         document.getElementById('authSubmitBtn').textContent = 'Se connecter';
         document.getElementById('authToggle').innerHTML = "Pas encore de compte ? <a onclick='toggleAuthMode()'>S'inscrire</a>";
         document.getElementById('authPrenomGroup').style.display = 'none';
       } else {
         document.getElementById('authTitle').textContent = 'Créer un compte';
-        document.getElementById('authSub').textContent = 'Inscrivez-vous gratuitement pour commencer';
+        document.getElementById('authSub').textContent = 'Inscris-toi gratuitement pour commencer';
         document.getElementById('authSubmitBtn').textContent = "S'inscrire";
         document.getElementById('authToggle').innerHTML = "Déjà un compte ? <a onclick='toggleAuthMode()'>Se connecter</a>";
         document.getElementById('authPrenomGroup').style.display = 'block';
@@ -260,7 +260,7 @@
       errorEl.style.display = 'none';
       successEl.style.display = 'none';
       if (!email) {
-        errorEl.textContent = 'Veuillez saisir votre adresse e-mail avant de cliquer sur ce lien.';
+        errorEl.textContent = 'Saisis ton adresse e-mail avant de cliquer sur ce lien.';
         errorEl.style.display = 'block';
         return;
       }
@@ -306,7 +306,7 @@
       const errorEl  = document.getElementById('authError');
       errorEl.style.display = 'none';
       if (!email || !password) {
-        errorEl.textContent = 'Veuillez remplir tous les champs.';
+        errorEl.textContent = 'Remplis tous les champs.';
         errorEl.style.display = 'block';
         return;
       }
