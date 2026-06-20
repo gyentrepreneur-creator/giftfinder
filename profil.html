@@ -290,7 +290,7 @@
       <div class="p-card-title">&#128100; Informations personnelles</div>
       <div class="p-field">
         <label>Pr&eacute;nom</label>
-        <input type="text" id="input-prenom" placeholder="Votre pr&eacute;nom" autocomplete="given-name">
+        <input type="text" id="input-prenom" placeholder="Ton pr&eacute;nom" autocomplete="given-name">
       </div>
       <div class="p-field">
         <label>Adresse e-mail</label>
@@ -345,7 +345,7 @@
         <div>
           <div style="font-size:14px;font-weight:600;color:#26215C;">Idée cadeau quotidienne</div>
           <div style="font-size:12px;color:#888;margin-top:3px;line-height:1.5;">
-            Recevez chaque matin une suggestion cadeau personnalis&eacute;e par IA, adapt&eacute;e &agrave; vos centres d&apos;int&eacute;r&ecirc;t habituels.
+            Re&ccedil;ois chaque matin une suggestion cadeau personnalis&eacute;e par IA, adapt&eacute;e &agrave; tes centres d&apos;int&eacute;r&ecirc;t habituels.
           </div>
         </div>
       </div>
@@ -356,7 +356,7 @@
     <div class="p-card danger">
       <div class="p-card-title">&#9888;&#65039; Zone de danger</div>
       <p style="font-size:13px;color:#666;margin:0 0 14px;line-height:1.6;">
-        La suppression de votre compte est <strong>irr&eacute;versible</strong>. Toutes vos recherches et donn&eacute;es seront d&eacute;finitivement supprim&eacute;es.
+        La suppression de ton compte est <strong>irr&eacute;versible</strong>. Toutes tes recherches et donn&eacute;es seront d&eacute;finitivement supprim&eacute;es.
       </p>
       <div class="p-field">
         <label>Tapez <strong>SUPPRIMER</strong> pour confirmer</label>
@@ -373,14 +373,14 @@
   <!-- Modal : raison suppression -->
   <div class="delete-modal-overlay" id="delete-modal-overlay">
     <div class="delete-modal">
-      <h3>&#128722; Pourquoi supprimez-vous votre compte ?</h3>
-      <p>Votre r&eacute;ponse nous aide &agrave; am&eacute;liorer Kadoizi.</p>
+      <h3>&#128722; Pourquoi supprimes-tu ton compte ?</h3>
+      <p>Ta r&eacute;ponse nous aide &agrave; am&eacute;liorer Kadoizi.</p>
       <label class="reason-opt"><input type="radio" name="del-reason" value="plus-utilise"> Je n&#39;utilise plus l&#39;application</label>
       <label class="reason-opt"><input type="radio" name="del-reason" value="pas-trouve"> Je n&#39;ai pas trouv&eacute; ce que je cherchais</label>
       <label class="reason-opt"><input type="radio" name="del-reason" value="quota"> Le quota de recherches est trop limit&eacute;</label>
       <label class="reason-opt"><input type="radio" name="del-reason" value="technique"> Probl&egrave;me technique</label>
       <label class="reason-opt"><input type="radio" name="del-reason" value="autre"> Autre raison</label>
-      <textarea id="del-reason-text" placeholder="Pr&eacute;cisez si vous le souhaitez&#8230;"></textarea>
+      <textarea id="del-reason-text" placeholder="Pr&eacute;cise si tu veux&#8230;"></textarea>
       <div class="delete-modal-actions">
         <button class="btn-modal-cancel" onclick="closeDeleteModal()">Annuler</button>
         <button class="btn-modal-confirm" id="btn-modal-confirm" disabled onclick="confirmDeleteWithReason()">Supprimer d&eacute;finitivement</button>
@@ -552,7 +552,7 @@
     async function changeEmail() {
       hideMsg('msg-email');
       var newEmail = document.getElementById('new-email').value.trim();
-      if (!newEmail) { showMsg('msg-email', 'Veuillez saisir un nouvel e-mail.', 'error'); return; }
+      if (!newEmail) { showMsg('msg-email', 'Saisis un nouvel e-mail.', 'error'); return; }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
         showMsg('msg-email', 'Adresse e-mail invalide.', 'error'); return;
       }
@@ -572,7 +572,7 @@
       hideMsg('msg-password');
       var pwd1 = document.getElementById('new-password').value;
       var pwd2 = document.getElementById('confirm-password').value;
-      if (!pwd1) { showMsg('msg-password', 'Veuillez saisir un nouveau mot de passe.', 'error'); return; }
+      if (!pwd1) { showMsg('msg-password', 'Saisis un nouveau mot de passe.', 'error'); return; }
       if (pwd1.length < 6) { showMsg('msg-password', 'Le mot de passe doit contenir au moins 6 caract\u00E8res.', 'error'); return; }
       if (pwd1 !== pwd2) { showMsg('msg-password', 'Les mots de passe ne correspondent pas.', 'error'); return; }
       setLoading('btn-password', true);
@@ -713,8 +713,8 @@
         if (error) throw error;
 
         msgEl.textContent = checked
-          ? '\u2705 Activ\u00E9 ! Vous recevrez une id\u00E9e cadeau chaque matin.'
-          : '\u2705 D\u00E9sactiv\u00E9. Vous ne recevrez plus d\u2019emails quotidiens.';
+          ? '\u2705 Activ\u00E9 ! Tu recevras une id\u00E9e cadeau chaque matin.'
+          : '\u2705 D\u00E9sactiv\u00E9. Tu ne recevras plus d\u2019emails quotidiens.';
         msgEl.className = 'p-msg success';
       } catch (err) {
         el.checked = !checked; // Revenir à l'état précédent
