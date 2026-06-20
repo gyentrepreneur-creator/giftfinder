@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kadoizi &mdash; Mon profil</title>
-  <meta name="theme-color" content="#8B2C24">
+  <meta name="theme-color" content="#E94560">
   <link rel="icon" href="/logo.png">
   <link rel="stylesheet" href="css/style.css?v=202605312153">
   <style>
@@ -54,7 +54,7 @@
     .p-card {
       background: #fff;
       border-radius: 18px;
-      box-shadow: 0 2px 16px rgba(139, 44, 36,0.08), 0 1px 4px rgba(0,0,0,0.04);
+      box-shadow: 0 2px 16px rgba(233, 69, 96,0.08), 0 1px 4px rgba(0,0,0,0.04);
       padding: 24px;
       margin-bottom: 18px;
     }
@@ -89,14 +89,14 @@
       outline: none;
       transition: border-color .15s;
     }
-    .p-field input:focus { border-color: #8B2C24; }
+    .p-field input:focus { border-color: #E94560; }
     .p-field input:disabled { background: #f5f5f5; color: #999; cursor: not-allowed; }
 
     /* Buttons */
     .btn-save {
       width: 100%;
       padding: 11px 0;
-      background: #8B2C24;
+      background: #E94560;
       color: #FAF3E3;
       border: none;
       border-radius: 999px;
@@ -107,7 +107,7 @@
       transition: background .15s;
       margin-top: 4px;
     }
-    .btn-save:hover { background: #6E1F1A; }
+    .btn-save:hover { background: #C42847; }
     .btn-save:disabled { background: #bbb; cursor: not-allowed; }
 
     /* Danger zone */
@@ -201,7 +201,7 @@
     }
     .p-msg.success { background: rgba(29,158,117,0.1); color: #1D9E75; }
     .p-msg.error   { background: rgba(198,40,40,0.08); color: #c62828; }
-    .p-msg.info    { background: rgba(139, 44, 36,0.08); color: #8B2C24; }
+    .p-msg.info    { background: rgba(233, 69, 96,0.08); color: #E94560; }
 
     /* Historique recherches */
     .h-item {
@@ -209,7 +209,7 @@
       align-items: center;
       gap: 14px;
       padding: 12px 0;
-      border-bottom: 1px solid rgba(139, 44, 36,0.07);
+      border-bottom: 1px solid rgba(233, 69, 96,0.07);
       cursor: pointer;
       text-decoration: none;
       color: inherit;
@@ -220,7 +220,7 @@
       padding-right: 8px;
     }
     .h-item:last-child { border-bottom: none; }
-    .h-item:hover { background: rgba(139, 44, 36,0.04); }
+    .h-item:hover { background: rgba(233, 69, 96,0.04); }
     .h-emoji { font-size: 24px; flex-shrink: 0; width: 32px; text-align: center; }
     .h-info { flex: 1; min-width: 0; }
     .h-destinataire { font-size: 14px; font-weight: 700; color: #1a1935; }
@@ -230,7 +230,7 @@
       padding: 2px 8px; border-radius: 999px;
       background: rgba(29,158,117,0.12); color: #1D9E75;
     }
-    .h-badge.pending { background: rgba(139, 44, 36,0.1); color: #8B2C24; }
+    .h-badge.pending { background: rgba(233, 69, 96,0.1); color: #E94560; }
     .h-date { font-size: 11px; color: #ccc; flex-shrink: 0; }
     .h-empty-msg { text-align: center; padding: 20px 0; color: #aaa; font-size: 13px; }
 
@@ -255,7 +255,7 @@
       border-radius: 50%;
       transition: .2s;
     }
-    .toggle-switch input:checked + .toggle-slider { background: #8B2C24; }
+    .toggle-switch input:checked + .toggle-slider { background: #E94560; }
     .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
   </style>
 </head>
@@ -273,7 +273,7 @@
       <span class="brand" id="brand-name"></span>
     </div>
     <div class="navbar-right" id="nav-right">
-      <button class="btn-outline" style="border-color:#8B2C24;color:#8B2C24;"
+      <button class="btn-outline" style="border-color:#E94560;color:#E94560;"
               onclick="window.location.href='questionnaire.html'">&#127873; Recherche</button>
       <button class="btn-primary" id="btn-logout" onclick="handleLogout()">D&eacute;connexion</button>
     </div>
@@ -312,7 +312,7 @@
       <button class="btn-save" id="btn-email" onclick="changeEmail()" style="margin-bottom:20px;">Mettre &agrave; jour l&apos;e-mail</button>
       <div class="p-msg" id="msg-email"></div>
 
-      <hr style="border:none;border-top:1px solid rgba(139, 44, 36,0.08);margin:16px 0;">
+      <hr style="border:none;border-top:1px solid rgba(233, 69, 96,0.08);margin:16px 0;">
 
       <p style="font-size:12px;font-weight:600;color:#888;margin:0 0 10px;text-transform:uppercase;letter-spacing:.5px;">Changer le mot de passe</p>
       <div class="p-field">
@@ -473,7 +473,7 @@
         loader.style.display = 'none';
 
         if (error || !data || data.length === 0) {
-          list.innerHTML = '<div class="h-empty-msg">Aucune recherche pour l&#8217;instant &#8212; <a href="questionnaire.html" style="color:#8B2C24;">lancez-en une !</a></div>';
+          list.innerHTML = '<div class="h-empty-msg">Aucune recherche pour l&#8217;instant &#8212; <a href="questionnaire.html" style="color:#E94560;">lancez-en une !</a></div>';
           return;
         }
 
