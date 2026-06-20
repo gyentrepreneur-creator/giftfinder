@@ -216,9 +216,9 @@
     <div id="loader" class="r-loader">
       <div class="r-gift">&#127873;</div>
       <div class="r-spinner"></div>
-      <h2 style="font-size:20px;font-weight:700;color:#26215C;margin:0 0 8px;">Notre IA cherche vos id&eacute;es&hellip;</h2>
+      <h2 style="font-size:20px;font-weight:700;color:#26215C;margin:0 0 8px;">Notre IA cherche tes id&eacute;es&hellip;</h2>
       <p style="font-size:14px;color:#666;max-width:300px;line-height:1.6;margin:0;">
-        Nous analysons votre profil et trouvons les meilleures id&eacute;es cadeaux.</p>
+        Nous analysons ton profil et trouvons les meilleures id&eacute;es cadeaux.</p>
       <p style="font-size:13px;color:#888;margin:6px 0 0;">Cela prend moins de 30 secondes.</p>
       <p style="font-size:11px;color:#bbb;margin:12px 0 0;" id="pollingStatus">V&eacute;rification en cours&hellip;</p>
     </div>
@@ -242,7 +242,7 @@
 
       <!-- Bouton partage social -->
       <div id="shareSection" style="text-align:center;margin-top:36px;padding-top:28px;border-top:1px solid rgba(233, 69, 96,0.1);">
-        <p style="font-size:13px;color:#888;margin-bottom:14px;">Vous avez aim&eacute; ces suggestions ?</p>
+        <p style="font-size:13px;color:#888;margin-bottom:14px;">Tu as aim&eacute; ces suggestions ?</p>
         <button id="shareBtn" onclick="handleShare()" style="
           display:inline-flex;align-items:center;gap:8px;
           background:#fff;border:1.5px solid rgba(233, 69, 96,0.25);
@@ -312,7 +312,7 @@
     const params   = new URLSearchParams(window.location.search);
     const searchId = params.get('id');
 
-    if (!searchId) showError('Aucun identifiant de recherche fourni. Veuillez relancer une recherche.');
+    if (!searchId) showError('Aucun identifiant de recherche fourni. Relance une recherche.');
 
     let pollInterval  = null;
     let pollCount     = 0;
@@ -338,7 +338,7 @@
 
       if (pollCount > MAX_POLLS) {
         stopPolling();
-        showError('D\u00E9lai d\'attente d\u00E9pass\u00E9. Veuillez rafra\u00EEchir ou relancer une recherche.');
+        showError('D\u00E9lai d\'attente d\u00E9pass\u00E9. Rafra\u00EEchis ou relance une recherche.');
         return;
       }
 
@@ -356,7 +356,7 @@
           displayResults(data);
         } else if (data.statut === 'error' || data.statut === 'failed') {
           stopPolling();
-          showError('Erreur lors de la g\u00E9n\u00E9ration. Veuillez r\u00E9essayer.');
+          showError('Erreur lors de la g\u00E9n\u00E9ration. R\u00E9essaie.');
         }
       } catch (err) {
         console.error('Erreur polling :', err.message);
@@ -384,7 +384,7 @@
         }
 
         if (!products.length) {
-          showError('Aucun r\u00E9sultat trouv\u00E9. Veuillez relancer une recherche.');
+          showError('Aucun r\u00E9sultat trouv\u00E9. Relance une recherche.');
           return;
         }
 
@@ -401,7 +401,7 @@
         // Sous-titre + titre onglet
         var budgetLabel = { moins_25:'< 25\u20AC', '25_50':'25-50\u20AC', '50_100':'50-100\u20AC', '100_200':'100-200\u20AC', plus_200:'> 200\u20AC' };
         document.getElementById('resultsSubtitle').textContent =
-          'Pour ' + (data.destinataire || 'votre proche') +
+          'Pour ' + (data.destinataire || 'ton proche') +
           (data.occasion ? ' - ' + data.occasion : '') +
           (data.budget   ? ' - Budget ' + (budgetLabel[data.budget] || data.budget) : '');
         if (data.destinataire) {
@@ -464,7 +464,7 @@
         updateNewSearchCTA();
       } catch (e) {
         console.error('displayResults erreur :', e);
-        showError('Erreur lors de l\'affichage. Veuillez rafra\u00EEchir la page.');
+        showError('Erreur lors de l\'affichage. Rafra\u00EEchis la page.');
       }
     }
 
