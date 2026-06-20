@@ -9,7 +9,7 @@
   <meta name="description" content="Kadoizi trouve 9 idées cadeaux personnalisées en 30 secondes grâce à l'IA. Saisissez l'âge, l'occasion et le budget — recevez des liens Amazon directs.">
   <meta name="keywords" content="idée cadeau, cadeau personnalisé, cadeau anniversaire, cadeau noël, cadeau homme, cadeau femme, idée cadeau IA">
   <meta name="robots" content="index, follow">
-  <meta name="theme-color" content="#8B2C24">
+  <meta name="theme-color" content="#E94560">
   <link rel="canonical" href="https://www.kadoizi.com/">
   <link rel="manifest" href="/manifest.json">
 
@@ -339,7 +339,7 @@
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         document.getElementById('nav-right').innerHTML =
-          '<a href="profil.html" style="font-size:14px;color:#8B2C24;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>' +
+          '<a href="profil.html" style="font-size:14px;color:#E94560;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>' +
           '<button class="btn-primary" onclick="window.location.href=\'questionnaire.html\'">Trouver mon cadeau</button>';
       }
     })();
