@@ -4,7 +4,7 @@
                Network-first pour API Supabase.
    ───────────────────────────────────────────── */
 
-const CACHE_NAME = 'giftfinder-v4';
+const CACHE_NAME = 'kadoizi-v5-reskin';
 const STATIC_ASSETS = [
   '/',
   '/',
