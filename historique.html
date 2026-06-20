@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kadoizi &#8212; Mon historique</title>
-  <meta name="theme-color" content="#8B2C24">
+  <meta name="theme-color" content="#E94560">
   <link rel="icon" href="/logo.png">
   <link rel="stylesheet" href="css/style.css?v=202605312153">
   <style>
@@ -58,7 +58,7 @@
     .h-card {
       background: rgba(255,255,255,0.88);
       border-radius: 16px;
-      box-shadow: 0 2px 16px rgba(139, 44, 36,0.08);
+      box-shadow: 0 2px 16px rgba(233, 69, 96,0.08);
       padding: 20px 24px;
       margin-bottom: 16px;
       display: flex;
@@ -70,7 +70,7 @@
       color: inherit;
     }
     .h-card:hover {
-      box-shadow: 0 6px 28px rgba(139, 44, 36,0.14);
+      box-shadow: 0 6px 28px rgba(233, 69, 96,0.14);
       transform: translateY(-2px);
     }
     .h-emoji {
@@ -97,8 +97,8 @@
       font-weight: 600;
       padding: 2px 10px;
       border-radius: 999px;
-      background: rgba(139, 44, 36,0.1);
-      color: #8B2C24;
+      background: rgba(233, 69, 96,0.1);
+      color: #E94560;
     }
     .h-badge-done {
       background: rgba(29,158,117,0.12);
@@ -151,8 +151,8 @@
     }
     .h-spinner {
       width: 36px; height: 36px;
-      border: 3px solid rgba(139, 44, 36,0.15);
-      border-top-color: #8B2C24;
+      border: 3px solid rgba(233, 69, 96,0.15);
+      border-top-color: #E94560;
       border-radius: 50%;
       animation: spin .8s linear infinite;
       margin: 0 auto 16px;
@@ -169,8 +169,8 @@
     }
     .h-scroll-loader .h-mini-spinner {
       width: 22px; height: 22px;
-      border: 2px solid rgba(139, 44, 36,0.15);
-      border-top-color: #8B2C24;
+      border: 2px solid rgba(233, 69, 96,0.15);
+      border-top-color: #E94560;
       border-radius: 50%;
       animation: spin .8s linear infinite;
       margin: 0 auto 8px;
@@ -204,18 +204,18 @@
       border-radius: 999px;
       font-size: 13px;
       font-weight: 500;
-      border: 1.5px solid rgba(139, 44, 36,0.22);
+      border: 1.5px solid rgba(233, 69, 96,0.22);
       background: rgba(255,255,255,0.75);
-      color: #8B2C24;
+      color: #E94560;
       cursor: pointer;
       transition: all .15s;
       font-family: inherit;
     }
-    .h-filter-chip:hover { background: rgba(139, 44, 36,0.07); }
+    .h-filter-chip:hover { background: rgba(233, 69, 96,0.07); }
     .h-filter-chip.active {
-      background: #8B2C24;
+      background: #E94560;
       color: #FAF3E3;
-      border-color: #8B2C24;
+      border-color: #E94560;
     }
 
     .footer { position: relative; z-index: 1; }
@@ -475,8 +475,8 @@
       _userId = session.user.id;
 
       document.getElementById('nav-right').innerHTML =
-        '<a href="questionnaire.html" style="font-size:14px;color:#8B2C24;text-decoration:none;font-weight:500;">&#127873; Recherche</a>' +
-        '<a href="profil.html" style="font-size:14px;color:#8B2C24;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>';
+        '<a href="questionnaire.html" style="font-size:14px;color:#E94560;text-decoration:none;font-weight:500;">&#127873; Recherche</a>' +
+        '<a href="profil.html" style="font-size:14px;color:#E94560;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>';
 
       // Compte total pour le sous-titre
       var countRes = await supabase
