@@ -321,8 +321,8 @@
     let _currentData  = null; // stocke les données pour handleShare
 
     (async function() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { window.location.href = 'index.html'; return; }
+      // value-first : on N'EXIGE PLUS de compte. Le froid lit SA recherche via la RLS
+      // searches_anon_select (user_id NULL). Plus de redirection vers index.html.
       if (searchId) startPolling();
     })();
 

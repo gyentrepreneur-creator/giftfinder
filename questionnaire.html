@@ -201,7 +201,7 @@
   <div class="auth-overlay" id="authOverlay" style="display:none;">
     <div class="auth-card">
       <h2 id="authTitle">Cr&eacute;er un compte</h2>
-      <p class="auth-sub" id="authSub">Inscris-toi pour voir tes r&eacute;sultats</p>
+      <p class="auth-sub" id="authSub">Cr&eacute;e un compte pour sauvegarder tes id&eacute;es</p>
       <div class="auth-error" id="authError"></div>
       <div class="form-group">
         <label for="authEmail">Adresse e-mail</label>
@@ -235,7 +235,7 @@
         <div class="q-prog-fill" id="progressFill"></div>
       </div>
 
-      <h2 class="q-title anim-fade-up anim-hero anim-delay-1">Trouvons le cadeau parfait</h2>
+      <h2 class="q-title anim-fade-up anim-hero anim-delay-1">Trouve ton cadeau en 30 secondes</h2>
       <p class="q-subtitle anim-fade-up anim-hero anim-delay-2">R&eacute;ponds &agrave; quelques questions &mdash; notre IA fait le reste.</p>
 
       <div class="q-error" id="formError"></div>
@@ -320,7 +320,7 @@
       <button class="q-submit" id="submitBtn" onclick="handleSubmit()">
         Trouver mes id&eacute;es &#10024;
       </button>
-      <p class="q-hint" id="quota-hint">R&eacute;sultats en moins de 30 secondes &middot; Gratuit &middot; 10 recherches/jour</p>
+      <p class="q-hint" id="quota-hint">R&eacute;sultats en moins de 30 secondes &middot; Gratuit &middot; sans inscription</p>
 
     </div>
   </div>
@@ -359,6 +359,10 @@
 
     // -- Etat des chips --
     const sel = { occasion: null, genre: null, centres: [], budget: null };
+
+    // -- Capter la source (?s=) depuis l'URL (ex: epingles Pinterest) pour l'attribution --
+    var _srcParam = new URLSearchParams(location.search).get('s');
+    if (_srcParam) localStorage.setItem('kado_src', _srcParam);
 
     // -- Chips mono-choix --
     ['grp-occasion', 'grp-genre', 'grp-budget'].forEach(function(grpId) {
@@ -452,26 +456,27 @@
     // -- Pop-up auth (value-first) --
     var authMode = 'signup';
 
-    function openAuth(mode) {
+    function openAuth(mode, customSub) {
       authMode = mode;
       document.getElementById('authError').style.display = 'none';
       var successEl = document.getElementById('authSuccess');
       if (successEl) successEl.style.display = 'none';
       if (mode === 'login') {
         document.getElementById('authTitle').textContent = 'Connexion';
-        document.getElementById('authSub').textContent = 'Connecte-toi pour voir tes résultats';
+        document.getElementById('authSub').textContent = 'Connecte-toi pour retrouver tes idées';
         document.getElementById('authSubmitBtn').textContent = 'Se connecter';
         document.getElementById('authToggle').innerHTML = "Pas encore de compte ? <a onclick='toggleAuthMode()'>S'inscrire</a>";
         document.getElementById('authPrenomGroup').style.display = 'none';
         document.getElementById('forgotPasswordLink').style.display = 'block';
       } else {
         document.getElementById('authTitle').textContent = 'Créer un compte';
-        document.getElementById('authSub').textContent = 'Inscris-toi pour voir tes résultats';
+        document.getElementById('authSub').textContent = 'Crée un compte pour sauvegarder tes idées';
         document.getElementById('authSubmitBtn').textContent = "S'inscrire";
         document.getElementById('authToggle').innerHTML = "Déjà un compte ? <a onclick='toggleAuthMode()'>Se connecter</a>";
         document.getElementById('authPrenomGroup').style.display = 'block';
         document.getElementById('forgotPasswordLink').style.display = 'none';
       }
+      if (customSub) document.getElementById('authSub').textContent = customSub;
       document.getElementById('authOverlay').style.display = 'flex';
     }
 
@@ -601,21 +606,27 @@
 
       try {
         const { data: { session } } = await supabase.auth.getSession();
+
+        // Froid (pas de compte) : 2 recherches gratuites, PUIS on propose l'inscription.
+        // Les resultats restent visibles sans compte (RLS searches_anon_insert/select).
         if (!session) {
-          // value-first : pas connecte -> on demande inscription/connexion, puis auto-resubmit
-          _pendingSubmit = true;
-          submitBtn.disabled    = false;
-          submitBtn.textContent = 'Trouver mes idées ✨';
-          openAuth('signup');
-          return;
+          var _anonCount = parseInt(localStorage.getItem('kado_anon_count') || '0', 10);
+          if (_anonCount >= 2) {
+            _pendingSubmit = true; // auto-resubmit apres inscription
+            submitBtn.disabled    = false;
+            submitBtn.textContent = 'Trouver mes idées ✨';
+            openAuth('signup', 'Tu as utilisé tes 2 recherches gratuites — crée un compte (gratuit) pour continuer à chercher.');
+            return;
+          }
         }
 
         const infosSup = document.getElementById('infos-sup').value.trim() || null;
+        var _src = localStorage.getItem('kado_src') || null;
 
         const { data, error } = await supabase
           .from('searches')
           .insert([{
-            user_id:                session.user.id,
+            user_id:                session ? session.user.id : null,
             destinataire:           destinataire,
             age:                    age,
             occasion:               sel.occasion,
@@ -630,6 +641,12 @@
 
         if (error) throw error;
 
+        // Compteur recherches anonymes (cap a 2 avant inscription)
+        if (!session) {
+          var _c = parseInt(localStorage.getItem('kado_anon_count') || '0', 10);
+          localStorage.setItem('kado_anon_count', String(_c + 1));
+        }
+
         // ── Analytics : search_initiated ──
         if (typeof GFAnalytics !== 'undefined') {
           GFAnalytics.track('search_initiated', {
@@ -637,7 +654,9 @@
             occasion:     sel.occasion,
             genre:        sel.genre,
             budget:       sel.budget,
-            nb_centres:   sel.centres.length
+            nb_centres:   sel.centres.length,
+            anonymous:    !session,
+            source:       _src
           });
         }
 
