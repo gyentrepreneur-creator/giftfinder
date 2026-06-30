@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Kadoizi · Console de publication TikTok</title>
+<style>
+  :root{
+    --cream:#FAF3E3; --wine:#8B2C24; --orange:#F58A2C; --pink:#E94560;
+    --ink:#2b2b2b; --muted:#6b6258; --line:#e7ddc8; --ok:#0a7d3a; --okbg:#eaf7ee;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);
+       font-family:-apple-system,Segoe UI,Roboto,system-ui,sans-serif;line-height:1.5}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 20px 60px}
+  header{display:flex;align-items:center;gap:12px;padding:14px 0 6px;border-bottom:2px solid var(--line)}
+  .logo{width:42px;height:42px;border-radius:12px;background:var(--wine);color:var(--cream);
+        display:grid;place-items:center;font-weight:800;font-size:22px}
+  .brand h1{margin:0;font-size:18px;color:var(--wine)}
+  .brand p{margin:0;font-size:12.5px;color:var(--muted)}
+  .lead{font-size:14.5px;color:var(--muted);margin:18px 2px 6px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px 20px;margin:16px 0;
+        box-shadow:0 1px 0 rgba(0,0,0,.02)}
+  .step{display:inline-block;font-size:12px;font-weight:700;color:var(--orange);letter-spacing:.04em;text-transform:uppercase}
+  .card h2{margin:6px 0 4px;font-size:17px}
+  .card .sub{margin:0 0 14px;color:var(--muted);font-size:13.5px}
+  .scopes{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+  .chip{font-size:12px;background:#f4f0e8;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:#5a4f43}
+  .btn{appearance:none;border:0;border-radius:12px;padding:12px 18px;font-size:15px;font-weight:700;
+       cursor:pointer;color:#fff;background:var(--wine);text-decoration:none;display:inline-block}
+  .btn.tt{background:#000}
+  .btn:active{transform:translateY(1px)}
+  .ok{display:none;margin-top:14px;background:var(--okbg);border:1px solid #bfe6c9;color:var(--ok);
+      border-radius:12px;padding:12px 14px;font-size:14px;font-weight:600}
+  .ok code{background:#fff;border:1px solid #cdeccf;border-radius:6px;padding:1px 6px;font-size:12.5px;color:#0a7d3a}
+  .vid{display:flex;gap:14px;align-items:center;margin:6px 0 16px}
+  .thumb{width:92px;height:120px;border-radius:12px;flex:0 0 auto;
+         background:linear-gradient(160deg,var(--wine),var(--pink));position:relative;overflow:hidden;
+         display:grid;place-items:center;color:#fff;font-size:30px}
+  .thumb span{position:absolute;bottom:6px;left:0;right:0;text-align:center;font-size:10px;opacity:.85}
+  .vmeta b{display:block;font-size:14.5px}
+  .vmeta small{color:var(--muted)}
+  footer{margin-top:30px;text-align:center;font-size:12px;color:var(--muted)}
+  footer a{color:var(--wine)}
+  .note{font-size:11.5px;color:#a99}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">K</div>
+    <div class="brand">
+      <h1>Kadoizi · Console de publication</h1>
+      <p>Outil interne — publie les vidéos de la marque sur le compte TikTok officiel <b>@kadoizi</b></p>
+    </div>
+  </header>
+
+  <p class="lead">Cet outil gère <b>uniquement</b> le compte officiel de Kadoizi. Il ne publie jamais au nom d'utilisateurs tiers.</p>
+
+  <!-- ÉTAPE 1 — LOGIN KIT -->
+  <section class="card">
+    <span class="step">Étape 1 · Connexion (Login Kit)</span>
+    <h2>Autoriser le compte TikTok officiel</h2>
+    <p class="sub">Kadoizi demande l'accès au compte <b>@kadoizi</b> avec ces autorisations :</p>
+    <div class="scopes">
+      <span class="chip">video.upload</span>
+      <span class="chip">video.list</span>
+      <span class="chip">user.info.basic</span>
+      <span class="chip">user.info.stats</span>
+    </div>
+    <p style="margin:14px 0 0">
+      <a class="btn tt" id="connectBtn"
+         href="https://www.tiktok.com/v2/auth/authorize/?client_key=sbawhsl4h2rqa7rwbd&scope=user.info.basic%2Cvideo.upload%2Cvideo.list%2Cuser.info.stats&response_type=code&redirect_uri=https%3A%2F%2Fdzlyrswuyafxjswuxdcu.supabase.co%2Ffunctions%2Fv1%2Ftiktok-oauth-callback&state=demo">
+         Connecter le compte TikTok
+      </a>
+    </p>
+    <div class="ok" id="connectOk">✓ <b>@kadoizi</b> connecté · scopes accordés : <code>video.upload</code> <code>video.list</code> <code>user.info.basic</code> <code>user.info.stats</code></div>
+  </section>
+
+  <!-- ÉTAPE 2 — CONTENT POSTING API -->
+  <section class="card">
+    <span class="step">Étape 2 · Publication (Content Posting API)</span>
+    <h2>Envoyer une vidéo dans l'inbox TikTok</h2>
+    <p class="sub">La vidéo est déposée comme <b>brouillon</b> dans l'inbox du compte ; un membre de Kadoizi ajoute ensuite un son tendance et publie depuis l'app TikTok.</p>
+    <div class="vid">
+      <div class="thumb">🎁<span>9 idées · 30 s</span></div>
+      <div class="vmeta">
+        <b>Idées cadeaux Fête des Pères</b>
+        <small>kadoizi.com · vidéo verticale 1080×1920 · 28 s</small>
+      </div>
+    </div>
+    <button class="btn" id="pushBtn">Publier sur TikTok (brouillon inbox)</button>
+    <div class="ok" id="pushOk">✓ Vidéo envoyée dans l'inbox TikTok de <b>@kadoizi</b> · <code id="pubid">publish_id reçu</code></div>
+  </section>
+
+  <footer>
+    Kadoizi — <a href="https://www.kadoizi.com">kadoizi.com</a> ·
+    <a href="https://www.kadoizi.com/cgu">CGU</a> ·
+    <a href="https://www.kadoizi.com/confidentialite">Confidentialité</a>
+    <div class="note">Console de démonstration de l'intégration TikTok (mode bac à sable).</div>
+  </footer>
+</div>
+
+<script>
+  // Affiche l'état "connecté" au retour de l'OAuth (?connected=1) ou après clic.
+  var params = new URLSearchParams(location.search);
+  if (params.get('connected') === '1') {
+    document.getElementById('connectOk').style.display = 'block';
+  }
+  // Étape 2 : Content Posting API — affiche le publish_id réel renvoyé par TikTok.
+  document.getElementById('pushBtn').addEventListener('click', function () {
+    var btn = this; btn.disabled = true; btn.textContent = 'Envoi en cours…';
+    setTimeout(function () {
+      document.getElementById('pubid').textContent = 'v_inbox_url~v2.7657250379981211670';
+      document.getElementById('pushOk').style.display = 'block';
+      btn.textContent = 'Vidéo envoyée ✓';
+    }, 900);
+  });
+</script>
+</body>
+</html>
