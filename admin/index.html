@@ -1954,16 +1954,30 @@
         const wfRes = await api('workflows');
         if (wfRes.workflows?.length) {
           WORKFLOWS.length = 0;
-          wfRes.workflows.forEach(w => WORKFLOWS.push({
-            name: w.workflow_name,
-            short: WORKFLOW_LABELS_FR[w.workflow_name] || w.short || w.workflow_name.slice(0, 8).toUpperCase(),
-            emoji: w.emoji || '⚙️',
-            state: w.state,
-            meta: w.trigger_meta || (w.last_execution_at ? fmtTime(w.last_execution_at) : 'idle'),
-            role: w.role_description || '',
-            lastRun: w.last_execution_at ? fmtTime(w.last_execution_at) + ' · ' + (w.last_execution_status || 'success') : 'jamais exécuté',
-            execs7d: w.executions_7d || 0,
-          }));
+          const WATCHED_AGENTS = ['02_Agent_Marketing','01_BigBoss_Orchestrateur_v2','TikTok_Publish_Detect','Workflow_Failure_Monitor','Sync_Workflow_Status','Welcome_Email_New_Signup','Cleanup_Stuck_Routine_Jobs','05_Render_Monitor','Agent_Cadeaux_v2'];
+          wfRes.workflows.forEach(w => {
+            // (b) Santé réelle : un agent CRITIQUE désactivé, sans exécution depuis 3j, ou dont l'info est périmée → ROUGE (fini le faux vert)
+            let liveState = w.state, healthReason = '';
+            if (WATCHED_AGENTS.includes(w.workflow_name)) {
+              const lastMs = w.last_execution_at ? Date.parse(w.last_execution_at) : 0;
+              const noRecentExec = (w.executions_7d || 0) === 0 || (Date.now() - lastMs) > 3*24*3600*1000;
+              const snapMs = w.snapshot_at ? Date.parse(w.snapshot_at) : 0;
+              const stalePhoto = snapMs && (Date.now() - snapMs) > 6*3600*1000;
+              if (w.is_active === false) { liveState = 'err'; healthReason = 'désactivé'; }
+              else if (noRecentExec) { liveState = 'err'; healthReason = '0 exéc depuis 3j'; }
+              else if (stalePhoto) { liveState = 'err'; healthReason = 'info périmée'; }
+            }
+            WORKFLOWS.push({
+              name: w.workflow_name,
+              short: WORKFLOW_LABELS_FR[w.workflow_name] || w.short || w.workflow_name.slice(0, 8).toUpperCase(),
+              emoji: w.emoji || '⚙️',
+              state: liveState,
+              meta: w.trigger_meta || (w.last_execution_at ? fmtTime(w.last_execution_at) : 'idle'),
+              role: w.role_description || '',
+              lastRun: (w.last_execution_at ? fmtTime(w.last_execution_at) + ' · ' + (w.last_execution_status || 'success') : 'jamais exécuté') + (healthReason ? ' · ⚠️ ' + healthReason : ''),
+              execs7d: w.executions_7d || 0,
+            });
+          });
           renderWorkflows();
         }
       } catch (e) { console.warn('Workflows load failed', e); }
