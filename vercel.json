@@ -1,4 +1,9 @@
 {
+  "redirects": [
+    { "source": "/tt", "destination": "/questionnaire?s=tiktok_bio", "permanent": false },
+    { "source": "/ig", "destination": "/questionnaire?s=ig_bio", "permanent": false },
+    { "source": "/pin", "destination": "/questionnaire?s=pinterest", "permanent": false }
+  ],
   "headers": [
     {
       "source": "/admin",
