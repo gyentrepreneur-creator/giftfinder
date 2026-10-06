@@ -509,7 +509,7 @@
         successEl.textContent = '✅ E-mail de réinitialisation envoyé à ' + email;
         successEl.style.display = 'block';
       } catch(err) {
-        errorEl.textContent = (err && err.message) || 'Erreur.';
+        errorEl.textContent = messageClair(err);
         errorEl.style.display = 'block';
       }
     }
@@ -547,7 +547,7 @@
           handleSubmit();
         }
       } catch (err) {
-        errorEl.textContent = err.message || 'Une erreur est survenue.';
+        errorEl.textContent = messageClair(err);
         errorEl.style.display = 'block';
         btn.disabled = false;
         btn.textContent = authMode === 'signup' ? "S'inscrire" : 'Se connecter';
@@ -663,10 +663,31 @@
         window.location.href = 'resultats.html?id=' + data.id;
 
       } catch (err) {
-        showError(err.message || 'Une erreur est survenue. Réessaie.');
+        showError(messageClair(err));
         submitBtn.disabled    = false;
         submitBtn.textContent = 'Trouver mes id\u00E9es \u2728';
       }
+    }
+
+
+    // --- Messages d'erreur a la voix de Kadoizi (06/10/2026) ---
+    // Avant : on affichait le message brut du serveur. Pendant la panne d'août-octobre,
+    // un visiteur qui validait le questionnaire lisait un texte technique EN ANGLAIS qui
+    // exposait en plus la situation de facturation du projet. Principe retenu : liste
+    // blanche. On ne traduit que les erreurs sur lesquelles l'utilisateur peut agir ;
+    // TOUT le reste devient un message de marque. Aucun texte serveur ne peut plus fuiter.
+    function messageClair(err) {
+      var brut = (err && err.message) ? String(err.message) : '';
+      var m = brut.toLowerCase();
+      if (m.indexOf('invalid login credentials') >= 0) return 'E-mail ou mot de passe incorrect.';
+      if (m.indexOf('user already registered') >= 0)   return 'Un compte existe déjà avec cet e-mail. Connecte-toi.';
+      if (m.indexOf('password should be at least') >= 0) return 'Ton mot de passe doit faire au moins 6 caractères.';
+      if (m.indexOf('email not confirmed') >= 0)       return 'Vérifie ta boîte mail : il reste un e-mail de confirmation à ouvrir.';
+      if (m.indexOf('unable to validate email') >= 0 || m.indexOf('invalid email') >= 0) return 'Cette adresse e-mail ne semble pas valide.';
+      if (m.indexOf('rate limit') >= 0 || m.indexOf('too many') >= 0) return "Trop de tentatives d'affilée. Réessaie dans quelques minutes.";
+      if (m.indexOf('for security purposes') >= 0)     return 'Patiente quelques secondes avant de réessayer.';
+      // Tout le reste = souci de notre cote. Jamais le message brut.
+      return 'On répare un truc de notre côté, ça revient très vite. Réessaie dans quelques minutes.';
     }
 
     function showError(msg) {
