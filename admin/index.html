@@ -1949,9 +1949,17 @@
     }
 
     async function loadAllLiveData() {
+      // v43 (07/10/2026) : les appels au serveur partent TOUS EN PARALLÈLE. Avant, ils s'enchaînaient
+      // l'un après l'autre (workflows → rapports → idées → pulse → validations → flux) et chacun payait
+      // la vérification d'identité + ses requêtes → 5 à 10 s de chargement. Désormais le temps total
+      // = l'appel le plus lent. Le traitement de chaque réponse, lui, est inchangé.
+      const _p = Object.fromEntries(
+        ['workflows','reports','costs','ideas','health','pulse','approvals','feed']
+          .map(r => [r, api(r).catch(e => ({ error: String(e && e.message || e) }))])
+      );
       // Workflows live (cron syncs n8n → Supabase toutes 5 min)
       try {
-        const wfRes = await api('workflows');
+        const wfRes = await _p['workflows'];
         if (wfRes.workflows?.length) {
           WORKFLOWS.length = 0;
           const WATCHED_AGENTS = ['02_Agent_Marketing','01_BigBoss_Orchestrateur_v2','TikTok_Publish_Detect','Workflow_Failure_Monitor','Sync_Workflow_Status','Welcome_Email_New_Signup','Cleanup_Stuck_Routine_Jobs','05_Render_Monitor','Agent_Cadeaux_v2'];
@@ -1984,7 +1992,7 @@
 
       // Reports analytics
       try {
-        const reportsRes = await api('reports');
+        const reportsRes = await _p['reports'];
         if (reportsRes.reports !== undefined) {
           REPORTS.length = 0;
           reportsRes.reports.forEach(r => REPORTS.push({
@@ -2003,7 +2011,7 @@
       // Costs live (fal.ai + Resend + ElevenLabs réels) — v42 : NON-BLOQUANT (appels externes lents) → ne retarde plus les approbations
       (async () => {
       try {
-        const costsRes = await api('costs');
+        const costsRes = await _p['costs'];
         if (costsRes.costs?.length) {
           $('#costs-list').innerHTML = costsRes.costs.map(c =>
             `<div class="cost-card">
@@ -2024,7 +2032,7 @@
 
       // Ideas
       try {
-        const ideasRes = await api('ideas');
+        const ideasRes = await _p['ideas'];
         if (ideasRes.ideas) {
           IDEAS.length = 0;
           ideasRes.ideas.forEach(i => IDEAS.push({
@@ -2038,7 +2046,7 @@
       // Santé Services — vraies mesures live — v42 : NON-BLOQUANT (appels externes lents)
       (async () => {
       try {
-        const healthRes = await api('health');
+        const healthRes = await _p['health'];
         if (Array.isArray(healthRes?.services)) {
           HEALTH.length = 0;
           healthRes.services.forEach(s => HEALTH.push(s));
@@ -2049,7 +2057,7 @@
 
       // Pulse alerts + KPIs Vidéos
       try {
-        const pulseRes = await api('pulse');
+        const pulseRes = await _p['pulse'];
         // Populer KPIs Vidéos (page Supervision)
         if (pulseRes?.counts) {
           const c = pulseRes.counts;
@@ -2098,7 +2106,7 @@
 
       // Approvals — DONNÉES RÉELLES UNIQUEMENT (unifie render_queue + video_approvals)
       try {
-        const aprRes = await api('approvals');
+        const aprRes = await _p['approvals'];
         if (Array.isArray(aprRes?.approvals)) {
           APPROVALS.length = 0;
           aprRes.approvals.forEach(a => {
@@ -2165,7 +2173,7 @@
 
       // Feed (posts publiés) — données réelles uniquement
       try {
-        const feedRes = await api('feed');
+        const feedRes = await _p['feed'];
         if (Array.isArray(feedRes?.feed)) {
           FEED.length = 0;
           let totalViews = 0, totalLikes = 0, totalComments = 0, hasMetrics = false;
@@ -2636,12 +2644,12 @@
     ];
 
     const COSTS = [
-      { name: 'fal.ai', detail: '~$0.18 par vidéo Veo · ~45 vidéos restantes', value: '$8.20', pct: 70, state: 'warn', icon: '🎨' },
+      { name: 'fal.ai', detail: 'crédits restants · mesure réelle au chargement', value: '…', pct: 0, state: 'ok', icon: '🎨' },
       { name: 'Resend (jour)', detail: 'Reset à minuit · welcome emails + delete confirmations', value: '12 / 100', pct: 12, state: 'ok', icon: '📧' },
-      { name: 'ElevenLabs (mois)', detail: 'Reset le 14 chaque mois · ~200 chars/vidéo', value: '2700 / 10k', pct: 27, state: 'ok', icon: '🎙️' },
+      { name: 'ElevenLabs (mois)', detail: 'caractères TTS · mesure réelle au chargement', value: '…', pct: 0, state: 'ok', icon: '🎙️' },
       { name: 'Anthropic API', detail: 'Pay-as-you-go · ~$0.02/vidéo (Haiku 4.5)', value: '~$12 ce mois', pct: 0, state: 'ok', icon: '🧠' },
       { name: 'Vercel', detail: 'Hébergement gratuit (Hobby) · domaine kadoizi.com ~20 $/an, renouvellement 08/04/2027', value: '12%', pct: 12, state: 'ok', icon: '▲' },
-      { name: 'Supabase', detail: 'FREE tier · 14% DB, 6% storage, 29 tables', value: '14%', pct: 14, state: 'ok', icon: '🗄️' },
+      { name: 'Supabase', detail: 'base + stockage · mesures réelles au chargement', value: '…', pct: 0, state: 'ok', icon: '🗄️' },
       { name: 'TikTok API', detail: 'Sandbox · access_token refresh auto · 365j refresh_token', value: 'GRATUIT', pct: 0, state: 'ok', icon: '🎵' },
     ];
 
