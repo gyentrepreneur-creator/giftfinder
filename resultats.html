@@ -343,10 +343,9 @@
       }
 
       try {
+        // Sécurité 07/10/2026 : lecture par UUID via la fonction serveur (plus d'accès direct à la table).
         const { data, error } = await supabase
-          .from('searches')
-          .select('statut, suggestions, destinataire, occasion, budget')
-          .eq('id', searchId)
+          .rpc('get_search_result', { p_id: searchId })
           .single();
 
         if (error) throw error;

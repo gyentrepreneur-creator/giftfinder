@@ -352,14 +352,11 @@
         var now = new Date();
         var firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
-        // Requêtes parallèles : total + mois courant
-        var results = await Promise.all([
-          supabase.from('searches').select('id', { count: 'exact', head: true }).in('statut', ['done', 'completed']),
-          supabase.from('searches').select('id', { count: 'exact', head: true }).in('statut', ['done', 'completed']).gte('created_at', firstOfMonth)
-        ]);
+        // Sécurité 07/10/2026 : compteurs via la fonction serveur (des nombres, aucune donnée exposée).
+        var { data: counts } = await supabase.rpc('public_search_counts').single();
 
-        var totalCount = results[0].count || 0;
-        var monthCount = results[1].count || 0;
+        var totalCount = (counts && Number(counts.total))      || 0;
+        var monthCount = (counts && Number(counts.this_month)) || 0;
 
         // Seulement si on a des données réelles
         if (totalCount > 0) {

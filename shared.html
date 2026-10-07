@@ -307,10 +307,9 @@
 
     async function loadSharedResults(token) {
       try {
+        // Sécurité 07/10/2026 : lecture par jeton via la fonction serveur (plus d'accès direct à la table).
         var { data, error } = await supabase
-          .from('shared_results')
-          .select('suggestions, destinataire, occasion, budget, expires_at')
-          .eq('token', token)
+          .rpc('get_shared_result', { p_token: token })
           .single();
 
         if (error || !data) {

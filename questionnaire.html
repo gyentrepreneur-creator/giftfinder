@@ -623,23 +623,21 @@
         const infosSup = document.getElementById('infos-sup').value.trim() || null;
         var _src = localStorage.getItem('kado_src') || null;
 
-        const { data, error } = await supabase
-          .from('searches')
-          .insert([{
-            user_id:                session ? session.user.id : null,
-            destinataire:           destinataire,
-            age:                    age,
-            occasion:               sel.occasion,
-            genre:                  sel.genre,
-            centres_interet:        sel.centres,
-            budget:                 sel.budget,
-            infos_supplementaires:  infosSup,
-            statut:                 'pending'
-          }])
-          .select('id')
-          .single();
+        // Sécurité 07/10/2026 : création via la fonction serveur create_search
+        // (user_id posé côté serveur = inforgeable, quota journalier imposé côté serveur).
+        // Le navigateur ne lit plus jamais la table 'searches' en direct.
+        const { data: newId, error } = await supabase.rpc('create_search', {
+          p_destinataire:          destinataire,
+          p_age:                   age,
+          p_occasion:              sel.occasion,
+          p_genre:                 sel.genre,
+          p_centres_interet:       sel.centres,
+          p_budget:                sel.budget,
+          p_infos_supplementaires: infosSup
+        });
 
         if (error) throw error;
+        const data = { id: newId };
 
         // Compteur recherches anonymes (cap a 2 avant inscription)
         if (!session) {
@@ -680,6 +678,7 @@
       var brut = (err && err.message) ? String(err.message) : '';
       var m = brut.toLowerCase();
       if (m.indexOf('invalid login credentials') >= 0) return 'E-mail ou mot de passe incorrect.';
+      if (m.indexOf('quota_jour_atteint') >= 0) return 'Tu as atteint la limite de 10 recherches gratuites par jour. Reviens demain !';
       if (m.indexOf('user already registered') >= 0)   return 'Un compte existe déjà avec cet e-mail. Connecte-toi.';
       if (m.indexOf('password should be at least') >= 0) return 'Ton mot de passe doit faire au moins 6 caractères.';
       if (m.indexOf('email not confirmed') >= 0)       return 'Vérifie ta boîte mail : il reste un e-mail de confirmation à ouvrir.';
