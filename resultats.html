@@ -16,6 +16,9 @@
       background: linear-gradient(135deg, #FAF3E3 0%, #FBEAF0 50%, #E1F5EE 100%);
       position: relative;
       overflow-x: hidden;
+      /* Pied de page toujours en bas, quel que soit l'écran (même schéma que les autres pages) */
+      display: flex;
+      flex-direction: column;
     }
     .deco {
       position: fixed;
@@ -181,7 +184,8 @@
     }
     .r-card-btn:hover { background: #C42847; color: #FAF3E3; }
 
-    .footer { position: relative; z-index: 1; }
+    .footer { position: relative; z-index: 1; flex-shrink: 0; }
+    .r-main { flex: 1 0 auto; }
 
     @media (max-width: 860px) { .r-grid { grid-template-columns: repeat(2,1fr); } }
     @media (max-width: 540px) { .r-grid { grid-template-columns: 1fr; } }
