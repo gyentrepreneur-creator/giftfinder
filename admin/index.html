@@ -1954,7 +1954,7 @@
       // la vérification d'identité + ses requêtes → 5 à 10 s de chargement. Désormais le temps total
       // = l'appel le plus lent. Le traitement de chaque réponse, lui, est inchangé.
       const _p = Object.fromEntries(
-        ['workflows','reports','costs','ideas','health','pulse','approvals','feed']
+        ['workflows','reports','costs','ideas','health','pulse','approvals','inbox','feed']
           .map(r => [r, api(r).catch(e => ({ error: String(e && e.message || e) }))])
       );
       // Workflows live (cron syncs n8n → Supabase toutes 5 min)
@@ -2140,7 +2140,7 @@
 
       // Inbox TikTok
       try {
-        const inboxRes = await api('inbox');
+        const inboxRes = await _p['inbox'];
         if (inboxRes.inbox !== undefined) {
           TT_HELPER.length = 0;
           inboxRes.inbox.forEach(t => {
