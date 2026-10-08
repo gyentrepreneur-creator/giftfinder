@@ -1755,10 +1755,15 @@
     let currentSession = null;
 
     let _sessionExpiredNotified = false;
+    const FN_REGION = 'eu-central-1';  // Francfort, au plus près de la base (Stockholm)
     async function api(route, opts = {}) {
       const headers = { 'content-type': 'application/json' };
       if (currentSession?.access_token) headers['Authorization'] = 'Bearer ' + currentSession.access_token;
-      const url = `${SB_URL}/functions/v1/admin-api?route=${route}`;
+      // 08/10/2026 : la fonction s'exécute dans la région la plus proche du TÉLÉPHONE. Avec un VPN qui sort aux
+      // États-Unis, elle tournait à New York alors que la base est à Stockholm → chaque requête traversait
+      // l'Atlantique (6,6 s en moyenne, jusqu'à 19 s, contre 0,05 s depuis Paris). On la force à Francfort,
+      // la région de fonctions la plus proche de la base (eu-north-1 n'est pas proposée).
+      const url = `${SB_URL}/functions/v1/admin-api?route=${route}&forceFunctionRegion=${FN_REGION}`;
       const res = await fetch(url, { method: opts.method || 'GET', headers, body: opts.body ? JSON.stringify(opts.body) : undefined });
       // v41 : ne jamais throw sur réponse non-JSON (gateway 401/5xx) → on renvoie un objet erreur exploitable.
       const data = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
@@ -2526,7 +2531,7 @@
       msgs.scrollTop = msgs.scrollHeight;
 
       try {
-        const res = await fetch(SB_URL + '/functions/v1/bigboss-chat', {
+        const res = await fetch(SB_URL + '/functions/v1/bigboss-chat?forceFunctionRegion=' + FN_REGION, {
           method: 'POST',
           headers: {
             'content-type': 'application/json',
