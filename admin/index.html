@@ -1857,8 +1857,12 @@
         });
     }
     function setupAutoRefresh() {
-      // Realtime = primary live source (push WebSocket)
-      setupRealtime();
+      // 08/10/2026 : Realtime DÉSACTIVÉ (incident 15h21-15h27). Chaque réveil du cockpit relançait le service
+      // Realtime de Supabase, qui applique alors ses migrations/partitions (DDL) → PostgREST recharge son cache de
+      // schéma 8× de suite (~10 s chacun sur cette instance) → ~5 min d'erreurs 504/544 pour TOUT le site.
+      // Le polling 60 s + le rafraîchissement au retour sur l'onglet suffisent pour un cockpit mono-utilisateur.
+      const REALTIME_ENABLED = false;
+      if (REALTIME_ENABLED) setupRealtime();
       // Polling = fallback (workflows/costs/health are HTTP, not in Realtime). Reduced to 60s since Realtime handles most events.
       if (_autoRefreshTimer) clearInterval(_autoRefreshTimer);
       _autoRefreshTimer = setInterval(() => {
