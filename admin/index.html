@@ -1644,6 +1644,9 @@
         <div class="kpi"><div class="kpi-head"><div class="kpi-emoji">🎞️</div><div class="kpi-label">En render</div></div><div class="kpi-value" id="kpi-render-active">—</div><div class="kpi-delta flat">queue active</div></div>
       </div>
 
+      <!-- 10/10/2026 : l'usine à vidéos (budget du mois, planning, troupe) -->
+      <div id="usine-bloc" style="margin-bottom:var(--space-4)"></div>
+
       <div class="filter-tabs">
         <button class="filter-tab active" data-aprfilter="all">Toutes</button>
         <button class="filter-tab" data-aprfilter="pending">⏳ Pending</button>
@@ -1966,6 +1969,7 @@
         ['workflows','reports','costs','ideas','health','pulse','approvals','inbox','feed']
           .map(r => [r, api(r).catch(e => ({ error: String(e && e.message || e) }))])
       );
+      const _usine = sbClient.rpc('usine_cockpit').then(r => r, e => ({ error: e }));
       // Workflows live (cron syncs n8n → Supabase toutes 5 min)
       try {
         const wfRes = await _p['workflows'];
@@ -2146,6 +2150,13 @@
           renderApprovals();
         }
       } catch (e) { console.warn('Approvals load failed', e); }
+
+      // Usine à vidéos (10/10/2026) : budget du mois, planning, note qualité et coût réel de chaque vidéo.
+      // Lecture directe par la fonction SQL usine_cockpit(), réservée à l'administrateur connecté.
+      try {
+        const u = await _usine;
+        if (u && !u.error && u.data) { USINE = u.data; renderUsine(); renderApprovals(); }
+      } catch (e) { console.warn('Usine load failed', e); }
 
       // Inbox TikTok
       try {
@@ -2706,6 +2717,53 @@
 
     // ─── RENDER APPROVALS ───
     let aprFilter = 'all';
+    // ════════ USINE À VIDÉOS (10/10/2026) ════════
+    let USINE = null;
+    const escU = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const usd = n => (n == null || isNaN(Number(n))) ? '—' : Number(n).toFixed(2).replace('.', ',') + ' $';
+    const usineVideo = id => (USINE && Array.isArray(USINE.videos)) ? USINE.videos.find(v => v.render_id === id || v.id === id) : null;
+    function renderUsine() {
+      const el = $('#usine-bloc');
+      if (!el || !USINE) return;
+      const b = USINE.budget || {};
+      const pct = b.plafond ? Math.min(100, Math.round(100 * Number(b.depense_mois || 0) / Number(b.plafond))) : 0;
+      const stLabel = { prevu: '🗓 prévue', attente: '💤 idée en attente', en_ecriture: '✍️ en écriture', en_fabrication: '🏭 en fabrication', produit: '✅ fabriquée', publie: '📤 publiée', rejete: '✕ refusée', saute: '⏭ sautée' };
+      const srcLabel = { gylan: '💡 ton idée', veille: '📰 actu', actu: '📰 actu', calendrier: '🗓 planning' };
+      const jour = d => { const p = String(d).slice(0, 10).split('-'); return p[2] + '/' + p[1]; };
+      const lignes = (USINE.planning || []).map(p => `
+        <div style="display:flex;gap:8px;align-items:baseline;padding:6px 0;border-top:1px solid var(--line, rgba(0,0,0,.06));font-size:12px">
+          <span style="font-weight:700;min-width:42px">${jour(p.date_prevue)}</span>
+          <span style="flex:1;min-width:0">${escU(p.titre || p.sous_theme || '—')}<span style="opacity:.6"> · ${srcLabel[p.source] || escU(p.source)}</span></span>
+          <span style="white-space:nowrap;opacity:.75">${p.cout_reel != null ? usd(p.cout_reel) : (p.cout_prevu_max != null ? '≤ ' + usd(p.cout_prevu_max) : '')}</span>
+          <span style="white-space:nowrap">${stLabel[p.statut] || escU(p.statut)}</span>
+        </div>`).join('');
+      el.innerHTML = `
+        <div class="kpi" style="display:block">
+          <div class="kpi-head"><div class="kpi-emoji">🏭</div><div class="kpi-label">Usine à vidéos · budget du mois</div></div>
+          <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:6px 0 8px">
+            <div class="kpi-value" style="font-size:22px">${usd(b.depense_mois)} <span style="font-size:13px;font-weight:500;opacity:.65">sur ${usd(b.plafond)}</span></div>
+            <div style="font-size:12px;opacity:.75">reste ${usd(b.reste)} · ${b.videos_mois ?? 0} vidéo(s) ce mois · ${(USINE.troupe || []).length} personnages</div>
+          </div>
+          <div style="height:8px;border-radius:6px;background:rgba(0,0,0,.08);overflow:hidden"><div style="height:100%;width:${pct}%;background:${pct > 90 ? 'var(--coral)' : 'var(--orange)'}"></div></div>
+          <div style="margin-top:10px">${lignes || '<div style="font-size:12px;opacity:.6">Aucune vidéo au planning.</div>'}</div>
+        </div>`;
+    }
+    function usineCarte(a) {
+      const v = usineVideo(a.id);
+      if (!v) return '';
+      const replis = Array.isArray(v.replis) ? v.replis : [];
+      const note = v.note == null ? null : Math.round(Number(v.note) * 100);
+      return `
+        <div style="margin-top:8px;padding:8px 10px;border-radius:10px;background:rgba(245,138,44,.08);font-size:11px;line-height:1.5">
+          <div><b>🏭 Fabriquée par l'usine</b>${v.est_reprise ? ' · reprise après ton refus' : ''}</div>
+          <div>🎁 ${escU(v.cadeau || '—')}</div>
+          <div>🔎 Contrôle qualité : ${note == null ? '—' : note + ' / 100'} · ${Number(v.reprises || 0)} image(s) ou clip(s) refait(s) · 💶 ${usd(v.cost_usd)}${v.duree_s ? ' · ' + Number(v.duree_s).toFixed(0) + ' s' : ''}</div>
+          ${replis.length ? `<div style="color:var(--coral)">⚠️ ${replis.map(r => escU(r.quoi) + ' : ' + escU(r.pourquoi)).join(' · ')}</div>` : ''}
+          ${v.hashtags ? `<div style="opacity:.8">${escU(v.hashtags)}</div>` : ''}
+          ${v.premier_commentaire ? `<button class="btn-mini" style="margin-top:6px" data-copycom="${escU(a.id)}">📋 Copier le 1ᵉʳ commentaire</button>` : ''}
+        </div>`;
+    }
+
     function renderApprovals() {
       const list = aprFilter === 'all' ? APPROVALS : APPROVALS.filter(a => a.status === aprFilter);
       if (list.length === 0) {
@@ -2722,7 +2780,7 @@
             <span class="vid-card-duration">${a.duration}</span>
           </div>
           <div class="vid-card-body">
-            <h3 class="vid-card-title">${a.title}</h3>
+            <h3 class="vid-card-title">${usineVideo(a.id)?.titre ? escU(usineVideo(a.id).titre) : a.title}</h3>
             <div class="vid-card-meta">Brief : ${a.brief} · Attempt #${a.attempt}</div>
             <div class="vid-card-cap">${a.cap}</div>
             <div class="vid-card-music">
@@ -2733,6 +2791,7 @@
                 ${a.music.whyMatches ? `<div style="font-size:11px;opacity:.7;margin-top:4px;font-style:italic">${a.music.whyMatches}</div>` : ''}
               </div>
             </div>
+            ${usineCarte(a)}
           </div>
           <div class="vid-card-actions">
             <button class="btn-mini btn-preview" data-preview="${a.id}">👁 Aperçu</button>
@@ -2744,6 +2803,12 @@
         </div>`
       ).join('');
       // Attach click handlers
+      $$('#approval-grid [data-copycom]').forEach(btn => btn.addEventListener('click', async () => {
+        const v = usineVideo(btn.dataset.copycom);
+        if (!v || !v.premier_commentaire) return;
+        try { await navigator.clipboard.writeText(v.premier_commentaire); btn.textContent = '✓ Copié'; }
+        catch (_) { prompt('Copie ce commentaire :', v.premier_commentaire); }
+      }));
       $$('#approval-grid [data-preview]').forEach(btn => btn.addEventListener('click', () => {
         const id = btn.dataset.preview;
         const item = APPROVALS.find(a => a.id === id);
@@ -2786,6 +2851,12 @@
         const rawFeedback = prompt('Pourquoi rejeter ?\n\n💡 Marketing lira ce motif et l\'utilisera pour améliorer la prochaine vidéo (variety, voice, hook, etc).\n\nSi tu laisses vide → aucun apprentissage, juste un rejet brut (coût $ perdu).');
         if (rawFeedback === null) { return; /* user clicked Cancel */ }
         const feedback = rawFeedback.trim();
+        // Vidéo de l'usine : le motif est obligatoire. C'est lui qui déclenche la reprise automatique (une seule),
+        // et sans lui l'argent de la vidéo est perdu sans rien apprendre.
+        if (!feedback && usineVideo(btn.dataset.reject)) {
+          alert('Pour une vidéo de l\'usine, écris en quelques mots ce qui ne va pas.\n\nC\'est ce motif qui lance la reprise automatique (une seule par vidéo) et qui évite le même défaut ensuite.');
+          return;
+        }
         if (!feedback) {
           if (!confirm('⚠️ Pas de motif = Marketing n\'apprend rien.\n\nSi 2 rejets sans motif consécutifs, Marketing te demandera quoi changer.\n\nRejeter quand même sans motif ?')) return;
         }
@@ -3015,6 +3086,11 @@
           <label class="modal-form-label">Description</label>
           <textarea class="modal-textarea" id="idea-desc-in" placeholder="Décris l'idée…">${existing?.desc || ''}</textarea>
         </div>
+        ${isNew ? `<div class="modal-form-field">
+          <label style="display:flex;gap:8px;align-items:center;font-size:13px;cursor:pointer">
+            <input type="checkbox" id="idea-video-in"> 🎬 C'est une idée de vidéo (l'usine la fabriquera en priorité)
+          </label>
+        </div>` : ''}
         <div class="modal-form-field">
           <label class="modal-form-label">Statut</label>
           <div class="modal-status-pills" id="idea-status-pills">
@@ -3038,9 +3114,11 @@
           } catch (e) { alert('Erreur : ' + e.message); }
         } }] : []),
         { label: isNew ? '+ Créer' : 'Enregistrer', style: 'primary', fn: async () => {
-          const t = $('#idea-title-in').value.trim();
+          let t = $('#idea-title-in').value.trim();
           const d = $('#idea-desc-in').value.trim();
           if (!t) { alert('Titre obligatoire'); return false; }
+          // L'usine à vidéos reconnaît une idée de vidéo à son titre : « Idée vidéo : … »
+          if (isNew && $('#idea-video-in')?.checked && !/^id[ée]e vid[ée]o/i.test(t)) t = 'Idée vidéo : ' + t;
           try {
             if (isNew) {
               const res = await api('new-idea', { method: 'POST', body: { title: t, description: d, status: currentStatus } });
