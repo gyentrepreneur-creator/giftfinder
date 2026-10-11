@@ -1821,6 +1821,63 @@
     const ALERTS = [];
     let ALERTS_TOTAL = 0;
 
+    // Les alertes sont écrites par plusieurs programmes (NAS, PC, base, usine), souvent en jargon ou en anglais.
+    // Le cockpit les redit en français simple : ce qui se passe, ce que ça change, quoi faire (demande de Gylan, 12/10/2026).
+    // Le texte d'origine reste lisible dans « Détail technique » quand on ouvre l'alerte.
+    const NOMS_AUTOMATISMES = { '02_Agent_Marketing': 'l\'agent Marketing (usine à vidéos)', 'Agent_Cadeaux_v2': 'le moteur de cadeaux', 'Agent_Cadeaux': 'le moteur de cadeaux',
+      'Welcome_Email_New_Signup': 'l\'e-mail de bienvenue', 'Agent_SEO': 'l\'agent des articles du blog', 'Agent_Intel': 'la veille quotidienne', 'BigBoss': 'BigBoss' };
+    const NOMS_TACHES = { tiktok_pull_stats_5min: 'le relevé des stats TikTok', tiktok_token_refresh_12h: 'le renouvellement de l\'accès TikTok', buffer_cross_post_5min: 'le relais vers Instagram',
+      analyze_video_perf_daily: 'l\'analyse quotidienne des vidéos', music_trends_scrape_daily: 'le relevé des sons tendance', marketing_morning_watchdog: 'le gardien du matin', purge_cron_logs_daily: 'le ménage quotidien des journaux' };
+    function alerteEnClair(a) {
+      const brut = String(a.message || ''), cle = String(a.alert_key || ''), src = String(a.source || '');
+      const esc = t => String(t == null ? '' : t);     // texte simple : la mise en page protège les caractères spéciaux au moment d'afficher (escA)
+      const nomAuto = n => NOMS_AUTOMATISMES[n] || ('l\'automatisme « ' + esc(String(n).replace(/_/g, ' ')) + ' »');
+      const maj = t => t.charAt(0).toUpperCase() + t.slice(1);
+      const quand = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', 'h'); };
+      const r = (titre, message, quoi) => ({ titre, message, quoi: quoi || '', detail: esc(brut) + (cle ? ' — clé : ' + esc(cle) : '') + (src ? ' — origine : ' + esc(src) : '') });
+      const titreVideo = id => { let v = null; try { v = (USINE && Array.isArray(USINE.videos)) ? USINE.videos.find(x => x.render_id === id) : null; } catch (_) { /* planning pas encore chargé */ } return v && v.titre ? '« ' + v.titre + ' »' : 'une vidéo'; };
+      let m;
+      if (cle.startsWith('usine_erreur_')) {
+        m = brut.match(/([\d.,]+) \$ engagés/);
+        return r('Usine à vidéos : une fabrication s\'est interrompue', 'La fabrication de ' + titreVideo(cle.slice(13)) + ' s\'est arrêtée en cours de route. Rien n\'est perdu : l\'usine reprend là où elle s\'était arrêtée, sans repayer ce qui est déjà fait' + (m ? ' (' + m[1].replace('.', ',') + ' $ engagés)' : '') + '.',
+          'Rien pour l\'instant. Si cette alerte revient pour la même vidéo, préviens Claude.');
+      }
+      if (cle.startsWith('usine_arret_')) return r('Usine à vidéos : une vidéo a été arrêtée', /^L'usine a arrêté/.test(brut) ? esc(brut) : 'L\'usine a arrêté d\'elle-même la fabrication de ' + titreVideo(cle.slice(12)) + ' (budget, durée ou contrôle).', 'Rien de ton côté. Si tu ne comprends pas la raison, demande à Claude.');
+      if (cle === 'usine_creneau_en_retard') return r('Une vidéo prévue n\'est pas prête', esc(brut), 'Regarde si le NAS est allumé. S\'il l\'est, préviens Claude.');
+      if (cle.startsWith('redepot_')) return r('Vidéo à publier aujourd\'hui', esc(brut), 'Valide-la dans le cockpit, puis publie-la sur TikTok. Instagram suit tout seul.');
+      if (cle.startsWith('agent_down_')) return r(maj(nomAuto(cle.slice(11))) + ' ne tourne plus', 'Aucun passage depuis plus de 3 jours, alors qu\'il devrait passer régulièrement.', 'Regarde si le NAS est allumé. S\'il l\'est, préviens Claude.');
+      if (cle === 'n8n_down_sentinel' || src === 'sentinelle_pc') {
+        m = brut.match(/depuis ~?\s*([\d.,]+)\s*(h|min|j)/i);
+        const duree = m ? m[1] + ' ' + ({ h: 'heure', min: 'minute', j: 'jour' }[m[2].toLowerCase()]) + (parseFloat(m[1].replace(',', '.')) >= 2 ? 's' : '') : '';
+        return r('Le NAS ne répond plus', 'Les automatismes de Kadoizi (moteur de cadeaux, agent Marketing, e-mails) sont à l\'arrêt' + (duree ? ' depuis environ ' + duree : '') + '. Les visiteurs du site n\'obtiennent plus leurs idées cadeaux.',
+          'Regarde si le NAS est allumé. S\'il est allumé mais ne répond pas, il faut le redémarrer électriquement (l\'éteindre, puis le rallumer).');
+      }
+      if (cle.startsWith('wf_failure') || src === 'workflow_failure_monitor') {
+        m = brut.match(/Workflow "([^"]+)" a échoué (\d+)x dans les (\d+) dernières minutes(?: \(dernière: ([^)]+)\))?/);
+        if (m) {
+          const suite = /^Agent_Cadeaux/.test(m[1]) ? ' Pendant ce temps, les recherches des visiteurs restent sans réponse.' : /^Welcome_Email/.test(m[1]) ? ' Les nouveaux inscrits ne reçoivent pas leur e-mail de bienvenue.' : /Marketing/.test(m[1]) ? ' Aucune vidéo ne peut être préparée tant que ça dure.' : '';
+          return r('Pannes à répétition : ' + nomAuto(m[1]), m[2] + ' échecs en ' + m[3] + ' minutes' + (m[4] && quand(m[4]) ? ', le dernier le ' + quand(m[4]) : '') + '.' + suite, 'Si ça dure plus d\'une heure, préviens Claude.');
+        }
+        return r('Un automatisme a échoué plusieurs fois', esc(brut), 'Si ça dure, préviens Claude.');
+      }
+      if (cle.startsWith('marketing_no_video') || cle.startsWith('marketing_no_morning')) return r('Aucune vidéo fabriquée récemment', 'C\'est une ancienne règle de surveillance (plus de 2 jours sans nouvelle vidéo). Elle est remplacée : l\'usine suit maintenant le calendrier de publication.', 'Tu peux fermer cette alerte.');
+      if (cle.startsWith('render_preview_fail')) return r('Une vidéo n\'a pas pu être montée', 'Le PC a essayé deux fois de produire le fichier de la vidéo et n\'y est pas arrivé.', 'Préviens Claude.');
+      if (cle.startsWith('voice_too_long')) { m = brut.match(/\(([\d.,]+)s\)/); return r('Voix trop longue pour une vidéo', 'La voix enregistrée' + (m ? ' (' + m[1].replace('.', ',') + ' secondes)' : '') + ' dure plus longtemps que la vidéo.', 'Rien : le texte de la prochaine vidéo sera plus court.'); }
+      if (cle.startsWith('cron_fail_')) {
+        const t = cle.slice(10), nom = NOMS_TACHES[t] || ('la tâche « ' + esc(t.replace(/_/g, ' ')) + ' »');
+        const suite = t === 'tiktok_token_refresh_12h' ? ' Sans elle, l\'accès à TikTok expire en quelques heures.' : t === 'buffer_cross_post_5min' ? ' Les vidéos publiées sur TikTok ne partent plus vers Instagram.' : '';
+        return r('Une tâche automatique a échoué : ' + nom, 'Son dernier passage s\'est mal terminé.' + suite, 'Si l\'alerte est encore là dans une heure, préviens Claude.');
+      }
+      if (cle === 'tiktok_token_stale') return r('L\'accès à TikTok va expirer', 'Le renouvellement automatique n\'a pas suivi. Sans accès valide, une vidéo validée ne peut plus partir vers TikTok.', 'Préviens Claude : il peut le renouveler à la main en une minute.');
+      if (cle.startsWith('cross_post_ready')) return r('Vidéo publiée sur TikTok', 'Ta publication a été repérée. Le relais vers Instagram part tout seul dans les minutes qui suivent.', '');
+      if (cle.startsWith('buffer_cross_post_fail')) return r('Le relais vers Instagram a échoué', 'La vidéo est bien sur TikTok, mais elle n\'a pas pu être envoyée à Instagram.', 'Vérifie dans Buffer que le compte Instagram est toujours connecté, ou préviens Claude.');
+      if (cle.startsWith('intel_report_failed')) return r('La veille du jour n\'a pas pu se faire', 'Une des sources d\'information n\'a pas répondu.', 'Rien : elle réessaie demain.');
+      if (/^Stockage Supabase/.test(brut)) { m = brut.match(/à (\d+) Mo/); return r('Le stockage des vidéos se remplit', 'Les vidéos gardées en ligne occupent ' + (m ? m[1] + ' Mo' : 'beaucoup de place') + ' sur environ 1 000 Mo autorisés. Au-delà, tout le site serait bloqué.', 'Préviens Claude pour qu\'il fasse le ménage.'); }
+      return r(src ? maj(esc(src.replace(/_/g, ' '))) : 'Alerte', esc(brut), '');
+    }
+    function escA(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+    const GRAVITE_FR = { critical: '🔴 Urgent', warning: '🟠 À surveiller', info: 'ℹ️ Pour information', success: '✅ Bonne nouvelle' };
+
     // ════════ INIT ════════
     const $ = s => document.querySelector(s);
     const $$ = s => document.querySelectorAll(s);
@@ -2095,22 +2152,18 @@
           pulseRes.alerts.forEach(a => {
             const sev = a.severity === 'critical' ? 'critical' : a.severity === 'warning' ? 'warning' : 'info';
             const emojiBySev = { critical: '🔴', warning: '⚠️', info: 'ℹ️' };
-            ALERTS.push({
-              id: a.id, sev,
-              emoji: emojiBySev[sev],
-              title: a.source || a.alert_key || a.severity || 'Alerte',
-              msg: a.message,
-              time: fmtTime(a.created_at)
-            });
+            const clair = alerteEnClair(a);
+            ALERTS.push({ id: a.id, sev, emoji: emojiBySev[sev], title: clair.titre, msg: clair.message, quoi: clair.quoi, detail: clair.detail, time: fmtTime(a.created_at) });
           });
           renderAlerts();
           $$('.alert-row').forEach(row => row.addEventListener('click', () => {
             const a = ALERTS[+row.dataset.idx];
-            const sevLabel = { critical: '🔴 Critique', warning: '🟠 Warning', info: 'ℹ️ Info', success: '✅ Succès' }[a.sev];
+            const sevLabel = GRAVITE_FR[a.sev] || '';
             openModal({
               emoji: a.emoji,
               emojiKind: a.sev === 'critical' ? 'err' : a.sev === 'warning' ? 'warn' : a.sev === 'success' ? 'ok' : 'info',
               title: a.title, meta: a.time + ' · ' + sevLabel, body: a.msg,
+              kv: { ...(a.quoi ? { 'À faire': escA(a.quoi) } : {}), 'Gravité': sevLabel, 'Reçue': a.time, 'Détail technique': escA(a.detail || '—') },
               actions: [{ label: 'Fermer', style: 'primary' }]
             });
           }));
@@ -2450,11 +2503,12 @@
         `<div class="alert-row ${a.sev}" data-idx="${i}">
           <div class="alert-emoji">${a.emoji}</div>
           <div class="alert-body">
-            <div class="alert-title">${a.title}</div>
-            <div class="alert-msg">${a.msg}</div>
+            <div class="alert-title">${escA(a.title)}</div>
+            <div class="alert-msg">${escA(a.msg)}</div>
+            ${a.quoi ? `<div class="alert-msg"><b>À faire :</b> ${escA(a.quoi)}</div>` : ''}
             <div class="alert-time">${a.time}</div>
           </div>
-          ${a.id ? `<button class="alert-dismiss" data-dismiss="${a.id}" aria-label="Dismiss">✕</button>` : ''}
+          ${a.id ? `<button class="alert-dismiss" data-dismiss="${a.id}" aria-label="Fermer cette alerte" title="Fermer cette alerte">✕</button>` : ''}
         </div>`
       ).join('');
       // Bouton "Voir tout" si plus de 10 alertes
@@ -2478,12 +2532,12 @@
       // Click on row → modal
       $$('#alert-list .alert-row[data-idx]').forEach(row => row.addEventListener('click', () => {
         const a = ALERTS[+row.dataset.idx];
-        const sevLabel = { critical: '🔴 Critique', warning: '🟠 Warning', info: 'ℹ️ Info' }[a.sev] || a.sev;
+        const sevLabel = GRAVITE_FR[a.sev] || '';
         openModal({
           emoji: a.emoji,
           emojiKind: a.sev === 'critical' ? 'err' : a.sev === 'warning' ? 'warn' : 'info',
           title: a.title, meta: a.time + ' · ' + sevLabel, body: a.msg,
-          kv: { 'Sévérité': sevLabel, 'Reçu': a.time, 'Source': 'system_alerts' },
+          kv: { ...(a.quoi ? { 'À faire': escA(a.quoi) } : {}), 'Gravité': sevLabel, 'Reçue': a.time, 'Détail technique': escA(a.detail || '—') },
           actions: [{ label: 'Fermer', style: 'primary' }]
         });
       }));
@@ -2498,7 +2552,8 @@
             r.alerts.forEach(a => {
               const sev = a.severity === 'critical' ? 'critical' : a.severity === 'warning' ? 'warning' : 'info';
               const emojiBySev = { critical: '🔴', warning: '⚠️', info: 'ℹ️' };
-              ALERTS.push({ id: a.id, sev, emoji: emojiBySev[sev], title: a.source || a.alert_key || 'Alerte', msg: a.message, time: fmtTime(a.created_at) });
+              const clair = alerteEnClair(a);
+              ALERTS.push({ id: a.id, sev, emoji: emojiBySev[sev], title: clair.titre, msg: clair.message, quoi: clair.quoi, detail: clair.detail, time: fmtTime(a.created_at) });
             });
             ALERTS_TOTAL = ALERTS.length;
             renderAlerts();
@@ -2719,6 +2774,8 @@
     let aprFilter = 'all';
     // ════════ USINE À VIDÉOS (10/10/2026) ════════
     let USINE = null;
+    // La liste des publications se replie et se déroule au double-clic sur le bloc (demande de Gylan, 12/10/2026). Repliée par défaut ; le choix est gardé.
+    let USINE_LISTE_OUVERTE = (() => { try { return localStorage.getItem('kadoizi_usine_liste') === '1'; } catch (_) { return false; } })();
     const escU = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const usd = n => (n == null || isNaN(Number(n))) ? '—' : Number(n).toFixed(2).replace('.', ',') + ' $';
     const usineVideo = id => (USINE && Array.isArray(USINE.videos)) ? USINE.videos.find(v => v.render_id === id || v.id === id) : null;
@@ -2768,6 +2825,10 @@
           <span style="min-width:74px">Publication</span><span style="flex:1">Vidéo</span><span>Coût</span><span style="min-width:92px;text-align:right">État</span>
         </div>`;
       const nbVideos = b.videos ?? b.videos_mois ?? 0;
+      const aujourdhui = new Date().toISOString().slice(0, 10);
+      const aVenir = (USINE.planning || []).filter(p => p.statut !== 'saute' && String(p.date_prevue).slice(0, 10) >= aujourdhui && !(p.statut === 'publie' || p.video_statut === 'done'));
+      const resumeListe = aVenir.length ? `Prochaine publication : <b>${jour(aVenir[0].date_prevue)}</b> · ${escU(aVenir[0].titre || aVenir[0].sous_theme || '')}` + (aVenir.length > 1 ? ` <span style="opacity:.6">(+ ${aVenir.length - 1} à venir)</span>` : '') : 'Aucune publication à venir';
+      const ouvert = USINE_LISTE_OUVERTE;
       const nbFab = Number(b.videos_mois || 0);
       el.innerHTML = `
         <div class="kpi" style="display:block">
@@ -2777,8 +2838,22 @@
             <div style="font-size:12px;opacity:.75">reste ${usd(b.reste)} · ${nbVideos} vidéo(s) ce mois${nbFab > nbVideos ? ' (' + nbFab + ' fabrications avec les nouvelles versions)' : ''} · ${(USINE.troupe || []).length} personnages</div>
           </div>
           <div style="height:8px;border-radius:6px;background:rgba(0,0,0,.08);overflow:hidden"><div style="height:100%;width:${pct}%;background:${pct > 90 ? 'var(--coral)' : 'var(--orange)'}"></div></div>
-          <div style="margin-top:12px">${lignes ? entete + lignes : '<div style="font-size:12px;opacity:.6">Aucune vidéo au planning.</div>'}</div>
+          <div id="usine-repli" style="margin-top:10px;display:flex;gap:8px;align-items:center;font-size:12px;cursor:pointer;user-select:none;-webkit-user-select:none">
+            <span id="usine-chevron" title="Dérouler ou enrouler la liste" style="display:inline-block;width:16px;text-align:center;font-size:14px;transition:transform .15s;${ouvert ? 'transform:rotate(90deg)' : ''}">▸</span>
+            <span style="flex:1;min-width:0">${resumeListe}</span>
+            <span style="opacity:.55;white-space:nowrap">${ouvert ? 'double-clic pour enrouler' : 'double-clic pour dérouler'}</span>
+          </div>
+          <div id="usine-liste" style="margin-top:10px;${ouvert ? '' : 'display:none'}">${lignes ? entete + lignes : '<div style="font-size:12px;opacity:.6">Aucune vidéo au planning.</div>'}</div>
         </div>`;
+      const basculer = () => {
+        USINE_LISTE_OUVERTE = !USINE_LISTE_OUVERTE;
+        try { localStorage.setItem('kadoizi_usine_liste', USINE_LISTE_OUVERTE ? '1' : '0'); } catch (_) { /* navigation privée : le choix n'est pas gardé */ }
+        try { window.getSelection().removeAllRanges(); } catch (_) { /* rien à désélectionner */ }
+        renderUsine();
+      };
+      const bloc = el.querySelector('.kpi'), fleche = el.querySelector('#usine-chevron');
+      if (bloc) bloc.ondblclick = basculer;                                             // double-clic n'importe où sur le bloc
+      if (fleche) fleche.onclick = e => { e.stopPropagation(); basculer(); };          // un simple appui sur la flèche, pratique au téléphone
     }
     function usineCarte(a) {
       const v = usineVideo(a.id);
