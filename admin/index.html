@@ -2730,22 +2730,43 @@
       const stLabel = { prevu: '🗓 prévue', attente: '💤 idée en attente', en_ecriture: '✍️ en écriture', en_fabrication: '🏭 en fabrication', produit: '✅ fabriquée', publie: '📤 publiée', rejete: '✕ refusée', saute: '⏭ sautée' };
       const srcLabel = { gylan: '💡 ton idée', veille: '📰 actu', actu: '📰 actu', calendrier: '🗓 planning' };
       const jour = d => { const p = String(d).slice(0, 10).split('-'); return p[2] + '/' + p[1]; };
+      // Une ligne = une vidéo (ses nouvelles versions comprises). À gauche : le jour de PUBLICATION prévu (remarque de Gylan, 11/10).
+      const etatLigne = p => {
+        if (p.statut === 'saute') return stLabel.saute;
+        if (p.statut === 'publie' || p.video_statut === 'done') return stLabel.publie;
+        if (['pending', 'downloading', 'rendering'].includes(p.video_statut)) return stLabel.en_fabrication;
+        if (p.video_statut === 'error') return '⚠️ en panne';
+        if (p.video_statut === 'rejected') return stLabel.rejete;
+        if (p.fabriquee_le) return '✅ prête';
+        return stLabel[p.statut] || escU(p.statut);
+      };
+      const sousLigne = p => {
+        if (p.statut === 'saute') return '';
+        if (p.fabriquee_le) return 'fabriquée le ' + jour(p.fabriquee_le) + (Number(p.versions) > 1 ? ' · ' + p.versions + ' versions, coût total' : '');
+        return 'pas encore fabriquée';
+      };
       const lignes = (USINE.planning || []).map(p => `
-        <div style="display:flex;gap:8px;align-items:baseline;padding:6px 0;border-top:1px solid var(--line, rgba(0,0,0,.06));font-size:12px">
-          <span style="font-weight:700;min-width:42px">${jour(p.date_prevue)}</span>
-          <span style="flex:1;min-width:0">${escU(p.titre || p.sous_theme || '—')}<span style="opacity:.6"> · ${srcLabel[p.source] || escU(p.source)}</span></span>
-          <span style="white-space:nowrap;opacity:.75">${p.cout_reel != null ? usd(p.cout_reel) : (p.cout_prevu_max != null ? '≤ ' + usd(p.cout_prevu_max) : '')}</span>
-          <span style="white-space:nowrap">${stLabel[p.statut] || escU(p.statut)}</span>
+        <div style="display:flex;gap:8px;align-items:baseline;padding:6px 0;border-top:1px solid var(--line, rgba(0,0,0,.06));font-size:12px${p.statut === 'saute' ? ';opacity:.5' : ''}">
+          <span style="font-weight:700;min-width:74px">${jour(p.date_prevue)}</span>
+          <span style="flex:1;min-width:0">${escU(p.titre || p.sous_theme || '—')}<span style="opacity:.6"> · ${srcLabel[p.source] || escU(p.source)}</span>${sousLigne(p) ? `<span style="display:block;font-size:11px;opacity:.6">${sousLigne(p)}</span>` : ''}</span>
+          <span style="white-space:nowrap;opacity:.75">${p.cout_total != null ? usd(p.cout_total) : (p.cout_reel != null ? usd(p.cout_reel) : (p.cout_prevu_max != null ? '≤ ' + usd(p.cout_prevu_max) : ''))}</span>
+          <span style="white-space:nowrap;min-width:92px;text-align:right">${etatLigne(p)}</span>
         </div>`).join('');
+      const entete = `
+        <div style="display:flex;gap:8px;padding:0 0 4px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;opacity:.55">
+          <span style="min-width:74px">Publication</span><span style="flex:1">Vidéo</span><span>Coût</span><span style="min-width:92px;text-align:right">État</span>
+        </div>`;
+      const nbVideos = b.videos ?? b.videos_mois ?? 0;
+      const nbFab = Number(b.videos_mois || 0);
       el.innerHTML = `
         <div class="kpi" style="display:block">
           <div class="kpi-head"><div class="kpi-emoji">🏭</div><div class="kpi-label">Usine à vidéos · budget du mois</div></div>
           <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:6px 0 8px">
             <div class="kpi-value" style="font-size:22px">${usd(b.depense_mois)} <span style="font-size:13px;font-weight:500;opacity:.65">sur ${usd(b.plafond)}</span></div>
-            <div style="font-size:12px;opacity:.75">reste ${usd(b.reste)} · ${b.videos_mois ?? 0} vidéo(s) ce mois · ${(USINE.troupe || []).length} personnages</div>
+            <div style="font-size:12px;opacity:.75">reste ${usd(b.reste)} · ${nbVideos} vidéo(s) ce mois${nbFab > nbVideos ? ' (' + nbFab + ' fabrications avec les nouvelles versions)' : ''} · ${(USINE.troupe || []).length} personnages</div>
           </div>
           <div style="height:8px;border-radius:6px;background:rgba(0,0,0,.08);overflow:hidden"><div style="height:100%;width:${pct}%;background:${pct > 90 ? 'var(--coral)' : 'var(--orange)'}"></div></div>
-          <div style="margin-top:10px">${lignes || '<div style="font-size:12px;opacity:.6">Aucune vidéo au planning.</div>'}</div>
+          <div style="margin-top:12px">${lignes ? entete + lignes : '<div style="font-size:12px;opacity:.6">Aucune vidéo au planning.</div>'}</div>
         </div>`;
     }
     function usineCarte(a) {
