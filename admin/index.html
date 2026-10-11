@@ -2155,7 +2155,7 @@
       // Lecture directe par la fonction SQL usine_cockpit(), réservée à l'administrateur connecté.
       try {
         const u = await _usine;
-        if (u && !u.error && u.data) { USINE = u.data; renderUsine(); renderApprovals(); }
+        if (u && !u.error && u.data) { USINE = u.data; renderUsine(); renderApprovals(); renderIdeas(); }
       } catch (e) { console.warn('Usine load failed', e); }
 
       // Inbox TikTok
@@ -2722,6 +2722,17 @@
     const escU = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const usd = n => (n == null || isNaN(Number(n))) ? '—' : Number(n).toFixed(2).replace('.', ',') + ' $';
     const usineVideo = id => (USINE && Array.isArray(USINE.videos)) ? USINE.videos.find(v => v.render_id === id || v.id === id) : null;
+    // Le créneau du calendrier qui porte une idée de la boîte à idées (bouton « En faire une vidéo », 11/10/2026)
+    const usineIdee = id => (id && USINE && Array.isArray(USINE.planning)) ? USINE.planning.find(p => p.idea_id === id && p.statut !== 'saute') : null;
+    const jourUsine = d => { const p = String(d).slice(0, 10).split('-'); return p[2] + '/' + p[1]; };
+    const etatIdeeVideo = p => (p.statut === 'publie' || p.video_statut === 'done') ? 'vidéo publiée le ' + jourUsine(p.date_prevue)
+      : p.fabriquee_le ? 'vidéo prête, publication le ' + jourUsine(p.date_prevue)
+      : (p.statut === 'en_ecriture' || p.statut === 'en_fabrication') ? 'vidéo en fabrication pour le ' + jourUsine(p.date_prevue)
+      : 'vidéo prévue pour le ' + jourUsine(p.date_prevue);
+    async function rechargerUsine() {
+      try { const u = await sbClient.rpc('usine_cockpit'); if (u && !u.error && u.data) { USINE = u.data; renderUsine(); renderApprovals(); renderIdeas(); } }
+      catch (e) { console.warn('Usine reload failed', e); }
+    }
     function renderUsine() {
       const el = $('#usine-bloc');
       if (!el || !USINE) return;
@@ -3077,7 +3088,7 @@
             <span class="idea-status ${i.status}">${statusLabel(i.status)}</span>
           </div>
           <div class="idea-desc">${i.desc}</div>
-          <div class="idea-foot">${i.date}</div>
+          <div class="idea-foot">${i.date}${usineIdee(i.id) ? ` · <b>🎬 ${etatIdeeVideo(usineIdee(i.id))}</b>` : ''}</div>
         </div>`
       ).join('');
       $$('#ideas-list .idea-card').forEach(card => card.addEventListener('click', () => {
@@ -3094,9 +3105,27 @@
       renderIdeas();
     }));
 
+    // Une idée ne devient une vidéo que sur ce clic : elle prend alors le prochain créneau libre du calendrier de publication.
+    async function ideeEnVideo(ideaId) {
+      const r = await sbClient.rpc('usine_idee_en_video', { p_idea_id: ideaId });
+      if (r.error) throw new Error(r.error.message || 'refusé');
+      await rechargerUsine();
+      const d = r.data || {};
+      alert(d.deja ? 'Cette idée est déjà au calendrier : vidéo prévue pour le ' + jourUsine(d.date_prevue) + '.'
+        : '🎬 C\'est noté : vidéo prévue pour le ' + jourUsine(d.date_prevue) + (d.remplace ? ', à la place de « ' + d.remplace + ' »' : '') + '. L\'usine la fabriquera la veille.');
+    }
+    async function ideeHorsCalendrier(ideaId) {
+      const r = await sbClient.rpc('usine_idee_annuler', { p_idea_id: ideaId });
+      if (r.error) throw new Error(r.error.message || 'refusé');
+      await rechargerUsine();
+      const d = r.data || {};
+      alert(d.ok === false ? (d.message || 'Impossible de la retirer.') : d.retire ? 'Idée retirée du calendrier' + (d.rendu_a ? ' : le créneau revient à « ' + d.rendu_a + ' ».' : '.') : 'Cette idée n\'était pas au calendrier.');
+    }
+
     // Idea Editor — création ou édition
     function openIdeaEditor(existing = null) {
       const isNew = !existing;
+      const creneauVideo = existing?.id ? usineIdee(existing.id) : null;
       let currentStatus = existing?.status || 'idea';
       const bodyHTML = `
         <div class="modal-form-field">
@@ -3109,7 +3138,7 @@
         </div>
         ${isNew ? `<div class="modal-form-field">
           <label style="display:flex;gap:8px;align-items:center;font-size:13px;cursor:pointer">
-            <input type="checkbox" id="idea-video-in"> 🎬 C'est une idée de vidéo (l'usine la fabriquera en priorité)
+            <input type="checkbox" id="idea-video-in"> 🎬 En faire une vidéo (elle prendra le prochain créneau libre du calendrier)
           </label>
         </div>` : ''}
         <div class="modal-form-field">
@@ -3134,17 +3163,25 @@
             renderIdeas();
           } catch (e) { alert('Erreur : ' + e.message); }
         } }] : []),
+        ...((!isNew && existing?.id && !creneauVideo) ? [{ label: '🎬 En faire une vidéo', style: 'outline', fn: async () => {
+          if (!confirm('Cette idée deviendra une vidéo : elle prendra le prochain créneau libre du calendrier et l\'usine la fabriquera la veille. Continuer ?')) return false;
+          try { await ideeEnVideo(existing.id); } catch (e) { alert('Erreur : ' + e.message); return false; }
+        } }] : []),
+        ...((!isNew && existing?.id && creneauVideo && creneauVideo.statut === 'prevu') ? [{ label: '✕ Retirer du calendrier (' + jourUsine(creneauVideo.date_prevue) + ')', style: 'outline', fn: async () => {
+          if (!confirm('Retirer cette idée du calendrier ? Elle reste dans ta boîte à idées.')) return false;
+          try { await ideeHorsCalendrier(existing.id); } catch (e) { alert('Erreur : ' + e.message); return false; }
+        } }] : []),
         { label: isNew ? '+ Créer' : 'Enregistrer', style: 'primary', fn: async () => {
           let t = $('#idea-title-in').value.trim();
           const d = $('#idea-desc-in').value.trim();
           if (!t) { alert('Titre obligatoire'); return false; }
-          // L'usine à vidéos reconnaît une idée de vidéo à son titre : « Idée vidéo : … »
-          if (isNew && $('#idea-video-in')?.checked && !/^id[ée]e vid[ée]o/i.test(t)) t = 'Idée vidéo : ' + t;
+          const enVideo = isNew && !!$('#idea-video-in')?.checked;
           try {
             if (isNew) {
               const res = await api('new-idea', { method: 'POST', body: { title: t, description: d, status: currentStatus } });
               if (res.ok && res.idea) {
                 IDEAS.unshift({ id: res.idea.id, title: t, desc: d, status: currentStatus, date: 'à l\'instant · ' + (res.idea.author || 'admin') });
+                if (enVideo) await ideeEnVideo(res.idea.id);
               } else throw new Error(res.error || 'unknown');
             } else {
               existing.title = t; existing.desc = d; existing.status = currentStatus;
