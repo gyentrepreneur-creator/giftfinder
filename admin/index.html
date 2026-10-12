@@ -2288,10 +2288,18 @@
           inboxRes.inbox.forEach(t => {
             const ss = t.suggested_sound || {};
             const top = ss.top_match || {};
+            // Le nom de la vidéo : celui du planning, sinon celui de l'usine, sinon le début de sa description (12/10/2026 :
+            // la carte affichait « Vidéo · » suivi d'un numéro, Gylan ne la reconnaissait pas).
+            const duPlanning = (USINE && Array.isArray(USINE.planning)) ? USINE.planning.find(p => p.video_id && p.video_id === t.render_id) : null;
+            const deLUsine = (USINE && Array.isArray(USINE.videos)) ? USINE.videos.find(v => v.id === t.render_id) : null;
+            const debut = String(t.caption || '').split('\n')[0].trim();
+            const nomVideo = (duPlanning && duPlanning.titre) || (deLUsine && deLUsine.titre)
+              || (debut ? (debut.length > 42 ? debut.slice(0, 42).replace(/\s+\S*$/, '') + '…' : debut) : 'Vidéo sans nom');
             TT_HELPER.push({
               id: t.id,
               renderId: t.render_id,
-              title: 'Vidéo · ' + (t.render_id || t.id || '').slice(0, 30),
+              title: nomVideo,
+              jourPublication: duPlanning ? duPlanning.date_prevue : null,
               publishId: t.publish_id,
               pushedAt: fmtTime(t.created_at),
               videoUrl: t.video_url,
@@ -2857,7 +2865,13 @@
     // Le créneau du calendrier qui porte une idée de la boîte à idées (bouton « En faire une vidéo », 11/10/2026)
     const usineIdee = id => (id && USINE && Array.isArray(USINE.planning)) ? USINE.planning.find(p => p.idea_id === id && p.statut !== 'saute') : null;
     const jourUsine = d => { const p = String(d).slice(0, 10).split('-'); return p[2] + '/' + p[1]; };
-    const etatIdeeVideo = p => (p.statut === 'publie' || p.video_statut === 'done') ? 'vidéo publiée le ' + jourUsine(p.date_prevue)
+    // 12/10/2026 : « publiée » = TikTok dit qu'elle est en ligne (ou le planning le dit). Une vidéo validée dans le cockpit attend
+    // encore dans la boîte de réception TikTok : avant, la liste écrivait « publiée » dès la validation, ce qui a trompé Gylan.
+    const estPubliee = p => p.statut === 'publie' || p.tiktok_statut === 'published';
+    const attendDansTikTok = p => !estPubliee(p) && p.video_statut === 'done';
+    const jourParis = iso => { try { return new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', timeZone: 'Europe/Paris' }); } catch (_) { return jourUsine(iso); } };
+    const etatIdeeVideo = p => estPubliee(p) ? 'vidéo publiée le ' + (p.tiktok_publiee_le ? jourParis(p.tiktok_publiee_le) : jourUsine(p.date_prevue))
+      : attendDansTikTok(p) ? 'vidéo validée, à publier dans TikTok'
       : p.fabriquee_le ? 'vidéo prête, publication le ' + jourUsine(p.date_prevue)
       : (p.statut === 'en_ecriture' || p.statut === 'en_fabrication') ? 'vidéo en fabrication pour le ' + jourUsine(p.date_prevue)
       : 'vidéo prévue pour le ' + jourUsine(p.date_prevue);
@@ -2876,7 +2890,8 @@
       // Une ligne = une vidéo (ses nouvelles versions comprises). À gauche : le jour de PUBLICATION prévu (remarque de Gylan, 11/10).
       const etatLigne = p => {
         if (p.statut === 'saute') return stLabel.saute;
-        if (p.statut === 'publie' || p.video_statut === 'done') return stLabel.publie;
+        if (estPubliee(p)) return stLabel.publie;
+        if (attendDansTikTok(p)) return '📱 à publier';
         if (['pending', 'downloading', 'rendering'].includes(p.video_statut)) return stLabel.en_fabrication;
         if (p.video_statut === 'error') return '⚠️ en panne';
         if (p.video_statut === 'rejected') return stLabel.rejete;
@@ -2885,8 +2900,10 @@
       };
       const sousLigne = p => {
         if (p.statut === 'saute') return '';
-        if (p.fabriquee_le) return 'fabriquée le ' + jour(p.fabriquee_le) + (Number(p.versions) > 1 ? ' · ' + p.versions + ' versions, coût total' : '');
-        return 'pas encore fabriquée';
+        const fab = p.fabriquee_le ? 'fabriquée le ' + jour(p.fabriquee_le) + (Number(p.versions) > 1 ? ' · ' + p.versions + ' versions, coût total' : '') : '';
+        if (estPubliee(p)) return [fab, p.tiktok_publiee_le ? 'publiée sur TikTok le ' + jourParis(p.tiktok_publiee_le) : ''].filter(Boolean).join(' · ');
+        if (attendDansTikTok(p)) return [fab, 'validée : elle t\'attend dans TikTok'].filter(Boolean).join(' · ');
+        return fab || 'pas encore fabriquée';
       };
       const lignes = (USINE.planning || []).map(p => `
         <div style="display:flex;gap:8px;align-items:baseline;padding:6px 0;border-top:1px solid var(--line, rgba(0,0,0,.06));font-size:12px${p.statut === 'saute' ? ';opacity:.5' : ''}">
@@ -2901,7 +2918,7 @@
         </div>`;
       const nbVideos = b.videos ?? b.videos_mois ?? 0;
       const aujourdhui = new Date().toISOString().slice(0, 10);
-      const aVenir = (USINE.planning || []).filter(p => p.statut !== 'saute' && String(p.date_prevue).slice(0, 10) >= aujourdhui && !(p.statut === 'publie' || p.video_statut === 'done'));
+      const aVenir = (USINE.planning || []).filter(p => p.statut !== 'saute' && String(p.date_prevue).slice(0, 10) >= aujourdhui && !estPubliee(p));
       const resumeListe = aVenir.length ? `Prochaine publication : <b>${jour(aVenir[0].date_prevue)}</b> · ${escU(aVenir[0].titre || aVenir[0].sous_theme || '')}` + (aVenir.length > 1 ? ` <span style="opacity:.6">(+ ${aVenir.length - 1} à venir)</span>` : '') : 'Aucune publication à venir';
       const ouvert = USINE_LISTE_OUVERTE;
       const nbFab = Number(b.videos_mois || 0);
@@ -3083,9 +3100,9 @@
           <div class="tt-helper-head">
             <div class="tt-helper-thumb">${t.emoji}</div>
             <div class="tt-helper-info">
-              <h3 class="tt-helper-title">${t.title}</h3>
-              <div class="tt-helper-meta">Push ${t.pushedAt} · ${t.publishId}</div>
-              <span class="tt-helper-tag">📱 SEND_TO_USER_INBOX</span>
+              <h3 class="tt-helper-title">${escU(t.title)}</h3>
+              <div class="tt-helper-meta">Envoyée à TikTok ${escU(t.pushedAt)}${t.jourPublication ? ' · à publier le ' + jourUsine(t.jourPublication) : ''}</div>
+              <span class="tt-helper-tag">📱 Elle t'attend dans ta boîte TikTok</span>
             </div>
           </div>
           <div class="vid-card-music" style="margin-bottom:var(--space-3)">
