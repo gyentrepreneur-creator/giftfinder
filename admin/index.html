@@ -1759,7 +1759,22 @@
 
     let _sessionExpiredNotified = false;
     const FN_REGION = 'eu-central-1';  // Francfort, au plus près de la base (Stockholm)
+    // 12/10/2026 : le jeton de connexion ne vit qu'une heure, et le cockpit gardait celui du chargement de la page. Passé une heure,
+    // TOUTES ses demandes étaient refusées (163 refus le 12/10 entre 8 h 37 et 9 h, dont deux validations) et l'écran restait figé
+    // sur l'ancien état. Désormais la session est relue avant chaque appel (elle se renouvelle seule si elle a expiré), et un refus
+    // déclenche un renouvellement puis UN nouvel essai. Une demande refusée n'a rien exécuté : la renvoyer ne fait rien deux fois.
+    let _renouvellement = null;
+    function renouvelerSession() {
+      if (!_renouvellement) {
+        _renouvellement = sbClient.auth.refreshSession()
+          .then(r => { if (r?.data?.session) currentSession = r.data.session; return r?.data?.session || null; })
+          .catch(() => null)
+          .finally(() => { _renouvellement = null; });
+      }
+      return _renouvellement;
+    }
     async function api(route, opts = {}) {
+      try { const { data: s0 } = await sbClient.auth.getSession(); if (s0?.session) currentSession = s0.session; } catch (_) {}
       const headers = { 'content-type': 'application/json' };
       if (currentSession?.access_token) headers['Authorization'] = 'Bearer ' + currentSession.access_token;
       // 08/10/2026 : la fonction s'exécute dans la région la plus proche du TÉLÉPHONE. Avec un VPN qui sort aux
@@ -1767,7 +1782,12 @@
       // l'Atlantique (6,6 s en moyenne, jusqu'à 19 s, contre 0,05 s depuis Paris). On la force à Francfort,
       // la région de fonctions la plus proche de la base (eu-north-1 n'est pas proposée).
       const url = `${SB_URL}/functions/v1/admin-api?route=${route}&forceFunctionRegion=${FN_REGION}`;
-      const res = await fetch(url, { method: opts.method || 'GET', headers, body: opts.body ? JSON.stringify(opts.body) : undefined });
+      const envoyer = () => fetch(url, { method: opts.method || 'GET', headers, body: opts.body ? JSON.stringify(opts.body) : undefined });
+      let res = await envoyer();
+      if (res.status === 401) {
+        const neuve = await renouvelerSession();
+        if (neuve?.access_token) { headers['Authorization'] = 'Bearer ' + neuve.access_token; res = await envoyer(); }
+      }
       // v41 : ne jamais throw sur réponse non-JSON (gateway 401/5xx) → on renvoie un objet erreur exploitable.
       const data = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
       // v41 : session expirée → avant, le cockpit se vidait en silence. On le signale une fois.
@@ -1775,6 +1795,7 @@
         _sessionExpiredNotified = true;
         alert('🔒 Session expirée — reconnecte-toi (menu → Déconnexion, puis login).');
       }
+      if (res.ok) _sessionExpiredNotified = false;
       return data;
     }
 
@@ -2339,6 +2360,8 @@
     sbClient.auth.getSession().then(({ data }) => {
       if (data?.session) showApp(data.session);
     });
+    // La session se renouvelle toute seule toutes les heures : on garde toujours la plus récente (12/10/2026).
+    sbClient.auth.onAuthStateChange((_evenement, session) => { if (session) currentSession = session; });
 
     // Drawer
     function renderDrawer() {
