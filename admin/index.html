@@ -1961,8 +1961,7 @@
       let _tours = 0;
       _autoRefreshTimer = setInterval(() => {
         if (document.visibilityState === 'visible') {
-          _lastRefreshAt = Date.now();
-          loadAllLiveData();
+          chargementAuto(true);
           if (++_tours % 5 === 0) mettreAJourSiBesoin();
         }
       }, 60000);
@@ -1970,9 +1969,8 @@
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') mettreAJourSiBesoin();
         if (document.visibilityState === 'visible' && Date.now() - _lastRefreshAt > 10000) {
-          _lastRefreshAt = Date.now();
-          loadAllLiveData();
-          showRefreshHint();
+          const retour = chargementAuto(false);
+          if (retour) retour.then(recu => { if (recu) showRefreshHint(); });   // « Actualisé » seulement quand c'est vrai
         }
       });
       // Pull-to-refresh : swipe down at top of page
@@ -2086,7 +2084,40 @@
       return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
     }
 
-    async function loadAllLiveData() {
+    // ── Un seul chargement à la fois (12/10/2026) ──
+    // Panne du 12/10 à 12 h : la base ralentissait, un chargement (9 appels + l'usine, une quarantaine de requêtes) durait
+    // plus d'une minute et le suivant partait quand même toutes les 60 s. Les demandes s'empilaient jusqu'à figer la base.
+    let _chargement = null, _suivant = null, _pasAvant = 0;
+    const LENT_MS = 20000, SANS_REPONSE_MS = 90000, PAUSE_MS = 5 * 60 * 1000;
+    function lancerChargement() {
+      const debut = Date.now();
+      _suivant = null;
+      _chargement = Promise.race([
+        chargerDonnees().catch(e => { console.warn('Chargement raté', e); return false; }),
+        new Promise(fin => setTimeout(() => fin(false), SANS_REPONSE_MS)),   // sans réponse : on ne bloque pas les suivants
+      ]).then(recu => {
+        _chargement = null;
+        const peine = !recu || Date.now() - debut > LENT_MS;
+        if (peine && Date.now() >= _pasAvant) showRefreshHint('🐢 Le serveur répond mal : actualisation automatique en pause 5 min (le bouton 🔄 marche toujours)', true);
+        _pasAvant = peine ? Date.now() + PAUSE_MS : 0;
+        return recu;
+      });
+      return _chargement;
+    }
+    // Demande explicite (bouton 🔄, après une validation…) : si un chargement tourne déjà, il a pu partir AVANT l'action ;
+    // on en prévoit donc un autre, un seul, juste après, et c'est son résultat qu'on rend.
+    function loadAllLiveData() {
+      if (!_chargement) return lancerChargement();
+      if (!_suivant) _suivant = _chargement.then(() => lancerChargement());
+      return _suivant;
+    }
+    // Chargement automatique : jamais pendant qu'un autre tourne. La minuterie respecte en plus la pause.
+    function chargementAuto(respecterLaPause) {
+      if (_chargement || (respecterLaPause && Date.now() < _pasAvant)) return null;
+      _lastRefreshAt = Date.now();
+      return lancerChargement();
+    }
+    async function chargerDonnees() {
       // v43 (07/10/2026) : les appels au serveur partent TOUS EN PARALLÈLE. Avant, ils s'enchaînaient
       // l'un après l'autre (workflows → rapports → idées → pulse → validations → flux) et chacun payait
       // la vérification d'identité + ses requêtes → 5 à 10 s de chargement. Désormais le temps total
