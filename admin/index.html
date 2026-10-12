@@ -2894,6 +2894,23 @@
     // Le créneau du calendrier qui porte une idée de la boîte à idées (bouton « En faire une vidéo », 11/10/2026)
     const usineIdee = id => (id && USINE && Array.isArray(USINE.planning)) ? USINE.planning.find(p => p.idea_id === id && p.statut !== 'saute') : null;
     const jourUsine = d => { const p = String(d).slice(0, 10).split('-'); return p[2] + '/' + p[1]; };
+    // Garde-fou (13/10/2026) : une vidéo fabriquée à l'avance porte son jour de publication. La valider avant ce jour l'envoie tout de
+    // suite dans la boîte TikTok (Halloween, prévue le 24, serait partie le 13). La carte écrit la date ; le bouton demande une confirmation datée.
+    const jourDuJourParis = () => { try { return new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Paris' }); } catch (_) { return new Date().toISOString().slice(0, 10); } };
+    const publicationPrevue = id => {
+      const p = (id && USINE && Array.isArray(USINE.planning)) ? USINE.planning.find(x => x.video_id === id && x.statut !== 'saute' && !estPubliee(x)) : null;
+      if (!p || !p.date_prevue) return null;
+      const jour = String(p.date_prevue).slice(0, 10), ce = jourDuJourParis();
+      const joursAvant = Math.round((new Date(jour + 'T12:00:00Z') - new Date(ce + 'T12:00:00Z')) / 86400000);
+      return { jour, joursAvant, enAvance: joursAvant > 0 };
+    };
+    const carteDate = a => {
+      const pp = publicationPrevue(a.id);
+      if (!pp) return '';
+      return (pp.enAvance && (a.status === 'pending' || a.status === 'done'))
+        ? `<div class="vid-card-meta" style="margin-top:4px;color:var(--coral);font-weight:600">📅 Prévue le ${jourUsine(pp.jour)} (dans ${pp.joursAvant} jour${pp.joursAvant > 1 ? 's' : ''}) · à valider ce jour-là, pas avant</div>`
+        : `<div class="vid-card-meta" style="margin-top:4px">📅 Publication prévue le ${jourUsine(pp.jour)}</div>`;
+    };
     // Le premier commentaire (idée de Gylan, 09/10/2026) : il le poste lui-même juste après la publication, puis il l'épingle.
     // Celui que l'usine a écrit pour la vidéo, sinon la formule habituelle des scripts validés.
     const COMMENTAIRE_HABITUEL = 'kadoizi.com 👉 décris la personne, on te sort 9 idées en 30 secondes';
@@ -3019,6 +3036,7 @@
           <div class="vid-card-body">
             <h3 class="vid-card-title">${usineVideo(a.id)?.titre ? escU(usineVideo(a.id).titre) : a.title}</h3>
             <div class="vid-card-meta">Brief : ${a.brief} · Attempt #${a.attempt}</div>
+            ${carteDate(a)}
             <div class="vid-card-cap">${a.cap}</div>
             <div class="vid-card-music">
               <div class="vid-card-music-icon">🎵</div>
@@ -3062,9 +3080,13 @@
         const isRetry = btn.dataset.retry === '1';
         const originalLabel = isRetry ? '🔁 Retry push' : '✓ Approve';
         // Caption auto-générée par l'agent côté serveur si manquante — aucune saisie utilisateur
+        // Garde-fou : une vidéo prévue pour plus tard demande une confirmation qui dit la date (13/10/2026).
+        const pp = publicationPrevue(btn.dataset.approve);
         const confirmMsg = isRetry
           ? 'Relancer le push TikTok pour cette vidéo ?'
-          : 'Approuver cette vidéo ? Elle sera poussée sur ton inbox TikTok pour publication.';
+          : (pp && pp.enAvance)
+            ? `⏳ Cette vidéo est prévue pour le ${jourUsine(pp.jour)}, dans ${pp.joursAvant} jour${pp.joursAvant > 1 ? 's' : ''}.\n\nLa valider maintenant l'envoie TOUT DE SUITE dans ta boîte TikTok, avant sa date.\n\nValider quand même aujourd'hui ?`
+            : 'Approuver cette vidéo ? Elle sera poussée sur ton inbox TikTok pour publication.';
         if (!confirm(confirmMsg)) return;
         btn.disabled = true; btn.textContent = '⏳…';
         try {
