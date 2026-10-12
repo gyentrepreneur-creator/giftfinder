@@ -2300,6 +2300,7 @@
               renderId: t.render_id,
               title: nomVideo,
               jourPublication: duPlanning ? duPlanning.date_prevue : null,
+              premierCommentaire: premierCommentaire(t.render_id),
               publishId: t.publish_id,
               pushedAt: fmtTime(t.created_at),
               videoUrl: t.video_url,
@@ -2314,10 +2315,7 @@
               } : { title: '⏳ Suggestion en cours de génération...', trending: '', emotion: '' }
             });
           });
-          renderHelper();
-          // Update banner count
-          const banner = $('.view[data-view="tt-helper"] .tt-banner-title');
-          if (banner) banner.textContent = `${TT_HELPER.length} vidéo${TT_HELPER.length > 1 ? 's' : ''} en attente dans ton inbox TikTok`;
+          renderHelper();   // la bannière est écrite dedans
         }
       } catch (e) { console.warn('Inbox load failed', e); }
 
@@ -2865,6 +2863,15 @@
     // Le créneau du calendrier qui porte une idée de la boîte à idées (bouton « En faire une vidéo », 11/10/2026)
     const usineIdee = id => (id && USINE && Array.isArray(USINE.planning)) ? USINE.planning.find(p => p.idea_id === id && p.statut !== 'saute') : null;
     const jourUsine = d => { const p = String(d).slice(0, 10).split('-'); return p[2] + '/' + p[1]; };
+    // Le premier commentaire (idée de Gylan, 09/10/2026) : il le poste lui-même juste après la publication, puis il l'épingle.
+    // Celui que l'usine a écrit pour la vidéo, sinon la formule habituelle des scripts validés.
+    const COMMENTAIRE_HABITUEL = 'kadoizi.com 👉 décris la personne, on te sort 9 idées en 30 secondes';
+    const premierCommentaire = videoId => {
+      const v = (USINE && Array.isArray(USINE.videos)) ? USINE.videos.find(x => x.id === videoId) : null;
+      return (v && String(v.premier_commentaire || '').trim()) || COMMENTAIRE_HABITUEL;
+    };
+    const heureParis = iso => { try { return new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris' }).replace(':', ' h '); } catch (_) { return ''; } };
+    const commentaireFait = id => { try { return localStorage.getItem('kadoizi_com_' + id) === '1'; } catch (_) { return false; } };
     // 12/10/2026 : « publiée » = TikTok dit qu'elle est en ligne (ou le planning le dit). Une vidéo validée dans le cockpit attend
     // encore dans la boîte de réception TikTok : avant, la liste écrivait « publiée » dès la validation, ce qui a trompé Gylan.
     const estPubliee = p => p.statut === 'publie' || p.tiktok_statut === 'published';
@@ -3084,6 +3091,37 @@
       const banner = $('.view[data-view="tt-helper"] .tt-banner');
       const bannerTitle = $('.view[data-view="tt-helper"] .tt-banner-title');
       const bannerSub = $('.view[data-view="tt-helper"] .tt-banner-sub');
+      // Le premier commentaire : le texte, et un bouton pour le copier.
+      const blocCommentaire = com => `<div style="font-size:11px;font-weight:700;color:var(--text-muted);margin:var(--space-3) 0 6px;letter-spacing:.04em">💬 TON 1ᵉʳ COMMENTAIRE, À POSTER APRÈS LA PUBLICATION PUIS À ÉPINGLER :</div>
+          <div class="tt-caption-box" style="margin-bottom:8px">${escU(com)}</div>`;
+      const boutonCommentaire = com => `<button class="btn-mini btn-preview" data-cap="${escU(com)}" onclick="copyCap(this, this.dataset.cap)">💬 Copier le 1ᵉʳ commentaire</button>`;
+      // Publiées depuis moins de 24 h : la carte reste, le temps de poster le commentaire. Avant, elle disparaissait dès que
+      // TikTok déclarait la vidéo en ligne, c'est-à-dire au moment où Gylan a besoin de son commentaire.
+      const publiees = ((USINE && Array.isArray(USINE.planning)) ? USINE.planning : []).filter(p => p.video_id && p.tiktok_statut === 'published' && p.tiktok_publiee_le
+        && Date.now() - new Date(p.tiktok_publiee_le).getTime() < 24 * 3600 * 1000 && !commentaireFait(p.video_id) && !TT_HELPER.some(t => t.renderId === p.video_id));
+      const cartesPubliees = publiees.map(p => `<div class="tt-helper-card">
+          <div class="tt-helper-head">
+            <div class="tt-helper-thumb">✅</div>
+            <div class="tt-helper-info">
+              <h3 class="tt-helper-title">${escU(p.titre || 'Vidéo sans nom')}</h3>
+              <div class="tt-helper-meta">Publiée sur TikTok le ${jourParis(p.tiktok_publiee_le)} à ${heureParis(p.tiktok_publiee_le)} · le relais Instagram part tout seul</div>
+              <span class="tt-helper-tag">💬 Dernier geste : ton 1ᵉʳ commentaire</span>
+            </div>
+          </div>
+          ${blocCommentaire(premierCommentaire(p.video_id))}
+          <div class="tt-helper-actions">
+            ${boutonCommentaire(premierCommentaire(p.video_id))}
+            <button class="btn-mini btn-primary" onclick="openTikTok()">${isMobile ? '📱 Ouvrir TikTok' : '🖥️ Ouvrir TikTok'}</button>
+            <button class="btn-mini btn-preview" onclick="commentairePoste('${escU(p.video_id)}')">✓ C'est fait</button>
+          </div>
+        </div>`).join('');
+      if (TT_HELPER.length === 0 && publiees.length) {
+        if (bannerTitle) bannerTitle.textContent = `${publiees.length} vidéo${publiees.length > 1 ? 's' : ''} publiée${publiees.length > 1 ? 's' : ''} : il reste ton 1ᵉʳ commentaire`;
+        if (bannerSub) bannerSub.textContent = 'Ouvre la vidéo sur TikTok · colle le commentaire · épingle-le';
+        if (banner) banner.style.opacity = '1';
+        $('#tt-helper-list').innerHTML = cartesPubliees;
+        return;
+      }
       if (TT_HELPER.length === 0) {
         if (bannerTitle) bannerTitle.textContent = 'Aucune vidéo en attente de publication';
         if (bannerSub) bannerSub.textContent = "Quand t'auras approuvé une vidéo dans Supervision, elle apparaitra ici prête à publier sur TikTok.";
@@ -3092,7 +3130,7 @@
         return;
       }
       if (bannerTitle) bannerTitle.textContent = `${TT_HELPER.length} vidéo${TT_HELPER.length > 1 ? 's' : ''} en attente dans ton inbox TikTok`;
-      if (bannerSub) bannerSub.textContent = 'Ouvre TikTok mobile · ajoute un son trending · colle la caption · publie';
+      if (bannerSub) bannerSub.textContent = 'Ouvre TikTok mobile · ajoute un son trending · colle la caption · publie · poste ton 1ᵉʳ commentaire et épingle-le';
       if (banner) banner.style.opacity = '1';
       $('#tt-helper-list').innerHTML = TT_HELPER.map(t => {
         const hasVideo = t.videoUrl && !/^https?:\/\/(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.)/i.test(t.videoUrl);
@@ -3121,10 +3159,17 @@
             <button class="btn-mini btn-preview" ${(t.cap||'').trim() ? '' : 'disabled style="opacity:.5"'} data-cap="${(t.cap||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}" onclick="copyCap(this, this.dataset.cap)">📋 Copier description</button>
             <button class="btn-mini btn-primary" onclick="openTikTok()">${isMobile ? '📱 Ouvrir TikTok' : '🖥️ Ouvrir TikTok'}</button>
           </div>
+          ${blocCommentaire(t.premierCommentaire)}
+          <div class="tt-helper-actions">${boutonCommentaire(t.premierCommentaire)}</div>
         </div>`;
-      }).join('');
+      }).join('') + cartesPubliees;
     }
     renderHelper();
+    // « C'est fait » : la carte d'une vidéo publiée se range (choix gardé sur l'appareil).
+    window.commentairePoste = function(id) {
+      try { localStorage.setItem('kadoizi_com_' + id, '1'); } catch (_) { /* navigation privée : la carte reviendra */ }
+      renderHelper();
+    };
 
     window.openTikTok = function() {
       if (isMobile) {
