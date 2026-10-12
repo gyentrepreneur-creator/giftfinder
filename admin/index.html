@@ -1914,6 +1914,13 @@
       loadAllLiveData();
       // === AUTO-REFRESH v30 : poll 30s + refresh on focus ===
       setupAutoRefresh();
+      try {
+        const vue = sessionStorage.getItem('kadoizi_vue');
+        sessionStorage.removeItem('kadoizi_vue');
+        if (vue && document.querySelector(`.view[data-view="${vue}"]`)) switchView(vue);
+        if (Date.now() - Number(sessionStorage.getItem('kadoizi_rechargee_le') || 0) < 20000) showRefreshHint('🆕 Nouvelle version du cockpit');
+      } catch (_) {}
+      nouvelleVersionEnLigne();   // note l'empreinte de la page qui vient d'être chargée
     }
 
     let _autoRefreshTimer = null;
@@ -1951,14 +1958,17 @@
       if (REALTIME_ENABLED) setupRealtime();
       // Polling = fallback (workflows/costs/health are HTTP, not in Realtime). Reduced to 60s since Realtime handles most events.
       if (_autoRefreshTimer) clearInterval(_autoRefreshTimer);
+      let _tours = 0;
       _autoRefreshTimer = setInterval(() => {
         if (document.visibilityState === 'visible') {
           _lastRefreshAt = Date.now();
           loadAllLiveData();
+          if (++_tours % 5 === 0) mettreAJourSiBesoin();
         }
       }, 60000);
       // Refresh immediately when tab regains focus (after >10s away)
       document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') mettreAJourSiBesoin();
         if (document.visibilityState === 'visible' && Date.now() - _lastRefreshAt > 10000) {
           _lastRefreshAt = Date.now();
           loadAllLiveData();
@@ -1969,20 +1979,17 @@
       let touchStartY = 0;
       document.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
       document.addEventListener('touchend', e => {
-        if (window.scrollY === 0 && e.changedTouches[0].clientY - touchStartY > 80) {
-          _lastRefreshAt = Date.now();
-          loadAllLiveData();
-          showRefreshHint();
-        }
+        if (window.scrollY === 0 && e.changedTouches[0].clientY - touchStartY > 80) manualRefresh();
       }, { passive: true });
     }
-    function showRefreshHint(reason) {
+    function showRefreshHint(reason, echec) {
       const el = document.getElementById('refresh-hint');
       if (!el) return;
-      el.textContent = reason ? `${reason} · mis à jour` : '✅ Actualisé';
+      el.textContent = echec ? reason : (reason ? `${reason} · mis à jour` : '✅ Actualisé');
+      el.style.background = echec ? '#dc2626' : '#22c55e';
       el.classList.add('show');
-      // Stay 2.5s so user has time to see it
-      setTimeout(() => el.classList.remove('show'), 2500);
+      // Stay 2.5s so user has time to see it (6 s pour un échec : il faut avoir le temps de le lire)
+      setTimeout(() => el.classList.remove('show'), echec ? 6000 : 2500);
     }
     window.editHelperCaption = async function(inboxId) {
       const item = TT_HELPER.find(h => h.id === inboxId);
@@ -2012,15 +2019,56 @@
         alert('Erreur : ' + (e.message || e));
       }
     };
+    // ── Le cockpit se met à jour tout seul (12/10/2026) ──
+    // Avant, un cockpit resté ouvert (l'appli du téléphone surtout) gardait son ancien code pendant des jours : le bouton 🔄 ne
+    // rechargeait que les données, jamais la page elle-même. On compare maintenant l'empreinte de la page en ligne avec celle
+    // qui a été chargée ; si elle a changé, la page entière se recharge en restant sur le même onglet.
+    let _empreintePage = null;
+    const nettoyerEmpreinte = e => (e || '').replace(/^W\//, '').replace(/"/g, '').trim() || null;
+    async function empreinteEnLigne() {
+      try {
+        const rep = await fetch(location.pathname + '?v=' + Date.now(), { method: 'HEAD', cache: 'no-store' });
+        return rep.ok ? nettoyerEmpreinte(rep.headers.get('etag')) : null;
+      } catch (_) { return null; }
+    }
+    async function nouvelleVersionEnLigne() {
+      const e = await empreinteEnLigne();
+      if (!e) return false;                                  // pas de réponse du site : on ne conclut rien
+      if (!_empreintePage) { _empreintePage = e; return false; }
+      return e !== _empreintePage;
+    }
+    function rechargerLaPage() {
+      try {
+        sessionStorage.setItem('kadoizi_vue', document.querySelector('.view.active')?.dataset.view || '');
+        sessionStorage.setItem('kadoizi_rechargee_le', String(Date.now()));
+      } catch (_) {}
+      location.reload();
+    }
+    // Rechargement automatique (retour sur le cockpit, ou toutes les 5 minutes) : au plus une fois toutes les 10 minutes,
+    // pour ne jamais tourner en rond.
+    async function mettreAJourSiBesoin() {
+      let dernier = 0;
+      try { dernier = Number(sessionStorage.getItem('kadoizi_rechargee_le') || 0); } catch (_) {}
+      if (Date.now() - dernier < 10 * 60 * 1000) return false;
+      if (await nouvelleVersionEnLigne()) { rechargerLaPage(); return true; }
+      return false;
+    }
     async function manualRefresh() {
       const btn = document.getElementById('manual-refresh-btn');
       if (btn) btn.classList.add('spinning');
       _lastRefreshAt = Date.now();
-      // v30 : ce bouton recharge toutes les data BDD (équivalent à fermer/rouvrir la page).
-      // Le cron tiktok_pull_stats tourne toutes les 5 min en arrière-plan donc les vues sont
-      // toujours à jour à <5 min près (limitation TikTok Display API).
-      try { await loadAllLiveData(); } finally {
-        setTimeout(() => { if (btn) btn.classList.remove('spinning'); showRefreshHint(); }, 400);
+      let echec = null;
+      try {
+        // 1. Une nouvelle version du cockpit est en ligne : on recharge toute la page (code, connexion, données).
+        if (await nouvelleVersionEnLigne()) { rechargerLaPage(); return; }
+        // 2. Sinon on recharge toutes les données (la connexion se renouvelle seule si elle a expiré).
+        //    Le cron tiktok_pull_stats tourne toutes les 5 min : les vues sont à jour à moins de 5 min près.
+        const recu = await loadAllLiveData();
+        if (!recu) echec = navigator.onLine === false ? '📡 Pas de réseau : rien n\'a pu être actualisé' : '⚠️ Le serveur n\'a rien renvoyé : réessaie, ou reconnecte-toi';
+      } catch (e) {
+        echec = '⚠️ Actualisation impossible : ' + String((e && e.message) || e).slice(0, 80);
+      } finally {
+        setTimeout(() => { if (btn) btn.classList.remove('spinning'); if (echec) showRefreshHint(echec, true); else showRefreshHint(); }, 400);
       }
     }
     // Expose globally so onclick can find them
@@ -2307,6 +2355,10 @@
           setKpi('kpi-feed-comments', hasMetrics ? totalComments.toLocaleString('fr-FR') : '—');
         }
       } catch (e) { console.warn('Feed load failed', e); }
+      // Dit si le serveur a vraiment répondu : le bouton 🔄 n'affiche plus « Actualisé » quand rien n'est arrivé (12/10/2026).
+      // (On ne regarde que les demandes déjà attendues plus haut : « costs » et « health » sont lentes et ne doivent rien retarder.)
+      const reponses = await Promise.all(['workflows', 'reports', 'ideas', 'pulse', 'approvals', 'inbox', 'feed'].map(k => _p[k]));
+      return reponses.some(x => x && !x.error);
     }
 
     async function doLogin(ev) {
@@ -2646,7 +2698,7 @@
     renderDrawer();
 
     // ════════ PWA Service Worker (prod) ════════
-    const APP_VERSION = 'v42-2026-06-12-refresh-non-bloquant';
+    const APP_VERSION = 'v45-2026-10-12-actualiser-tout';
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/admin/sw.js', { scope: '/admin/' })
