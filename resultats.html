@@ -189,10 +189,20 @@
 
     @media (max-width: 860px) { .r-grid { grid-template-columns: repeat(2,1fr); } }
     @media (max-width: 540px) { .r-grid { grid-template-columns: 1fr; } }
-    /* Téléphone (13/10/2026) : « Mon profil » et « Nouveau formulaire » sont déjà dans la barre du bas (Profil, Recherche).
-       La barre du haut ne garde que « Rafraîchir », sinon elle déborde de l'écran (page de 445 px sur un écran de 390, bouton coupé). */
+    /* Téléphone (13/10/2026, demande de Gylan : garder les trois boutons sans que la page glisse de côté).
+       Avant, la barre faisait 445 px sur un écran de 390 et « Rafraîchir » était coupé. Désormais : « Mon profil » = son seul
+       pictogramme, boutons resserrés, et la barre comme la page ne peuvent plus dépasser la largeur de l'écran. */
     @media (max-width: 640px) {
-      .navbar-right > a[href="profil.html"], .navbar-right > .btn-outline { display: none !important; }
+      html, body { overflow-x: hidden; }
+      .navbar { gap: 6px; }
+      .navbar-left { flex-shrink: 0; }
+      .navbar .navbar-right { flex: 1 1 auto; min-width: 0; justify-content: flex-end; gap: 5px; }
+      .navbar .navbar-right .nav-label { display: none; }
+      .navbar .navbar-right > a[href="profil.html"] { padding: 4px 7px !important; font-size: 16px !important; line-height: 1 !important; }
+      .navbar .navbar-right > .btn-outline, .navbar .navbar-right > .btn-primary { padding: 5px 8px !important; font-size: 12px !important; }
+    }
+    @media (max-width: 380px) {
+      .navbar .navbar-right > .btn-outline, .navbar .navbar-right > .btn-primary { padding: 4px 6px !important; font-size: 11px !important; }
     }
   </style>
 </head>
@@ -211,7 +221,7 @@
       <span class="brand" id="brand-name"></span>
     </div>
     <div class="navbar-right">
-      <a href="profil.html" style="font-size:14px;color:#E94560;text-decoration:none;font-weight:500;">&#128100; Mon profil</a>
+      <a href="profil.html" title="Mon profil" aria-label="Mon profil" style="font-size:14px;color:#E94560;text-decoration:none;font-weight:500;">&#128100;<span class="nav-label"> Mon profil</span></a>
       <button class="btn-outline" style="border-color:#E94560;color:#E94560;"
               onclick="window.location.href='questionnaire.html'">Nouveau formulaire</button>
       <button class="btn-primary" onclick="manualRefresh()">Rafra&icirc;chir</button>
