@@ -433,9 +433,10 @@
             var titre = p.titre || p.nom || p.name || 'Cadeau';
             var prix = p.prix_estime || p.prix || p.price || '';
             var lienBrut = p.lien_recherche || p.lien || p.url || '';
-            // Ajouter le tag affilié Amazon si c'est un lien Amazon
+            // Ajouter le tag affilié Amazon si c'est un lien Amazon et qu'il ne l'a pas déjà
+            // (13/10/2026 : le moteur l'écrit déjà dans lien_recherche, la page le doublait → « &tag=…&tag=… »)
             var lien = lienBrut;
-            if (lienBrut && lienBrut.includes('amazon')) {
+            if (lienBrut && lienBrut.includes('amazon') && !/[?&]tag=/.test(lienBrut)) {
               lien = lienBrut + (lienBrut.includes('?') ? '&' : '?') + 'tag=giftfinder0d6-21';
             }
 
