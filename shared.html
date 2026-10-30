@@ -377,12 +377,12 @@
         var lienBrut = p.lien_recherche || p.lien || p.url || '';
         var lien = lienBrut;
         if (lienBrut && lienBrut.includes('amazon')) {
-          lien = lienBrut + (lienBrut.includes('?') ? '&' : '?') + 'tag=giftfinder0d6-21';
+          lien = lienBrut + (lienBrut.includes('?') ? '&' : '?') + 'tag=kadoizi-21';
         }
 
         var buyBtn = lien
           ? '<a class="s-card-btn" href="' + esc(lien) + '" target="_blank" rel="noopener">Voir le produit &rarr;</a>'
-          : '<a class="s-card-btn" href="https://www.amazon.fr/s?k=' + encodeURIComponent(titre) + '&tag=giftfinder0d6-21" target="_blank" rel="noopener">Rechercher sur Amazon &rarr;</a>';
+          : '<a class="s-card-btn" href="https://www.amazon.fr/s?k=' + encodeURIComponent(titre) + '&tag=kadoizi-21" target="_blank" rel="noopener">Rechercher sur Amazon &rarr;</a>';
 
         card.innerHTML =
           imgHtml +
