@@ -350,7 +350,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/supabase-init.js"></script>
-  <script src="js/analytics.js"></script>
+  <script src="js/analytics.js?v=20261031"></script>
   <script src="js/animate.js"></script>
   <script>
     document.getElementById('brand-name').textContent = APP_NAME;
@@ -363,7 +363,7 @@
     // -- Capter la source (?s=) depuis l'URL (ex: epingles Pinterest) pour l'attribution --
     var _srcParam = new URLSearchParams(location.search).get('s');
     if (_srcParam) localStorage.setItem('kado_src', _srcParam);
-    if (window.GFAnalytics) GFAnalytics.pageView('questionnaire');
+    try { if (window.GFAnalytics && typeof GFAnalytics.pageView === 'function') GFAnalytics.pageView('questionnaire'); } catch (e) {}
 
     // -- Chips mono-choix --
     ['grp-occasion', 'grp-genre', 'grp-budget'].forEach(function(grpId) {

@@ -205,7 +205,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/supabase-init.js"></script>
-  <script src="js/analytics.js"></script>
+  <script src="js/analytics.js?v=20261031"></script>
   <script src="js/animate.js"></script>
   <script>
     document.getElementById('brand-name').textContent = APP_NAME;
@@ -213,7 +213,7 @@
     if (footerBrandEl) footerBrandEl.textContent = APP_NAME;
 
     // Suivi des visites : mémorise ?s= (lien TikTok/Instagram/Pinterest) et d'où vient le visiteur
-    if (window.GFAnalytics) GFAnalytics.pageView('accueil');
+    try { if (window.GFAnalytics && typeof GFAnalytics.pageView === 'function') GFAnalytics.pageView('accueil'); } catch (e) {}
 
     let authMode = 'login';
 
