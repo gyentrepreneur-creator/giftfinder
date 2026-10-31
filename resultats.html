@@ -325,6 +325,7 @@
   <script src="js/analytics.js"></script>
   <script src="js/animate.js"></script>
   <script>
+    if (window.GFAnalytics) GFAnalytics.pageView('resultats');
     document.getElementById('brand-name').textContent   = APP_NAME;
     document.getElementById('footer-brand').textContent = APP_NAME;
 
