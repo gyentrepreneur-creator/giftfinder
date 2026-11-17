@@ -350,10 +350,11 @@
     </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <!-- config + analytics d'abord : les compteurs n'attendent pas la librairie externe -->
   <script src="js/config.js"></script>
+  <script src="js/analytics.js?v=20261117c"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-init.js"></script>
-  <script src="js/analytics.js?v=20261117"></script>
   <script src="js/animate.js"></script>
   <script>
     document.getElementById('brand-name').textContent = APP_NAME;
