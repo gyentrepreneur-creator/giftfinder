@@ -358,3 +358,34 @@
   from { opacity: 0; transform: translateX(-50%) translateY(20px); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
+
+
+/* ══════════════════════════════════════════════
+   14. HAUT DE PAGE VISIBLE SANS JAVASCRIPT (17/11/2026)
+   Les éléments .anim-hero (titre et bouton de l'accueil, carte du questionnaire,
+   en-tête des résultats) restaient à opacité 0 tant qu'animate.js n'avait pas tourné,
+   donc après le chargement de tous les scripts du bas de page. Sur une connexion lente
+   ou dans le navigateur interne de TikTok / Instagram, le visiteur voyait une page sans
+   titre ni bouton. Ils sont maintenant visibles par défaut ; l'entrée en douceur est une
+   animation CSS qui n'attend aucun script.
+   ══════════════════════════════════════════════ */
+.anim-hero.anim-fade-up,
+.anim-hero.anim-fade-in,
+.anim-hero.anim-scale-up {
+  opacity: 1;
+  transform: none;
+}
+.anim-hero.anim-fade-up  { animation: kado-hero-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+.anim-hero.anim-fade-in  { animation: kado-hero-fade 0.45s ease backwards; }
+.anim-hero.anim-scale-up { animation: kado-hero-scale 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+.anim-hero.anim-delay-1 { animation-delay: 0.05s; }
+.anim-hero.anim-delay-2 { animation-delay: 0.10s; }
+.anim-hero.anim-delay-3 { animation-delay: 0.15s; }
+.anim-hero.anim-delay-4 { animation-delay: 0.20s; }
+.anim-hero.anim-delay-5 { animation-delay: 0.25s; }
+.anim-hero.anim-delay-6 { animation-delay: 0.30s; }
+@keyframes kado-hero-up    { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@keyframes kado-hero-fade  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes kado-hero-scale { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: none; } }
+/* garde l'effet d'appui du bouton (la règle ci-dessus fixait transform: none) */
+.btn-cta.anim-hero:active { transform: scale(0.97); }

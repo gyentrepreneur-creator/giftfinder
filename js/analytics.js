@@ -9,6 +9,7 @@
  *   results_viewed    — Affichage des résultats (statut done/completed)
  *   product_clicked   — Clic sur un produit affilié
  *   share_clicked     — Clic sur "Partager ces idées cadeaux"
+ *   cta_click         — Appui sur « Trouver mon cadeau » (accueil), envoyé par send() : arrive même si la page change aussitôt
  *
  * Attribution : le paramètre ?s= (ex. s=tt pour la bio TikTok) est mémorisé dans
  * localStorage (kado_src) dès la première page vue, puis repris par tous les événements.
@@ -83,6 +84,33 @@ window.GFAnalytics = (function() {
     }
   }
 
+  /**
+   * Envoi direct, sans attendre la librairie Supabase, et qui survit au changement de page
+   * (fetch keepalive). Sert aux appuis sur un bouton qui quitte la page aussitôt :
+   * avec track(), l'envoi était souvent annulé par la navigation sur téléphone.
+   * Toujours anonyme (user_id nul) : c'est un compteur, pas un suivi de personne.
+   */
+  function send(eventName, props) {
+    try {
+      if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined' || !window.fetch) return;
+      props = props || {};
+      if (props.src === undefined) props.src = source();
+      if (props.sid === undefined) props.sid = sessionId();
+      if (props.app === undefined) props.app = appFromUA();
+      fetch(SUPABASE_URL + '/rest/v1/events', {
+        method: 'POST',
+        keepalive: true,
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify([{ user_id: null, event: eventName, properties: props }])
+      }).catch(function() {});
+    } catch (e) {}
+  }
+
   /** Page vue : d'où vient le visiteur (appli, mobile, site référent) — à appeler une fois par page. */
   function pageView(page) {
     try {
@@ -92,11 +120,13 @@ window.GFAnalytics = (function() {
         page:   page,
         app:    appFromUA(),
         mobile: /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent || ''),
-        ref:    ref
+        ref:    ref,
+        // 'hidden' = page chargée sans être affichée (préchargement d'une pub par l'appli) : à ne pas compter comme une visite
+        vis:    document.visibilityState || null
       });
     } catch (e) {}
   }
 
-  return { track: track, pageView: pageView, source: source };
+  return { track: track, send: send, pageView: pageView, source: source };
 
 })();
