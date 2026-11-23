@@ -25,14 +25,14 @@ window.addEventListener('DOMContentLoaded', function() {
   var bn = document.getElementById('brand-name');
   if (bn) bn.style.display = 'none';
 
-  // 3. Footer brand : logo K + KADOIZI + Le cadeau parfait
+  // 3. Footer brand : logo K + KADOIZI + Le cadeau qui tape juste
   var fb = document.getElementById('footer-brand');
   if (fb) {
     fb.innerHTML = '<span style="display:inline-flex;align-items:center;gap:7px;">' +
       '<img src="' + LOGO_NAV + '" alt="' + APP_NAME + '" height="36" style="border-radius:8px;">' +
       '<span style="display:flex;flex-direction:column;line-height:1.25;">' +
         '<span style="font-weight:800;font-size:12px;color:#26215C;letter-spacing:.8px;">' + APP_NAME.toUpperCase() + '</span>' +
-        '<span style="font-size:10px;color:#aaa;font-style:italic;">Le cadeau parfait</span>' +
+        '<span style="font-size:10px;color:#aaa;font-style:italic;">Le cadeau qui tape juste</span>' +
       '</span></span>';
   }
 
